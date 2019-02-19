@@ -1,7 +1,7 @@
-package edu.northeastern.ccs.im.TestUtils;
+package edu.northeastern.ccs.im.utils;
 
 import edu.northeastern.ccs.im.Message;
-import edu.northeastern.ccs.im.TestConstants.MessageConstants;
+import edu.northeastern.ccs.im.constants.MessageConstants;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -9,6 +9,10 @@ import java.util.Iterator;
 import java.util.List;
 
 public class NetworkConnectionTestUtil {
+
+    private NetworkConnectionTestUtil() {
+
+    }
 
     public static Iterator<Message> getMessageIterator() {
 
