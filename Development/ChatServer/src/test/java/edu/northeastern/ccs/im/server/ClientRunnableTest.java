@@ -2,7 +2,7 @@ package edu.northeastern.ccs.im.server;
 
 import edu.northeastern.ccs.im.Message;
 import edu.northeastern.ccs.im.NetworkConnection;
-import edu.northeastern.ccs.im.TestUtils.NetworkConnectionTestUtil;
+import edu.northeastern.ccs.im.utils.NetworkConnectionTestUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -14,7 +14,7 @@ import java.util.Iterator;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ClientRunnableTests {
+public class ClientRunnableTest {
 
     @InjectMocks
     ClientRunnable clientRunnable;
@@ -22,11 +22,9 @@ public class ClientRunnableTests {
     @Mock
     NetworkConnection networkConnection;
 
-    Iterator<Message> messageIterator;
-
     @Test
     public void testValidClient() {
-        messageIterator = NetworkConnectionTestUtil.getMessageIterator();
+        Iterator<Message> messageIterator = NetworkConnectionTestUtil.getMessageIterator();
 
         when(networkConnection.iterator()).thenReturn(messageIterator);
         clientRunnable = new ClientRunnable(networkConnection);
@@ -38,7 +36,8 @@ public class ClientRunnableTests {
 
     @Test
     public void testClientWithNullUserName() {
-        messageIterator = NetworkConnectionTestUtil.getMessageIteratorWithNoUsers();
+        Iterator<Message> messageIterator = NetworkConnectionTestUtil
+                .getMessageIteratorWithNoUsers();
 
         when(networkConnection.iterator()).thenReturn(messageIterator);
         clientRunnable = new ClientRunnable(networkConnection);
@@ -47,4 +46,6 @@ public class ClientRunnableTests {
         networkConnection.close();
 
     }
+
+
 }
