@@ -26,10 +26,10 @@ pipeline {
 
              stage('Build') {
                steps {
-                 echo "Building Chatter"
-                 sh 'mvn -f Development/Chatter/pom.xml install'
-                 echo "Building Prattle"
-                 sh 'mvn -f Development/Prattle/pom.xml compile'
+                 //echo "Building Chatter"
+                 //sh 'mvn -f Development/Chatter/pom.xml install'
+                 echo "Building ChatServer"
+                 sh 'mvn -f Development/ChatServer/pom.xml compile'
                }
    } // build
    stage('SonarQube') {
@@ -40,8 +40,8 @@ pipeline {
      }
      steps {
       withSonarQubeEnv('SonarQube') {
-        sh 'mvn -f Development/Prattle/pom.xml clean install'
-        sh 'mvn -f Development/Prattle/pom.xml sonar:sonar -Dsonar.projectKey=${jobBaseName} -Dsonar.projectName=${jobBaseName}'
+        sh 'mvn -f Development/ChatServer/pom.xml clean install'
+        sh 'mvn -f Development/ChatServer/pom.xml sonar:sonar -Dsonar.projectKey=${jobBaseName} -Dsonar.projectName=${jobBaseName}'
       }
 
       sh 'sleep 30'
@@ -66,8 +66,8 @@ stage('Master Branch Tasks') {
  }
  agent any
  steps {
-   echo "Building Prattle"
-   sh 'mvn -f Development/Prattle/pom.xml package -Dmaven.test.skip=true'          
+   echo "Building ChatServer"
+   sh 'mvn -f Development/ChatServer/pom.xml package -Dmaven.test.skip=true'          
 
    script {
     def json = readJSON file:'config.json'
