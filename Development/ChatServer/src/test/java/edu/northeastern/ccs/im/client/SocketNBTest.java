@@ -7,6 +7,7 @@ import java.nio.channels.spi.SelectorProvider;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.northeastern.ccs.im.constants.MessageConstants;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -42,7 +43,8 @@ public class SocketNBTest {
 
     @Test
     public void testPrintMessage() throws IOException {
-        Message message = Message.makeBroadcastMessage(null,"hello world");
+        Message message = Message.makeBroadcastMessage(MessageConstants.SIMPLE_USER,
+                MessageConstants.BROADCAST_TEXT_MESSAGE);
         try {
             socketNBObj.print(message);
         }catch (IllegalOperationException e){
@@ -56,13 +58,13 @@ public class SocketNBTest {
     @Test
     public void testEnqueueMessages() throws IOException {
         List<Message> messageList  = new ArrayList<>();
-        Message message = Message.makeBroadcastMessage(null,"hello world");
+        Message message = Message.makeBroadcastMessage(MessageConstants.SIMPLE_USER,
+                MessageConstants.BROADCAST_TEXT_MESSAGE);
         messageList.add(message);
         messageList.add(message);
         messageList.add(message);
         socketNBObj.startIMConnection();
         socketNBObj.startIMConnection();
-
         socketNBObj.enqueueMessages(messageList);
     }
 
