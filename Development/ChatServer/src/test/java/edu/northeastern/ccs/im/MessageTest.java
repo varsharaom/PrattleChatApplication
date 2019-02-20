@@ -4,6 +4,7 @@ import edu.northeastern.ccs.im.constants.MessageConstants;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class MessageTest {
 
@@ -17,12 +18,16 @@ public class MessageTest {
         assertTrue(message.isBroadcastMessage());
     }
 
+    
     @Test
     public void testMakeQuitMessage() {
         Message message = Message.makeQuitMessage(MessageConstants.SIMPLE_USER);
         assertEquals(MessageConstants.SIMPLE_USER, message.getName());
+
+        assertNull(message.getText());
         assertTrue(message.terminate());
     }
+    
 
     @Test
     public void testSimpleLoginMessage() {
