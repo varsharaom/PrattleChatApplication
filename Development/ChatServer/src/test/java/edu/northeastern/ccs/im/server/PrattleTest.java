@@ -7,8 +7,6 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.net.InetSocketAddress;
-import java.nio.ByteBuffer;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
@@ -24,7 +22,6 @@ public class PrattleTest {
     private ScheduledExecutorService tPool;
     private SocketChannel sc;
 
-    @BeforeEach
     void setUp() {
 
         try {
