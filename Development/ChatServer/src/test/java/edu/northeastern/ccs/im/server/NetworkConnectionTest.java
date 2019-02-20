@@ -15,6 +15,8 @@ import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.nio.channels.spi.SelectorProvider;
 
+import static edu.northeastern.ccs.im.server.ServerConstants.PORT;
+
 
 public class NetworkConnectionTest {
     private ServerSocketChannel serverSocket;
@@ -40,7 +42,7 @@ public class NetworkConnectionTest {
     @Test
     public void testNetworkConnection() throws IOException {
         serverSocket.configureBlocking(false);
-        serverSocket.socket().bind(new InetSocketAddress(4545));
+        serverSocket.socket().bind(new InetSocketAddress(PORT));
         sc.connect(serverSocket.socket().getLocalSocketAddress());
 
         NetworkConnection nc = new NetworkConnection(sc);
@@ -49,7 +51,7 @@ public class NetworkConnectionTest {
     @Test
     public void testSendMessage() throws IOException {
         serverSocket.configureBlocking(false);
-        serverSocket.socket().bind(new InetSocketAddress(4545));
+        serverSocket.socket().bind(new InetSocketAddress(PORT));
         sc.connect(serverSocket.socket().getLocalSocketAddress());
         NetworkConnection nc = new NetworkConnection(sc);
         Message message = Message.makeBroadcastMessage(MessageConstants.SIMPLE_USER,
@@ -60,7 +62,7 @@ public class NetworkConnectionTest {
     @Test
     public void testMessageIterator() throws IOException {
         serverSocket.configureBlocking(false);
-        serverSocket.socket().bind(new InetSocketAddress(4545));
+        serverSocket.socket().bind(new InetSocketAddress(PORT));
         sc.connect(serverSocket.socket().getLocalSocketAddress());
         NetworkConnection nc = new NetworkConnection(sc);
         Message message1 = Message.makeBroadcastMessage(MessageConstants.SIMPLE_USER,
@@ -74,7 +76,7 @@ public class NetworkConnectionTest {
     @Test
     public void testClose() throws IOException {
         serverSocket.configureBlocking(false);
-        serverSocket.socket().bind(new InetSocketAddress(4545));
+        serverSocket.socket().bind(new InetSocketAddress(PORT));
         sc.connect(serverSocket.socket().getLocalSocketAddress());
         NetworkConnection nc = new NetworkConnection(sc);
         nc.close();

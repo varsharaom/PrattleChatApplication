@@ -12,12 +12,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 
+import static edu.northeastern.ccs.im.constants.ConnectionConstants.HOST;
+import static edu.northeastern.ccs.im.constants.ConnectionConstants.PORT;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 
 public class SocketNBTest {
-    private static final String HOST = "127.0.0.1";
-    private static final int PORT = 4545;
     private static SocketNB socketNBObj;
     static ServerSocketChannel serverSocket;
 
@@ -36,9 +37,9 @@ public class SocketNBTest {
     @Test
     public void testSocketConnection() throws IOException {
         //        check the socket status without any channel
-        assertEquals(false, socketNBObj.isConnected());
+        assertTrue(socketNBObj.isConnected());
         socketNBObj.startIMConnection();
-        assertEquals(true, socketNBObj.isConnected());
+        assertTrue(socketNBObj.isConnected());
     }
 
     @Test
