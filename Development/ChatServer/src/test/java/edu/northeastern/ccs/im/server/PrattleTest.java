@@ -30,9 +30,6 @@ public class PrattleTest {
         }
     }
 
-    @Test
-    void testMain() throws IOException {
-    }
 
     @Test
     void testStopServer() {
@@ -51,8 +48,6 @@ public class PrattleTest {
         Field active = Prattle.class.getDeclaredField("active");
         active.setAccessible(true);
         active.set(null, queue);
-
-        ConcurrentLinkedQueue<ClientRunnable> returned = (ConcurrentLinkedQueue<ClientRunnable>) active.get(null);
 
         Prattle.broadcastMessage(Message.makeBroadcastMessage(MessageConstants.SIMPLE_USER,
                 MessageConstants.BROADCAST_TEXT_MESSAGE));

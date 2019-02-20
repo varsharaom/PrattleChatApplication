@@ -24,7 +24,7 @@ public class MessageTest {
         Message message = Message.makeQuitMessage(MessageConstants.SIMPLE_USER);
         assertEquals(MessageConstants.SIMPLE_USER, message.getName());
 
-        assertEquals(null, message.getText());
+        assertNull(message.getText());
         assertTrue(message.terminate());
     }
     
