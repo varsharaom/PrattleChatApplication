@@ -52,7 +52,7 @@ public final class ScanForMessagesWorker extends SwingWorker<Void, Message> {
 		realConnection = sock;
 		// Create the queue that will hold the messages received from over the
 		// network
-		messages = new CopyOnWriteArrayList<Message>();
+		messages = new CopyOnWriteArrayList<>();
 	}
 
 	/**
@@ -74,7 +74,7 @@ public final class ScanForMessagesWorker extends SwingWorker<Void, Message> {
 
 	@Override
 	protected void process(List<Message> mess) {
-		List<Message> publishList = new LinkedList<Message>();
+		List<Message> publishList = new LinkedList<>();
 		boolean flagForClosure = false;
 		for (Message m : mess) {
 			switch (m.getType()) {

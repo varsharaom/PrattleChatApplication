@@ -1,9 +1,11 @@
 package edu.northeastern.ccs.im.client.utilities;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.SwingWorker;
 
@@ -32,13 +34,13 @@ public class IMConnection {
 	/**
 	 * List of instances that have registered as a listener for connection events.
 	 */
-	private Vector<LinkListener> linkListeners;
+	private ArrayList<LinkListener> linkListeners;
 
 	/**
 	 * List of instances that have registered as a listener for received message
 	 * events.
 	 */
-	private Vector<MessageListener> messageListeners;
+	private ArrayList<MessageListener> messageListeners;
 
 	/** Server to which this connection will be made. */
 	private String hostName;
@@ -49,10 +51,6 @@ public class IMConnection {
 	/** Name of the user for which this connection was formed. */
 	private String userName;
 
-	/**
-	 * Holds the SwingWorker which is used to read and process all incoming data.
-	 */
-	private SwingWorker<Void, Message> workerBee;
 
 	/** Instance used to read the messages. */
 	private MessageScanner messageScanner;
@@ -69,8 +67,8 @@ public class IMConnection {
 		if ((username == null) || username.trim().equals("")) {
 			username = "TooDumbToEnterRealUsername";
 		}
-		linkListeners = new Vector<LinkListener>();
-		messageListeners = new Vector<MessageListener>();
+		linkListeners = new ArrayList<>();
+		messageListeners = new ArrayList<>();
 		userName = username;
 		hostName = host;
 		portNum = port;
@@ -207,17 +205,18 @@ public class IMConnection {
 	 */
 	private boolean login() {
 		// Now log in using this name.
+		SwingWorker<Void, Message> workerBee;
+		
 		Message loginMessage = Message.makeLoginMessage(userName);
 		try {
 			socketConnection = new SocketNB(hostName, portNum);
 			socketConnection.startIMConnection();
 		} catch (IOException e) {
 			// Report the error
-			System.err.println("ERROR:  Could not make a connection to: " + hostName + " at port " + portNum);
-			System.err.println(
-					"        If the settings look correct and your machine is connected to the Internet, report this error to Dr. Jump");
-			// And print out the problem
-			e.printStackTrace();
+			Logger logger = Logger.getGlobal();
+			logger.log(Level.INFO, "ERROR:  Could not make a connection to: " + hostName + " at port " + portNum);
+			logger.log(Level.INFO, "If the settings look correct and your machine is connected to the Internet, report this error to Dr. Jump");
+			
 			// Return that the connection could not be made.
 			return false;
 		}
@@ -233,9 +232,9 @@ public class IMConnection {
 
 	@SuppressWarnings({ "unchecked" })
 	protected void fireSendMessages(List<Message> mess) {
-		Vector<MessageListener> targets;
+		ArrayList<MessageListener> targets;
 		synchronized (this) {
-			targets = (Vector<MessageListener>) messageListeners.clone();
+			targets = (ArrayList<MessageListener>) messageListeners.clone();
 		}
 		for (MessageListener iml : targets) {
 			iml.messagesReceived(mess.iterator());
@@ -244,9 +243,9 @@ public class IMConnection {
 
 	@SuppressWarnings("unchecked")
 	protected void fireStatusChange(String userName) {
-		Vector<LinkListener> targets;
+		ArrayList<LinkListener> targets;
 		synchronized (this) {
-			targets = (Vector<LinkListener>) linkListeners.clone();
+			targets = (ArrayList<LinkListener>) linkListeners.clone();
 		}
 		for (LinkListener iml : targets) {
 			iml.linkStatusUpdate(userName, this);

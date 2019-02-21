@@ -14,12 +14,16 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.nio.channels.SocketChannel;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 
 public class PrattleTest {
+	private static final String ACTIVE = "active";
+	
     private SocketChannel sc;
     private NetworkConnection nc;
 
@@ -30,7 +34,8 @@ public class PrattleTest {
             sc = SocketChannel.open();
             nc = new NetworkConnection(sc);
         } catch (IOException e) {
-            e.printStackTrace();
+        		Logger logger = Logger.getGlobal();
+            logger.log(Level.INFO, "Stack trace: " + e.getStackTrace());
         }
     }
 
@@ -41,7 +46,8 @@ public class PrattleTest {
             sc.close();
 
         } catch (IOException e) {
-            e.printStackTrace();
+            Logger logger = Logger.getGlobal();
+            logger.log(Level.INFO, "Stack trace: " + e.getStackTrace());
         }
     }
 
@@ -55,16 +61,16 @@ public class PrattleTest {
     public void testBroadcastClient() throws IllegalAccessException,
             NoSuchFieldException {
 
-            ConcurrentLinkedQueue<ClientRunnable> queue = new ConcurrentLinkedQueue<>();
+        ConcurrentLinkedQueue<ClientRunnable> queue = new ConcurrentLinkedQueue<>();
 
-            ClientRunnable c1 = new ClientRunnable(nc);
-            queue.add(c1);
-            Field active = Prattle.class.getDeclaredField("active");
-            active.setAccessible(true);
-            active.set(null, queue);
+        ClientRunnable c1 = new ClientRunnable(nc);
+        queue.add(c1);
+        Field active = Prattle.class.getDeclaredField(ACTIVE);
+        active.setAccessible(true);
+        active.set(null, queue);
 
-            Prattle.broadcastMessage(Message.makeBroadcastMessage(MessageConstants.SIMPLE_USER,
-                    MessageConstants.BROADCAST_TEXT_MESSAGE));
+        Prattle.broadcastMessage(Message.makeBroadcastMessage(MessageConstants.SIMPLE_USER,
+                MessageConstants.BROADCAST_TEXT_MESSAGE));
 
     }
 
@@ -74,7 +80,7 @@ public class PrattleTest {
         ConcurrentLinkedQueue<ClientRunnable> queue = new ConcurrentLinkedQueue<>();
         ClientRunnable c1 = new ClientRunnable(nc);
         queue.add(c1);
-        Field active = Prattle.class.getDeclaredField("active");
+        Field active = Prattle.class.getDeclaredField(ACTIVE);
         active.setAccessible(true);
         active.set(null, queue);
         Object returned = active.get(null);
@@ -110,7 +116,6 @@ public class PrattleTest {
         catch (Exception e) {
             Prattle.stopServer();
         }
-
     }
     
     
@@ -121,7 +126,7 @@ public class PrattleTest {
         ClientRunnable c1 = new ClientRunnable(nc);
         ClientRunnable c2 = new ClientRunnable(nc);
         queue.add(c1);
-        Field active = Prattle.class.getDeclaredField("active");
+        Field active = Prattle.class.getDeclaredField(ACTIVE);
         active.setAccessible(true);
         active.set(null, queue);
 
