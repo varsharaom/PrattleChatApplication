@@ -42,7 +42,7 @@ public class MessageScanner implements MessageListener, Iterator<Message> {
 	 * {@link Message}s to be processed by the client.
 	 */
 	private MessageScanner() {
-		messages = new ConcurrentLinkedQueue<Message>();
+		messages = new ConcurrentLinkedQueue<>();
 	}
 
 	/**
