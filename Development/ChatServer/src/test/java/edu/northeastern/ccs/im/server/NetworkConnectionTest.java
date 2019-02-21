@@ -15,7 +15,7 @@ import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.nio.channels.spi.SelectorProvider;
 
-import static edu.northeastern.ccs.im.server.ServerConstants.PORT;
+import static edu.northeastern.ccs.im.server.ServerConstants.*;
 
 
 public class NetworkConnectionTest {
@@ -30,7 +30,7 @@ public class NetworkConnectionTest {
             serverSocket = ServerSocketChannel.open();
             serverSocket.configureBlocking(false);
             selector = SelectorProvider.provider().openSelector();
-            serverSocket.socket().bind(new InetSocketAddress(PORT));
+            serverSocket.socket().bind(new InetSocketAddress(NEW_PORT));
             sc.connect(serverSocket.socket().getLocalSocketAddress());
         } catch (IOException e) {
             e.printStackTrace();
@@ -62,6 +62,14 @@ public class NetworkConnectionTest {
 
     @Test
     public void testMessageIterator() throws IOException {
+    	
+    	sc = SocketChannel.open();
+        serverSocket = ServerSocketChannel.open();
+        serverSocket.configureBlocking(false);
+        selector = SelectorProvider.provider().openSelector();
+        serverSocket.socket().bind(new InetSocketAddress(NEW_PORT2));
+        sc.connect(serverSocket.socket().getLocalSocketAddress());
+    	
         NetworkConnection nc = new NetworkConnection(sc);
         Message message1 = Message.makeBroadcastMessage(MessageConstants.SIMPLE_USER,
                 MessageConstants.BROADCAST_TEXT_MESSAGE);
