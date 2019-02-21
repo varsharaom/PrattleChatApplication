@@ -38,3 +38,10 @@ buildNumber.properties
 # intellij spefifics:
 .idea/
 *.iml
+
+*.classpath
+*.project
+*.settings*
+*.log.*
+*.lck
+.DS_Store
