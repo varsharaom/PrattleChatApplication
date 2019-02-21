@@ -18,7 +18,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 
 public class PrattleTest {
@@ -116,7 +115,6 @@ public class PrattleTest {
             Prattle.stopServer();
         }
         catch (Exception e) {
-            System.out.println("Exception - > " + e.getMessage());
             Prattle.stopServer();
         }
 
