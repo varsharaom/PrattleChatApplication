@@ -103,19 +103,23 @@ public class PrattleTest {
             connection1 = new IMConnection(ConnectionConstants.HOST,
                     ConnectionConstants.PORT, MessageConstants.BROADCAST_TEXT_MESSAGE);
             connection1.connect();
+
             connection2 = new IMConnection(ConnectionConstants.HOST,
                     ConnectionConstants.PORT, MessageConstants.BROADCAST_TEXT_MESSAGE);
             connection2.connect();
+
             connection1.sendMessage(MessageConstants.BROADCAST_TEXT_MESSAGE);
             connection2.sendMessage(MessageConstants.BROADCAST_TEXT_MESSAGE);
-            assertTrue(connection1.getMessageScanner().hasNext());
+
             Prattle.broadcastMessage(Message.makeBroadcastMessage(MessageConstants.SIMPLE_USER,
                     MessageConstants.BROADCAST_TEXT_MESSAGE));
             Prattle.stopServer();
         }
         catch (Exception e) {
+            System.out.println("Exception - > " + e.getMessage());
             Prattle.stopServer();
         }
+
     }
     
     
