@@ -15,6 +15,7 @@ import org.junit.Test;
 import static edu.northeastern.ccs.im.constants.ConnectionConstants.HOST;
 import static edu.northeastern.ccs.im.constants.ConnectionConstants.PORT;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 
@@ -46,7 +47,7 @@ public class SocketNBTest {
     @Test
     public void testSocketConnection() throws IOException {
         //        check the socket status without any channel
-        assertTrue(socketNBObj.isConnected());
+        assertFalse(socketNBObj.isConnected());
         socketNBObj.startIMConnection();
         assertTrue(socketNBObj.isConnected());
     }
