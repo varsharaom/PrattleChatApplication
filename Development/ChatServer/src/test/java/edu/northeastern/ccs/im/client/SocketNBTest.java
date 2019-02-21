@@ -8,12 +8,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.northeastern.ccs.im.constants.MessageConstants;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
-import static edu.northeastern.ccs.im.constants.ConnectionConstants.HOST;
-import static edu.northeastern.ccs.im.constants.ConnectionConstants.PORT;
+import static edu.northeastern.ccs.im.constants.ConnectionConstants.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -23,16 +22,26 @@ public class SocketNBTest {
     private static SocketNB socketNBObj;
     static ServerSocketChannel serverSocket;
 
-    @BeforeAll
-    static void suiteSetUp() throws IOException {
+    @Before
+    public void suiteSetUp() throws IOException {
         serverSocket = SelectorProvider.provider().openServerSocketChannel();
         serverSocket.configureBlocking(false);
-        serverSocket.socket().bind(new InetSocketAddress(PORT));
+        serverSocket.socket().bind(new InetSocketAddress(ALT_PORT));
     }
 
-    @BeforeEach
+    @After
+    public void cleanUp() {
+        try {
+            serverSocket.socket().close();
+            serverSocket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Before
     public void setUp() {
-        socketNBObj = new SocketNB(HOST, PORT);
+        socketNBObj = new SocketNB(HOST, ALT_PORT);
     }
 
     @Test
@@ -49,7 +58,7 @@ public class SocketNBTest {
                 MessageConstants.BROADCAST_TEXT_MESSAGE);
         try {
             socketNBObj.print(message);
-        }catch (IllegalOperationException e){
+        } catch (IllegalOperationException e) {
             assertEquals("Cannot send a message when we are not connected!",
                     e.getMessage());
         }
@@ -59,7 +68,7 @@ public class SocketNBTest {
 
     @Test
     public void testEnqueueMessages() throws IOException {
-        List<Message> messageList  = new ArrayList<>();
+        List<Message> messageList = new ArrayList<>();
         Message message = Message.makeBroadcastMessage(MessageConstants.SIMPLE_USER,
                 MessageConstants.BROADCAST_TEXT_MESSAGE);
         messageList.add(message);
