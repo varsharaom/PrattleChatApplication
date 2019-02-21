@@ -60,7 +60,6 @@ public class PrattleTest {
 
         ClientRunnable c1 = new ClientRunnable(nc);
         queue.add(c1);
-
         Field active = Prattle.class.getDeclaredField("active");
         active.setAccessible(true);
         active.set(null, queue);
@@ -81,9 +80,7 @@ public class PrattleTest {
         active.setAccessible(true);
         active.set(null, queue);
         ConcurrentLinkedQueue<ClientRunnable> returned = (ConcurrentLinkedQueue<ClientRunnable>) active.get(null);
-
         Prattle.removeClient(c1);
-
         assertTrue(returned.isEmpty());
     }
 
@@ -103,11 +100,9 @@ public class PrattleTest {
         connection2.connect();
         connection1.sendMessage(MessageConstants.BROADCAST_TEXT_MESSAGE);
         connection2.sendMessage(MessageConstants.BROADCAST_TEXT_MESSAGE);
-        //assertFalse(connection1.getMessageScanner().hasNext());
         assertTrue(connection1.getMessageScanner().hasNext());
         Prattle.broadcastMessage(Message.makeBroadcastMessage(MessageConstants.SIMPLE_USER,
                 MessageConstants.BROADCAST_TEXT_MESSAGE));
-        //assertTrue(connection2.getMessageScanner().hasNext());
         Prattle.stopServer();
     }
     
@@ -129,25 +124,6 @@ public class PrattleTest {
         
     }
     
-    
-  /*  @Test
-    public void testBroadcastClientblah() throws IllegalAccessException,
-            NoSuchFieldException {
-        ConcurrentLinkedQueue<ClientRunnable> queue = new ConcurrentLinkedQueue<>();
-        NetworkConnection nc = new NetworkConnection(sc);
-
-        ClientRunnable c1 = new ClientRunnable(nc);
-        queue.add(c1);
-
-        Field active = Prattle.class.getDeclaredField("active");
-        active.setAccessible(true);
-        active.set(null, queue);
-
-        Prattle.broadcastMessage(Message.makeBroadcastMessage(MessageConstants.SIMPLE_USER,
-                MessageConstants.BROADCAST_TEXT_MESSAGE));
-
-    }
-*/
     class MainTest implements Runnable {
 
         @Override
