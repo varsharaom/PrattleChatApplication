@@ -85,12 +85,13 @@ public class PrattleTest {
     public void test() {
         Thread thread = new Thread(new MainTest());
         thread.start();
-        //Prattle.broadcastMessage(Message.makeBroadcastMessage("test","test"));
+        Prattle.broadcastMessage(Message.makeBroadcastMessage(MessageConstants.SIMPLE_USER,
+                MessageConstants.BROADCAST_TEXT_MESSAGE));
         IMConnection connection1 = new IMConnection(ConnectionConstants.HOST,
-                ConnectionConstants.PORT, "test");
+                ConnectionConstants.PORT, MessageConstants.BROADCAST_TEXT_MESSAGE);
         connection1.connect();
         IMConnection connection2 = new IMConnection(ConnectionConstants.HOST,
-                ConnectionConstants.PORT, "test");
+                ConnectionConstants.PORT, MessageConstants.BROADCAST_TEXT_MESSAGE);
         connection2.connect();
         connection1.sendMessage(MessageConstants.BROADCAST_TEXT_MESSAGE);
         connection2.sendMessage(MessageConstants.BROADCAST_TEXT_MESSAGE);
