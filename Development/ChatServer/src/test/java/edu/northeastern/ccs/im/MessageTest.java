@@ -8,6 +8,38 @@ import static org.junit.Assert.*;
 public class MessageTest {
 
     @Test
+    public void testMakeMessageBroadcast() {
+        Message message = Message.makeMessage(MessageType.BROADCAST.toString(), MessageConstants.SIMPLE_USER,
+                MessageConstants.BROADCAST_TEXT_MESSAGE);
+        assertTrue(message.isBroadcastMessage());
+    }
+
+    @Test
+    public void testMakeMessageQuit() {
+        Message message = Message.makeMessage(MessageType.QUIT.toString(), MessageConstants.SIMPLE_USER,
+                MessageConstants.BROADCAST_TEXT_MESSAGE);
+        assertFalse(message.isBroadcastMessage());
+    }
+
+    @Test
+    public void testMakeMessageHello() {
+        Message message = Message.makeMessage(MessageType.HELLO.toString(), MessageConstants.SIMPLE_USER,
+                MessageConstants.BROADCAST_TEXT_MESSAGE);
+        assertFalse(message.isBroadcastMessage());
+    }
+
+    @Test
+    public void makeHelloMessage() {
+
+        Message message = Message.makeHelloMessage(MessageConstants.BROADCAST_TEXT_MESSAGE);
+        String msgAsString = message.toString();
+        String[] msgStringContent = msgAsString.split(" ");
+
+        assertEquals(MessageType.HELLO.toString(), msgStringContent[0]);
+
+    }
+
+    @Test
     public void testMakeBroadcastMessage() {
         Message message = Message.makeBroadcastMessage(MessageConstants.SIMPLE_USER,
                 MessageConstants.BROADCAST_TEXT_MESSAGE);
