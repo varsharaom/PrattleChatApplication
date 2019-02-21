@@ -34,6 +34,12 @@ public class ServerConstants {
 	/** Name of the private user who handles bad requests. */
 	protected static final String BOUNCER_ID = "Bouncer";
 
+	/** The port number to listen on. */
+	protected static final int NEW_PORT = 4547;
+	
+	/** The port number to listen on. */
+	protected static final int NEW_PORT2 = 4548;
+	
 	/** Private constructor to prevent anyone from creating one of these. */
 	private ServerConstants() {
 		/* does nothing. */

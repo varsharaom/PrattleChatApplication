@@ -54,10 +54,11 @@ public abstract class Prattle {
 	 * @param message Message that the client sent.
 	 */
 	public static void broadcastMessage(Message message) {
-		// Loop through all of our active threads
+		// Loop through all of our active threads		
 		for (ClientRunnable tt : active) {
-			// Do not send the message to any clients that are not ready to receive it.
+			// Do not send the message to any clients that are not ready to receive it.			
 			if (tt.isInitialized()) {
+				
 				tt.enqueueMessage(message);
 			}
 		}
@@ -98,6 +99,7 @@ public abstract class Prattle {
 	 *                     to which it is supposed to listen.
 	 */
 	public static void main(String[] args) {
+		
 		// Connect to the socket on the appropriate port to which this server connects.
 		try (ServerSocketChannel serverSocket = ServerSocketChannel.open()) {
 			serverSocket.configureBlocking(false);
@@ -131,6 +133,7 @@ public abstract class Prattle {
 				}
 			}
 		} catch (IOException ex) {
+			
 			ChatLogger.error("Fatal error: " + ex.getMessage());
 			throw new IllegalStateException(ex.getMessage());
 		}
