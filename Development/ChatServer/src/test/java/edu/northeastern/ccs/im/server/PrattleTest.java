@@ -2,26 +2,27 @@ package edu.northeastern.ccs.im.server;
 
 import edu.northeastern.ccs.im.NetworkConnection;
 import edu.northeastern.ccs.im.Message;
+import edu.northeastern.ccs.im.client.IMConnection;
+import edu.northeastern.ccs.im.constants.ConnectionConstants;
 import edu.northeastern.ccs.im.constants.MessageConstants;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.nio.channels.Selector;
-import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ScheduledExecutorService;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 
 public class PrattleTest {
     private SocketChannel sc;
 
-    @BeforeEach
-    void setUp() {
+    @Before
+    public void setUp() {
 
         try {
             sc = SocketChannel.open();
@@ -30,15 +31,24 @@ public class PrattleTest {
         }
     }
 
+    @After
+    public void cleanUp() {
+        try {
+            sc.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     @Test
-    void testStopServer() {
+    public void testStopServer() {
         Prattle.stopServer();
     }
 
     @Test
-    void testBroadcastClient() throws IllegalAccessException,
-            NoSuchFieldException{
+    public void testBroadcastClient() throws IllegalAccessException,
+            NoSuchFieldException {
         ConcurrentLinkedQueue<ClientRunnable> queue = new ConcurrentLinkedQueue<>();
         NetworkConnection nc = new NetworkConnection(sc);
 
@@ -55,7 +65,7 @@ public class PrattleTest {
     }
 
     @Test
-    void testRemoveClient() throws IllegalAccessException, NoSuchFieldException {
+    public void testRemoveClient() throws IllegalAccessException, NoSuchFieldException {
         ConcurrentLinkedQueue<ClientRunnable> queue = new ConcurrentLinkedQueue<>();
 
         NetworkConnection nc = new NetworkConnection(sc);
@@ -69,6 +79,35 @@ public class PrattleTest {
         Prattle.removeClient(c1);
 
         assertTrue(returned.isEmpty());
+    }
+
+    @Test
+    public void test() {
+        Thread thread = new Thread(new MainTest());
+        thread.start();
+        Prattle.broadcastMessage(Message.makeBroadcastMessage(MessageConstants.SIMPLE_USER,
+                MessageConstants.BROADCAST_TEXT_MESSAGE));
+        IMConnection connection1 = new IMConnection(ConnectionConstants.HOST,
+                ConnectionConstants.PORT, MessageConstants.BROADCAST_TEXT_MESSAGE);
+        connection1.connect();
+        IMConnection connection2 = new IMConnection(ConnectionConstants.HOST,
+                ConnectionConstants.PORT, MessageConstants.BROADCAST_TEXT_MESSAGE);
+        connection2.connect();
+        connection1.sendMessage(MessageConstants.BROADCAST_TEXT_MESSAGE);
+        connection2.sendMessage(MessageConstants.BROADCAST_TEXT_MESSAGE);
+        assertFalse(connection1.getMessageScanner().hasNext());
+        Prattle.broadcastMessage(Message.makeBroadcastMessage(MessageConstants.SIMPLE_USER,
+                MessageConstants.BROADCAST_TEXT_MESSAGE));
+        //assertTrue(connection2.getMessageScanner().hasNext());
+        Prattle.stopServer();
+    }
+
+    class MainTest implements Runnable {
+
+        @Override
+        public void run() {
+            Prattle.main(new String[0]);
+        }
     }
 
 }

@@ -11,10 +11,11 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import java.util.Iterator;
 import java.util.concurrent.*;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 
@@ -28,7 +29,7 @@ public class ClientRunnableTest {
     NetworkConnection networkConnection;
 
     private final Logger logger = Logger.getLogger(ClientRunnableTest.class.getName());
-    
+
     @Test
     public void testValidClient() {
         Iterator<Message> messageIterator = NetworkConnectionTestUtil.getMessageIterator();
@@ -92,7 +93,7 @@ public class ClientRunnableTest {
         clientRunnable = new ClientRunnable(networkConnection);
         ScheduledFuture<?> clientFuture = Executors.newSingleThreadScheduledExecutor()
                 .scheduleAtFixedRate(clientRunnable, ServerConstants.CLIENT_CHECK_DELAY,
-                ServerConstants.CLIENT_CHECK_DELAY, TimeUnit.MILLISECONDS);
+                        ServerConstants.CLIENT_CHECK_DELAY, TimeUnit.MILLISECONDS);
         clientRunnable.setFuture(clientFuture);
 
         clientRunnable.run();
@@ -114,13 +115,13 @@ public class ClientRunnableTest {
         clientRunnable.setFuture(clientFuture);
         clientRunnable.run();
         clientRunnable.run();
-    }     
+    }
 
 	/**
-	 * Testing client with a random array of multiple messages. 
+	 * Testing client with a random array of multiple messages.
 	 */
 	@Test
-	public void testWithMultipleMessages() {		
+	public void testWithMultipleMessages() {
 		Iterator<Message> messageIterator = NetworkConnectionTestUtil.getMessageIteratorWithManyMessages();
 		when(networkConnection.iterator()).thenReturn(messageIterator);
 		clientRunnable = new ClientRunnable(networkConnection);
@@ -171,7 +172,7 @@ public class ClientRunnableTest {
 	 * Testing clientRunnable with an array of 0 messages
 	 */
 	@Test
-	public void testEmptyMessageQueue() {	
+	public void testEmptyMessageQueue() {
 		Iterator<Message> messageIterator = NetworkConnectionTestUtil.getMessageIteratorWithNoMessages();
 		when(networkConnection.iterator()).thenReturn(messageIterator);
 		clientRunnable = new ClientRunnable(networkConnection);
