@@ -12,8 +12,8 @@ import org.mockito.runners.MockitoJUnitRunner;
 import java.util.Iterator;
 import java.util.concurrent.*;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 
@@ -93,7 +93,7 @@ public class ClientRunnableTest {
 
         ScheduledFuture<?> clientFuture = Executors.newSingleThreadScheduledExecutor()
                 .scheduleAtFixedRate(clientRunnable, ServerConstants.CLIENT_CHECK_DELAY,
-                ServerConstants.CLIENT_CHECK_DELAY, TimeUnit.MILLISECONDS);
+                        ServerConstants.CLIENT_CHECK_DELAY, TimeUnit.MILLISECONDS);
         clientRunnable.setFuture(clientFuture);
 
         clientRunnable.run();

@@ -17,12 +17,16 @@ public class MessageTest {
         assertTrue(message.isBroadcastMessage());
     }
 
+    
     @Test
     public void testMakeQuitMessage() {
         Message message = Message.makeQuitMessage(MessageConstants.SIMPLE_USER);
         assertEquals(MessageConstants.SIMPLE_USER, message.getName());
+
+        assertNull(message.getText());
         assertTrue(message.terminate());
     }
+    
 
     @Test
     public void testSimpleLoginMessage() {
