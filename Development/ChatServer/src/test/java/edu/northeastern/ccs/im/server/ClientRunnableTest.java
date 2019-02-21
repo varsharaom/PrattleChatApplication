@@ -11,9 +11,12 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.Iterator;
 import java.util.concurrent.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 
@@ -26,6 +29,8 @@ public class ClientRunnableTest {
     @Mock
     NetworkConnection networkConnection;
 
+    private final Logger logger = Logger.getLogger(ClientRunnableTest.class.getName());
+    
     @Test
     public void testValidClient() {
         Iterator<Message> messageIterator = NetworkConnectionTestUtil.getMessageIterator();
@@ -119,5 +124,97 @@ public class ClientRunnableTest {
         clientRunnable.run();
 
     }
+    
+    
+    
+    /**
+	 * Testing client with random array of messages.
+	 */
+	@Test
+	public void testClient1() {
+		Iterator<Message> messageIterator = NetworkConnectionTestUtil.getMessageIterator1();
+		when(networkConnection.iterator()).thenReturn(messageIterator);
+		clientRunnable = new ClientRunnable(networkConnection);
+		clientRunnable.run();
+		networkConnection.close();
+	}
+
+	/**
+	 * Testing client with a random array of messages. 
+	 */
+	@Test
+	public void testClient2() {
+		
+		Iterator<Message> messageIterator = NetworkConnectionTestUtil.getMessageIterator2();
+		when(networkConnection.iterator()).thenReturn(messageIterator);
+		clientRunnable = new ClientRunnable(networkConnection);
+		clientRunnable.run();
+		ScheduledExecutorService ses = Executors.newScheduledThreadPool(1);
+		Runnable task2 = () -> logger.log(Level.INFO, "Starting demo task");
+		ScheduledFuture<?> scheduledFuture = ses.schedule(task2, 5, TimeUnit.SECONDS);
+		clientRunnable.setFuture(scheduledFuture);
+		clientRunnable.run();
+		networkConnection.close();
+	}
+
+	
+
+	/**
+	 * Testing the behavior of terminateClient
+	 */
+	@Test
+	public void testTerminateClient() {
+		Iterator<Message> messageIterator = NetworkConnectionTestUtil.getMessageIterator1();
+		when(networkConnection.iterator()).thenReturn(messageIterator);
+		clientRunnable = new ClientRunnable(networkConnection);
+		clientRunnable.run();
+		ScheduledExecutorService ses = Executors.newScheduledThreadPool(1);
+		Runnable task2 = () -> logger.log(Level.INFO, "In testTerminateClient");
+		ScheduledFuture<?> scheduledFuture = ses.schedule(task2, 5, TimeUnit.SECONDS);
+		clientRunnable.setFuture(scheduledFuture);
+		clientRunnable.terminateClient();
+		networkConnection.close();
+
+	}
+
+	/**
+	* Testing with an array of terminate messages
+	*/
+	@Test
+	public void testTerminateMessages() {
+		Iterator<Message> messageIterator = NetworkConnectionTestUtil.getMessageIterator3();
+		when(networkConnection.iterator()).thenReturn(messageIterator);
+		clientRunnable = new ClientRunnable(networkConnection);
+		clientRunnable.run();
+		ScheduledExecutorService ses = Executors.newScheduledThreadPool(1);
+		Runnable task2 = () -> logger.log(Level.INFO, "In testTerminateMessages");
+		ScheduledFuture<?> scheduledFuture = ses.schedule(task2, 5, TimeUnit.SECONDS);
+		clientRunnable.setFuture(scheduledFuture);
+		clientRunnable.run();
+		networkConnection.close();
+
+	}
+
+	/**
+	 * Testing clientRunnable with an array of 0 messages
+	 */
+	@Test
+	public void testEmptyMessageQueue() {
+	
+		Iterator<Message> messageIterator = NetworkConnectionTestUtil.getMessageIterator4();
+		when(networkConnection.iterator()).thenReturn(messageIterator);
+		clientRunnable = new ClientRunnable(networkConnection);
+		clientRunnable.run();
+		logger.log(Level.INFO, ""+clientRunnable.getUserId());
+		ScheduledExecutorService ses = Executors.newScheduledThreadPool(1);
+		Runnable task2 = () -> logger.log(Level.INFO, "Starting new task");
+		ScheduledFuture<?> scheduledFuture = ses.schedule(task2, 5, TimeUnit.SECONDS);
+		clientRunnable.setFuture(scheduledFuture);
+		clientRunnable.run();
+		networkConnection.close();
+
+	}
+	
+    
 
 }
