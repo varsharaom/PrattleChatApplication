@@ -21,7 +21,7 @@ public class Buddy {
 	private static final ConcurrentHashMap<String, Buddy> INSTANCES;
 
 	static {
-		INSTANCES = new ConcurrentHashMap<String, Buddy>();
+		INSTANCES = new ConcurrentHashMap<>();
 	}
 
 	/**
@@ -41,10 +41,10 @@ public class Buddy {
 	 *         before, it will be created.
 	 */
 	protected static Buddy getBuddy(String name) {
-		Buddy b = INSTANCES.get(name);
+		Buddy b = INSTANCES.computeIfAbsent(name, null);
 		if (b == null) {
 			synchronized (Buddy.class) {
-				b = INSTANCES.get(name);
+				b = INSTANCES.computeIfAbsent(name, null);
 				if (b == null) {
 					b = new Buddy(name);
 					INSTANCES.put(name, b);

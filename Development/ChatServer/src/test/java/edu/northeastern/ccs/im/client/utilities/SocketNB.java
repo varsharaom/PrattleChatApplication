@@ -174,8 +174,7 @@ public final class SocketNB {
 				final String message = readArgument(charBuffer);
 				// Add this message into our queue
 				Message newMsg = Message.makeMessage(handle, sender, message);
-				// And move the position to the start of the next character
-				start = charBuffer.position() + 1;
+
 				// Check if this message is closing our connection
 				if (newMsg.getType() == Message.MessageType.QUIT) {
 					quitter = true;
