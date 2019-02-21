@@ -45,11 +45,14 @@ public final class KeyboardScanner {
 	 * Stop the instance from looking for keyboard input. This method
 	 * <b>must</b> be called for the program to terminate.
 	 */
-	@SuppressWarnings("deprecation")
 	protected static void close() {
 		if (producer != null) {
 			producer.interrupt();
-			producer.stop();
+			try {
+				producer.join();
+			} catch (InterruptedException e) {
+				producer.interrupt();
+			}
 		}
 	}
 
@@ -62,32 +65,28 @@ public final class KeyboardScanner {
 	 */
 	protected static KeyboardScanner getInstance() {
 		// This will be a pseudo-singleton class to make life easier.
-		if (singleton == null) {
-			synchronized (KeyboardScanner.class) {
-				if (singleton == null) {
-					singleton = new KeyboardScanner();
-					// Create the new queue of messages in which we will store
-					// each line that we input
-					messages = new CopyOnWriteArrayList<String>();
-					// Create the class which produces the keyboard output this
-					// class will examine.
-					producer = new Thread(new Runnable() {
-						public void run() {
-							@SuppressWarnings("resource")
-							Scanner scan = new Scanner(System.in);
-							boolean done = false;
-							while (!done) {
-								String keyboardIn = scan.nextLine();
-								messages.add(keyboardIn);
-							}
-						}
-					});
-					producer.setName("Key scanning thread");
-					// Start the thread that reads in from the keyboard and
-					// blocks for the team.
-					producer.start();
+		if (singleton == null) {	
+			singleton = new KeyboardScanner();
+			// Create the new queue of messages in which we will store
+			// each line that we input
+			messages = new CopyOnWriteArrayList<>();
+			// Create the class which produces the keyboard output this
+			// class will examine.
+			producer = new Thread(new Runnable() {
+				public void run() {
+					@SuppressWarnings("resource")
+					Scanner scan = new Scanner(System.in);
+					boolean done = false;
+					while (!done) {
+						String keyboardIn = scan.nextLine();
+						messages.add(keyboardIn);
+					}
 				}
-			}
+			});
+			producer.setName("Key scanning thread");
+			// Start the thread that reads in from the keyboard and
+			// blocks for the team.
+			producer.start();
 		}
 		return singleton;
 	}
@@ -170,7 +169,6 @@ public final class KeyboardScanner {
 		if (messages.isEmpty()) {
 			throw new NoSuchElementException("No new text has been typed in!");
 		}
-		String msg = messages.remove(0);
-		return msg;
+		return messages.remove(0);
 	}
 }

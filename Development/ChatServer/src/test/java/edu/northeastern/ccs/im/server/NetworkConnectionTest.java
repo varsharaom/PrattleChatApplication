@@ -14,6 +14,8 @@ import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.nio.channels.spi.SelectorProvider;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static edu.northeastern.ccs.im.server.ServerConstants.*;
 
@@ -33,7 +35,8 @@ public class NetworkConnectionTest {
             serverSocket.socket().bind(new InetSocketAddress(NEW_PORT));
             sc.connect(serverSocket.socket().getLocalSocketAddress());
         } catch (IOException e) {
-            e.printStackTrace();
+            Logger logger = Logger.getGlobal();
+            logger.log(Level.INFO, "IOException: " + e.getStackTrace());
         }
     }
 
@@ -46,13 +49,13 @@ public class NetworkConnectionTest {
     }
 
     @Test
-    public void testNetworkConnection() throws IOException {
+    public void testNetworkConnection() {
         NetworkConnection nc = new NetworkConnection(sc);
         nc.close();
     }
 
     @Test
-    public void testSendMessage() throws IOException {
+    public void testSendMessage() {
         NetworkConnection nc = new NetworkConnection(sc);
         Message message = Message.makeBroadcastMessage(MessageConstants.SIMPLE_USER,
                 MessageConstants.BROADCAST_TEXT_MESSAGE);
@@ -77,12 +80,6 @@ public class NetworkConnectionTest {
                 MessageConstants.BROADCAST_TEXT_MESSAGE);
         nc.sendMessage(message1);
         nc.sendMessage(message2);
-        nc.close();
-    }
-
-    @Test
-    public void testClose() throws IOException {
-        NetworkConnection nc = new NetworkConnection(sc);
         nc.close();
     }
 
