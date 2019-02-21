@@ -18,7 +18,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 
 public class PrattleTest {
@@ -103,12 +102,14 @@ public class PrattleTest {
             connection1 = new IMConnection(ConnectionConstants.HOST,
                     ConnectionConstants.PORT, MessageConstants.BROADCAST_TEXT_MESSAGE);
             connection1.connect();
+
             connection2 = new IMConnection(ConnectionConstants.HOST,
                     ConnectionConstants.PORT, MessageConstants.BROADCAST_TEXT_MESSAGE);
             connection2.connect();
+
             connection1.sendMessage(MessageConstants.BROADCAST_TEXT_MESSAGE);
             connection2.sendMessage(MessageConstants.BROADCAST_TEXT_MESSAGE);
-            assertTrue(connection1.getMessageScanner().hasNext());
+
             Prattle.broadcastMessage(Message.makeBroadcastMessage(MessageConstants.SIMPLE_USER,
                     MessageConstants.BROADCAST_TEXT_MESSAGE));
             Prattle.stopServer();
@@ -116,6 +117,7 @@ public class PrattleTest {
         catch (Exception e) {
             Prattle.stopServer();
         }
+
     }
     
     
