@@ -12,26 +12,23 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.net.InetSocketAddress;
-import java.nio.channels.Selector;
-import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
-import java.nio.channels.spi.SelectorProvider;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import static edu.northeastern.ccs.im.server.ServerConstants.NEW_PORT;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 
 public class PrattleTest {
     private SocketChannel sc;
+    private NetworkConnection nc;
 
     @Before
     public void setUp() {
 
         try {
             sc = SocketChannel.open();
+            nc = new NetworkConnection(sc);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -40,7 +37,9 @@ public class PrattleTest {
     @After
     public void cleanUp() {
         try {
+            nc.close();
             sc.close();
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -55,73 +54,84 @@ public class PrattleTest {
     @Test
     public void testBroadcastClient() throws IllegalAccessException,
             NoSuchFieldException {
-        ConcurrentLinkedQueue<ClientRunnable> queue = new ConcurrentLinkedQueue<>();
-        NetworkConnection nc = new NetworkConnection(sc);
 
-        ClientRunnable c1 = new ClientRunnable(nc);
-        queue.add(c1);
-        Field active = Prattle.class.getDeclaredField("active");
-        active.setAccessible(true);
-        active.set(null, queue);
+            ConcurrentLinkedQueue<ClientRunnable> queue = new ConcurrentLinkedQueue<>();
 
-        Prattle.broadcastMessage(Message.makeBroadcastMessage(MessageConstants.SIMPLE_USER,
-                MessageConstants.BROADCAST_TEXT_MESSAGE));
+            ClientRunnable c1 = new ClientRunnable(nc);
+            queue.add(c1);
+            Field active = Prattle.class.getDeclaredField("active");
+            active.setAccessible(true);
+            active.set(null, queue);
+
+            Prattle.broadcastMessage(Message.makeBroadcastMessage(MessageConstants.SIMPLE_USER,
+                    MessageConstants.BROADCAST_TEXT_MESSAGE));
 
     }
 
     @Test
     public void testRemoveClient() throws IllegalAccessException, NoSuchFieldException {
+        nc = new NetworkConnection(sc);
         ConcurrentLinkedQueue<ClientRunnable> queue = new ConcurrentLinkedQueue<>();
-
-        NetworkConnection nc = new NetworkConnection(sc);
         ClientRunnable c1 = new ClientRunnable(nc);
         queue.add(c1);
         Field active = Prattle.class.getDeclaredField("active");
         active.setAccessible(true);
         active.set(null, queue);
-        ConcurrentLinkedQueue<ClientRunnable> returned = (ConcurrentLinkedQueue<ClientRunnable>) active.get(null);
+        Object returned = active.get(null);
         Prattle.removeClient(c1);
-        assertTrue(returned.isEmpty());
+        assertEquals("[]", returned.toString());
     }
 
-    @Test(expected = AssertionError.class)    
-    public void test() {    	 
-    	
-        Thread thread = new Thread(new MainTest());
-        thread.start();
-        
-        Prattle.broadcastMessage(Message.makeBroadcastMessage(MessageConstants.SIMPLE_USER,
-                MessageConstants.BROADCAST_TEXT_MESSAGE));
-        IMConnection connection1 = new IMConnection(ConnectionConstants.HOST,
-                ConnectionConstants.PORT, MessageConstants.BROADCAST_TEXT_MESSAGE);
-        connection1.connect();
-        IMConnection connection2 = new IMConnection(ConnectionConstants.HOST,
-                ConnectionConstants.PORT, MessageConstants.BROADCAST_TEXT_MESSAGE);
-        connection2.connect();
-        connection1.sendMessage(MessageConstants.BROADCAST_TEXT_MESSAGE);
-        connection2.sendMessage(MessageConstants.BROADCAST_TEXT_MESSAGE);
-        assertTrue(connection1.getMessageScanner().hasNext());
-        Prattle.broadcastMessage(Message.makeBroadcastMessage(MessageConstants.SIMPLE_USER,
-                MessageConstants.BROADCAST_TEXT_MESSAGE));
-        Prattle.stopServer();
+    @Test
+    public void testUsingClient() {
+
+        IMConnection connection1;
+        IMConnection connection2;
+
+        try{
+            Thread thread = new Thread(new MainTest());
+            thread.start();
+
+            Prattle.broadcastMessage(Message.makeBroadcastMessage(MessageConstants.SIMPLE_USER,
+                    MessageConstants.BROADCAST_TEXT_MESSAGE));
+            connection1 = new IMConnection(ConnectionConstants.HOST,
+                    ConnectionConstants.PORT, MessageConstants.BROADCAST_TEXT_MESSAGE);
+            connection1.connect();
+            connection2 = new IMConnection(ConnectionConstants.HOST,
+                    ConnectionConstants.PORT, MessageConstants.BROADCAST_TEXT_MESSAGE);
+            connection2.connect();
+            connection1.sendMessage(MessageConstants.BROADCAST_TEXT_MESSAGE);
+            connection2.sendMessage(MessageConstants.BROADCAST_TEXT_MESSAGE);
+            assertTrue(connection1.getMessageScanner().hasNext());
+            Prattle.broadcastMessage(Message.makeBroadcastMessage(MessageConstants.SIMPLE_USER,
+                    MessageConstants.BROADCAST_TEXT_MESSAGE));
+            Prattle.stopServer();
+        }
+        catch (Exception e) {
+            Prattle.stopServer();
+        }
+
     }
     
     
     @Test
     public void testRemoveNonExistantClient() throws IllegalAccessException, NoSuchFieldException {
         ConcurrentLinkedQueue<ClientRunnable> queue = new ConcurrentLinkedQueue<>();
-        NetworkConnection nc = new NetworkConnection(sc);
+        nc = new NetworkConnection(sc);
         ClientRunnable c1 = new ClientRunnable(nc);
         ClientRunnable c2 = new ClientRunnable(nc);
         queue.add(c1);
         Field active = Prattle.class.getDeclaredField("active");
         active.setAccessible(true);
         active.set(null, queue);
-        ConcurrentLinkedQueue<ClientRunnable> returned = (ConcurrentLinkedQueue<ClientRunnable>) active.get(null);
-        Prattle.removeClient(c1);        
-        assertTrue(returned.isEmpty());
+
+        Object returned = active.get(null);
+        Prattle.removeClient(c1);
+        assertEquals("[]", returned.toString());
+
+        Prattle.removeClient(c1);
         Prattle.removeClient(c2);
-        
+        Prattle.stopServer();
     }
     
     class MainTest implements Runnable {
