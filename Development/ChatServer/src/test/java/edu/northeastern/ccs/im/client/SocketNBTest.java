@@ -31,8 +31,9 @@ public class SocketNBTest {
     }
 
     @After
-    public void cleanUp(){
+    public void cleanUp() {
         try {
+            serverSocket.socket().close();
             serverSocket.close();
         } catch (IOException e) {
             e.printStackTrace();
