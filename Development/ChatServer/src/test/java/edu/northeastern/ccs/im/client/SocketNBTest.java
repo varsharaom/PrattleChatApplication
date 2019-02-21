@@ -12,8 +12,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import static edu.northeastern.ccs.im.constants.ConnectionConstants.HOST;
-import static edu.northeastern.ccs.im.constants.ConnectionConstants.PORT;
+import static edu.northeastern.ccs.im.constants.ConnectionConstants.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -27,7 +26,7 @@ public class SocketNBTest {
     public void suiteSetUp() throws IOException {
         serverSocket = SelectorProvider.provider().openServerSocketChannel();
         serverSocket.configureBlocking(false);
-        serverSocket.socket().bind(new InetSocketAddress(PORT));
+        serverSocket.socket().bind(new InetSocketAddress(ALT_PORT));
     }
 
     @After
@@ -42,7 +41,7 @@ public class SocketNBTest {
 
     @Before
     public void setUp() {
-        socketNBObj = new SocketNB(HOST, PORT);
+        socketNBObj = new SocketNB(HOST, ALT_PORT);
     }
 
     @Test
