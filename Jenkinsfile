@@ -26,10 +26,10 @@ pipeline {
 
              stage('Build') {
                steps {
-                 echo "Building Chatter"
-                 sh 'mvn -f Development/Chatter/pom.xml install'
-                 echo "Building Prattle"
-                 sh 'mvn -f Development/Prattle/pom.xml compile'
+                 //echo "Building Chatter"
+                 //sh 'mvn -f Development/Chatter/pom.xml install'
+                 echo "Building ChatServer"
+                 sh 'mvn -f Development/ChatServer/pom.xml compile'
                }
    } // build
    stage('SonarQube') {
@@ -40,8 +40,8 @@ pipeline {
      }
      steps {
       withSonarQubeEnv('SonarQube') {
-        sh 'mvn -f Development/Prattle/pom.xml clean install'
-        sh 'mvn -f Development/Prattle/pom.xml sonar:sonar -Dsonar.projectKey=${jobBaseName} -Dsonar.projectName=${jobBaseName}'
+        sh 'mvn -f Development/ChatServer/pom.xml clean install'
+        sh 'mvn -f Development/ChatServer/pom.xml sonar:sonar -Dsonar.projectKey=${jobBaseName} -Dsonar.projectName=${jobBaseName}'
       }
 
       sh 'sleep 30'
@@ -66,8 +66,8 @@ stage('Master Branch Tasks') {
  }
  agent any
  steps {
-   echo "Building Prattle"
-   sh 'mvn -f Development/Prattle/pom.xml package -Dmaven.test.skip=true'          
+   echo "Building ChatServer"
+   sh 'mvn -f Development/ChatServer/pom.xml package -Dmaven.test.skip=true'          
 
    script {
     def json = readJSON file:'config.json'
@@ -82,14 +82,12 @@ stage('Master Branch Tasks') {
 } // STAGES
 
 
- //post {      
-
-  //SLACK IS CURRENTLY COMMENTED OUT, you will have to add your custom integration. 
-  //   success {
-  //          slackSend (baseUrl: "https://nu-cs5500.slack.com/services/hooks/jenkins-ci/", token: "gO2JO0o8DG11Syjwl6UDDAQy", channel: "#cs5500-team-XXX-SP19", color: '#00FF00', message: "SUCCESSFUL: Job '${env.JOB_NAME}")
-  //          }
-  // failure {  
-  //       slackSend (baseUrl: "https://nu-cs5500.slack.com/services/hooks/jenkins-ci/", token: "gO2JO0o8DG11Syjwl6UDDAQy", channel: "#cs5500-team-XXX-SP19", color: '#FF0000', message: "FAILED: Job '${env.JOB_NAME}")
-  //        }
-  //  }
+ post {      
+     success {
+            slackSend (baseUrl: "https://nu-cs5500.slack.com/services/hooks/jenkins-ci/", token: "SKyTnf0m1UkBTDZjdqrEfkPM", channel: "#cs5500-team-209-SP19", color: '#00FF00', message: "SUCCESSFUL: Job '${env.JOB_NAME}")
+            }
+   failure {  
+         slackSend (baseUrl: "https://nu-cs5500.slack.com/services/hooks/jenkins-ci/", token: "SKyTnf0m1UkBTDZjdqrEfkPM", channel: "#cs5500-team-209-SP19", color: '#FF0000', message: "FAILED: Job '${env.JOB_NAME}")
+         }
+   }
 } //pipeline
