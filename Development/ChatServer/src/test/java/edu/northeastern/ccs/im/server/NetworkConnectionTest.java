@@ -74,7 +74,7 @@ public class NetworkConnectionTest {
     @Test
     public void testMessageIterator() throws IOException {
     	
-    	sc = SocketChannel.open();
+    		sc = SocketChannel.open();
         serverSocket = ServerSocketChannel.open();
         serverSocket.configureBlocking(false);
         selector = SelectorProvider.provider().openSelector();
@@ -116,6 +116,21 @@ public class NetworkConnectionTest {
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
+        nc.close();
+    }
+    
+    @Test
+    public void testSendMessageException() {
+        NetworkConnection nc = new NetworkConnection(sc);
+        try {
+			sc.close();
+		} catch (IOException e) {
+			Logger logger = Logger.getGlobal();
+			logger.log(Level.INFO, ""+e.getStackTrace());
+		}
+        Message message = Message.makeBroadcastMessage(MessageConstants.SIMPLE_USER,
+                MessageConstants.BROADCAST_TEXT_MESSAGE);
+        nc.sendMessage(message);
         nc.close();
     }
 

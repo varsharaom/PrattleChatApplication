@@ -188,4 +188,25 @@ public class ClientRunnableTest {
 		clientRunnable.run();
 		networkConnection.close();
 	}
+	
+	/**
+ 	 * Test single message queue.
+ 	 */
+ 	@Test
+ 	public void testSingleMessageQueue() {
+ 		Iterator<Message> messageIterator = NetworkConnectionTestUtil.getMessageIteratorWithManyMessages();
+ 		when(networkConnection.iterator()).thenReturn(messageIterator);
+ 		clientRunnable = new ClientRunnable(networkConnection);
+ 		clientRunnable.run();
+ 		logger.log(Level.INFO, ""+clientRunnable.getUserId());
+ 		ScheduledExecutorService ses = Executors.newScheduledThreadPool(1);
+ 		Runnable task2 = () -> logger.log(Level.INFO, "Starting new task");
+ 		ScheduledFuture<?> scheduledFuture = ses.schedule(task2, ConnectionConstants.SCHEDULER_DELAY, TimeUnit.SECONDS);
+ 		clientRunnable.setFuture(scheduledFuture);
+ 		while(messageIterator.hasNext()) {
+ 			messageIterator.next();
+ 		}
+ 		clientRunnable.run();
+ 		networkConnection.close();
+ 	}
 }
