@@ -27,6 +27,7 @@ import java.util.logging.Logger;
 
 import static edu.northeastern.ccs.im.server.ServerConstants.*;
 import static junit.framework.TestCase.assertTrue;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
 
@@ -168,6 +169,58 @@ public class NetworkConnectionTest {
             e.printStackTrace();
         } finally {
             try {
+                serverSocketLocal.close();
+                selector.close();
+                connection1.disconnect();
+                networkConnection.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Test
+    public void testMessageItreator() {
+        ServerSocketChannel serverSocketLocal = null;
+        try {
+            serverSocketLocal = ServerSocketChannel.open();
+            serverSocketLocal.configureBlocking(false);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        Boolean status = false;
+
+        Selector selector = null;
+        IMConnection connection1 = null;
+        NetworkConnection networkConnection = null;
+        SocketChannel socket = null;
+        try {
+            serverSocketLocal.socket().bind(new InetSocketAddress(ServerConstants.PORT));
+            selector = SelectorProvider.provider().openSelector();
+            serverSocketLocal.register(selector, SelectionKey.OP_ACCEPT);
+
+            connection1 = new IMConnection(ConnectionConstants.HOST,
+                    ConnectionConstants.PORT, MessageConstants.BROADCAST_TEXT_MESSAGE);
+            connection1.connect();
+
+            socket = serverSocketLocal.accept();
+            connection1.sendMessage(MessageConstants.BROADCAST_TEXT_MESSAGE);
+            networkConnection = new NetworkConnection(socket);
+            Iterator<Message> itr = networkConnection.iterator();
+            assertTrue(itr.hasNext());
+            StringBuilder builder = new StringBuilder();
+            while ((itr.hasNext())) {
+                builder.append(itr.next());
+            }
+            assertEquals("HLO 20 broadcastTextMessage 2 --BCT 20 " +
+                    "broadcastTextMessage 20 broadcastTextMessage", builder.toString());
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                socket.close();
                 serverSocketLocal.close();
                 selector.close();
                 connection1.disconnect();
