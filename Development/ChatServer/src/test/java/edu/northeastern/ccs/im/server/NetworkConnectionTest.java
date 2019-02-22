@@ -151,6 +151,7 @@ public class NetworkConnectionTest {
 
         Selector selector = null;
         IMConnection connection1 = null;
+        NetworkConnection networkConnection = null;
         try {
             serverSocketLocal.socket().bind(new InetSocketAddress(ServerConstants.PORT));
             selector = SelectorProvider.provider().openSelector();
@@ -162,7 +163,7 @@ public class NetworkConnectionTest {
 
             SocketChannel socket = serverSocketLocal.accept();
             socket.close();
-            NetworkConnection networkConnection = new NetworkConnection(socket);
+            networkConnection = new NetworkConnection(socket);
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
@@ -170,6 +171,7 @@ public class NetworkConnectionTest {
                 serverSocketLocal.close();
                 selector.close();
                 connection1.disconnect();
+                networkConnection.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
