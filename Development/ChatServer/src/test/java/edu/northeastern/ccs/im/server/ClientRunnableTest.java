@@ -209,4 +209,29 @@ public class ClientRunnableTest {
  		clientRunnable.run();
  		networkConnection.close();
  	}
+ 	
+ 	@Test
+    public void testNullConnection() {
+        Iterator<Message> messageIterator = NetworkConnectionTestUtil
+                .getMessageIteratorWithDifferentUsers();
+
+        when(networkConnection.iterator()).thenReturn(messageIterator);
+        when(networkConnection.sendMessage(any())).thenReturn(true);
+        clientRunnable = new ClientRunnable(null);
+        clientRunnable.run();
+        clientRunnable.run();
+    }
+ 	
+ 	@Test
+    public void testNullMessage() {
+        Iterator<Message> messageIterator = NetworkConnectionTestUtil
+                .getMessageIteratorWithNullAndNonNullMessages();
+
+        when(networkConnection.iterator()).thenReturn(messageIterator);
+        when(networkConnection.sendMessage(any())).thenReturn(true);
+        clientRunnable = new ClientRunnable(networkConnection);
+        clientRunnable.run();
+        clientRunnable.run();
+    }
+ 	
 }
