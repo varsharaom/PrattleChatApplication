@@ -84,18 +84,20 @@ public class ClientRunnable implements Runnable {
 	 * Check to see for an initialization attempt and process the message sent.
 	 */
 	private void checkForInitialization() {
-		// Check if there are any input messages to read
-		Iterator<Message> messageIter = connection.iterator();
-		if (messageIter.hasNext()) {
-			// If a message exists, try to use it to initialize the connection
-			Message msg = messageIter.next();
-			if (setUserName(msg.getName())) {
-				// Update the time until we terminate this client due to inactivity.
-				timer.updateAfterInitialization();
-				// Set that the client is initialized.
-				initialized = true;
-			} else {
-				initialized = false;
+		if (connection != null) {
+			// Check if there are any input messages to read
+			Iterator<Message> messageIter = connection.iterator();
+			if (messageIter.hasNext()) {
+				// If a message exists, try to use it to initialize the connection
+				Message msg = messageIter.next();
+				if (setUserName(msg.getName())) {
+					// Update the time until we terminate this client due to inactivity.
+					timer.updateAfterInitialization();
+					// Set that the client is initialized.
+					initialized = true;
+				} else {
+					initialized = false;
+				}
 			}
 		}
 	}
@@ -228,25 +230,27 @@ public class ClientRunnable implements Runnable {
 		if (messageIter.hasNext()) {
 			// Get the next message
 			Message msg = messageIter.next();
-			// If the message is a broadcast message, send it out
-			if (msg.terminate()) {
-				// Stop sending the poor client message.
-				terminate = true;
-				// Reply with a quit message.
-				enqueueMessage(Message.makeQuitMessage(name));
-			} else {
-				// Check if the message is legal formatted
-				if (messageChecks(msg)) {
-					// Check for our "special messages"
-					if (msg.isBroadcastMessage()) {
-						// Check for our "special messages"
-						Prattle.broadcastMessage(msg);
-					}
+			if (msg != null) {
+				// If the message is a broadcast message, send it out
+				if (msg.terminate()) {
+					// Stop sending the poor client message.
+					terminate = true;
+					// Reply with a quit message.
+					enqueueMessage(Message.makeQuitMessage(name));
 				} else {
-					Message sendMsg;
-					sendMsg = Message.makeBroadcastMessage(ServerConstants.BOUNCER_ID,
-							"Last message was rejected because it specified an incorrect user name.");
-					enqueueMessage(sendMsg);
+					// Check if the message is legal formatted
+					if (messageChecks(msg)) {
+						// Check for our "special messages"
+						if (msg.isBroadcastMessage()) {
+							// Check for our "special messages"
+							Prattle.broadcastMessage(msg);
+						}
+					} else {
+						Message sendMsg;
+						sendMsg = Message.makeBroadcastMessage(ServerConstants.BOUNCER_ID,
+								"Last message was rejected because it specified an incorrect user name.");
+						enqueueMessage(sendMsg);
+					}
 				}
 			}
 		}

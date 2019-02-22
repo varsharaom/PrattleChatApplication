@@ -101,7 +101,7 @@ public class MessageTest {
     }
 
     @Test
-    public void checkIsBroadcastMessage() {
+    public void testIsBroadcastMessage() {
     	Message message1 = Message.makeBroadcastMessage(MessageConstants.SIMPLE_USER, null);
     	Message message2 = Message.makeSimpleLoginMessage(MessageConstants.SIMPLE_USER);
     	assertTrue(message1.isBroadcastMessage());
@@ -109,7 +109,7 @@ public class MessageTest {
     }
     
     @Test
-    public void checkBroadcastInitialization() {
+    public void testBroadcastInitialization() {
     	Message message1 = Message.makeBroadcastMessage(MessageConstants.SIMPLE_USER, null);
     	Message message2 = Message.makeSimpleLoginMessage(MessageConstants.SIMPLE_USER);
     	assertTrue(message2.isInitialization());
@@ -117,7 +117,7 @@ public class MessageTest {
     }
     
     @Test
-    public void checkTerminate() {
+    public void testTerminate() {
     	Message message1 = Message.makeBroadcastMessage(MessageConstants.SIMPLE_USER, null);
     	Message message2 = Message.makeQuitMessage(MessageConstants.SIMPLE_USER);
     	assertTrue(message2.terminate());
@@ -125,7 +125,14 @@ public class MessageTest {
     }
     
     @Test
-	public void checkNullHandle() {
+	public void testNullHandle() {
+		Message message1 = Message.makeMessage(MessageConstants.SIMPLE_USER, MessageConstants.SIMPLE_USER,
+				MessageConstants.SIMPLE_USER);
+		assertTrue(message1==null);		
+	}
+    
+    @Test
+	public void testNullMessageType() {
 		Message message1 = Message.makeMessage(MessageConstants.SIMPLE_USER, MessageConstants.SIMPLE_USER,
 				MessageConstants.SIMPLE_USER);
 		assertTrue(message1==null);		

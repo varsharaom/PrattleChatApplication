@@ -193,4 +193,30 @@ public class NetworkConnectionTestUtil {
 			}
 		};
 	}
+	
+	public static Iterator<Message> getMessageIteratorWithNullAndNonNullMessages() {
+
+		return new Iterator<Message>() {
+			Message message1 = Message.makeBroadcastMessage(MessageConstants.SIMPLE_USER,
+					MessageConstants.BROADCAST_TEXT_MESSAGE);
+			List<Message> messageList = new ArrayList<>(Arrays.asList(message1, null));
+			int index = 0;
+
+			@Override
+			public boolean hasNext() {
+				return index < messageList.size();
+			}
+
+			@Override
+			public Message next() {
+				if (hasNext()) {
+					return messageList.get(index++);
+				} else {
+					throw new NoSuchElementException();
+				}
+
+			}
+		};
+	}
+
 }
