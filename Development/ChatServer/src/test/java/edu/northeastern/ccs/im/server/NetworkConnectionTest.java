@@ -149,21 +149,30 @@ public class NetworkConnectionTest {
 
         Boolean status = false;
 
+        Selector selector = null;
+        IMConnection connection1 = null;
         try {
             serverSocketLocal.socket().bind(new InetSocketAddress(ServerConstants.PORT));
-            Selector selector = SelectorProvider.provider().openSelector();
+            selector = SelectorProvider.provider().openSelector();
             serverSocketLocal.register(selector, SelectionKey.OP_ACCEPT);
 
-            IMConnection connection1 = new IMConnection(ConnectionConstants.HOST,
+            connection1 = new IMConnection(ConnectionConstants.HOST,
                     ConnectionConstants.PORT, MessageConstants.BROADCAST_TEXT_MESSAGE);
             connection1.connect();
 
-            SocketChannel socket =serverSocketLocal.accept();
-            //serverSocketLocal.close();
+            SocketChannel socket = serverSocketLocal.accept();
             socket.close();
             NetworkConnection networkConnection = new NetworkConnection(socket);
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            try {
+                serverSocketLocal.close();
+                selector.close();
+                connection1.disconnect();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 }
