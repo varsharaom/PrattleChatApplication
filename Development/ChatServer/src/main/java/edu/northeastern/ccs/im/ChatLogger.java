@@ -152,4 +152,18 @@ public class ChatLogger {
     /** Both handlers. */
     BOTH;
   }
+  
+  protected static HandlerType getHandlerType(int mode) {
+	  switch(mode) { 
+	  	case 1:
+	  		return HandlerType.FILE;
+	  	case 2:
+	  		return HandlerType.CONSOLE;
+	  	case 3:
+	  		return HandlerType.BOTH;
+	  	default:
+	  		return null;
+	  }
+  }
+
 }
