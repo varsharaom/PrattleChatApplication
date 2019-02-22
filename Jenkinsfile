@@ -84,10 +84,10 @@ stage('Master Branch Tasks') {
 
  post {      
      success {
-            slackSend (baseUrl: "https://nu-cs5500.slack.com/services/hooks/jenkins-ci/", token: "SKyTnf0m1UkBTDZjdqrEfkPM", channel: "#cs5500-team-209-SP19", color: '#00FF00', message: "SUCCESSFUL: Job '${env.JOB_NAME}")
+            slackSend (baseUrl: "https://nu-cs5500.slack.com/services/hooks/jenkins-ci/", token: "SKyTnf0m1UkBTDZjdqrEfkPM", channel: "#team-209-sp19", color: '#00FF00', message: "SUCCESSFUL: Job '${env.JOB_NAME}")
             }
    failure {  
-         slackSend (baseUrl: "https://nu-cs5500.slack.com/services/hooks/jenkins-ci/", token: "SKyTnf0m1UkBTDZjdqrEfkPM", channel: "#cs5500-team-209-SP19", color: '#FF0000', message: "FAILED: Job '${env.JOB_NAME}")
+         slackSend (baseUrl: "https://nu-cs5500.slack.com/services/hooks/jenkins-ci/", token: "SKyTnf0m1UkBTDZjdqrEfkPM", channel: "#team-209-sp19", color: '#FF0000', message: "FAILED: Job '${env.JOB_NAME}")
          }
    }
 } //pipeline
