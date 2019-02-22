@@ -54,7 +54,6 @@ public class PrattleTest {
         }
     }
 
-
     @Test
     public void testStopServer() {
         Prattle.stopServer();
@@ -121,9 +120,7 @@ public class PrattleTest {
         catch (Exception e) {
             Prattle.stopServer();
         }
-
     }
-    
     
     @Test
     public void testRemoveNonExistantClient() throws IllegalAccessException, NoSuchFieldException {
@@ -168,6 +165,42 @@ public class PrattleTest {
 
         Prattle.broadcastMessage(Message.makeBroadcastMessage(MessageConstants.SIMPLE_USER,
                 MessageConstants.BROADCAST_TEXT_MESSAGE));
+    }
+    
+    @Test
+    public void testPrattleMainException() {
+
+        IMConnection connection1;
+        IMConnection connection2;
+
+        try{
+            Thread thread = new Thread(new MainTest());
+            thread.start();
+
+            Class pr = Prattle.class;
+            Field isReady = pr.getDeclaredField("isReady");
+            isReady.setAccessible(true);
+            isReady.set(pr, false);
+            
+            Prattle.broadcastMessage(Message.makeBroadcastMessage(MessageConstants.SIMPLE_USER,
+                    MessageConstants.BROADCAST_TEXT_MESSAGE));
+            connection1 = new IMConnection(ConnectionConstants.HOST,
+                    ConnectionConstants.PORT, MessageConstants.BROADCAST_TEXT_MESSAGE);
+            connection1.connect();
+
+            connection2 = new IMConnection(ConnectionConstants.HOST,
+                    ConnectionConstants.PORT, MessageConstants.BROADCAST_TEXT_MESSAGE);
+            connection2.connect();
+
+            connection1.sendMessage(MessageConstants.BROADCAST_TEXT_MESSAGE);
+            connection2.sendMessage(MessageConstants.BROADCAST_TEXT_MESSAGE);
+
+            Prattle.broadcastMessage(Message.makeBroadcastMessage(MessageConstants.SIMPLE_USER,
+                    MessageConstants.BROADCAST_TEXT_MESSAGE));
+        }
+        catch (Exception e) {
+            Prattle.stopServer();
+        }
     }
 
 }
