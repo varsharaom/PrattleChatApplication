@@ -6,11 +6,14 @@ import java.net.InetSocketAddress;
 
 import edu.northeastern.ccs.im.Message;
 import edu.northeastern.ccs.im.NetworkConnection;
+import edu.northeastern.ccs.im.client.utilities.IMConnection;
+import edu.northeastern.ccs.im.constants.ConnectionConstants;
 import edu.northeastern.ccs.im.constants.MessageConstants;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
@@ -73,8 +76,8 @@ public class NetworkConnectionTest {
 
     @Test
     public void testMessageIterator() throws IOException {
-    	
-    		sc = SocketChannel.open();
+
+        sc = SocketChannel.open();
         serverSocket = ServerSocketChannel.open();
         serverSocket.configureBlocking(false);
         selector = SelectorProvider.provider().openSelector();
@@ -85,7 +88,7 @@ public class NetworkConnectionTest {
                 MessageConstants.BROADCAST_TEXT_MESSAGE);
         Message message2 = Message.makeBroadcastMessage(MessageConstants.SIMPLE_USER,
                 MessageConstants.BROADCAST_TEXT_MESSAGE);
-        Queue<Message> queue =new ConcurrentLinkedQueue<>();
+        Queue<Message> queue = new ConcurrentLinkedQueue<>();
         queue.add(message1);
         queue.add(message2);
 
@@ -104,12 +107,12 @@ public class NetworkConnectionTest {
         try {
             Field messages = ncClass.getDeclaredField("messages");
             messages.setAccessible(true);
-            messages.set(nc,queue);
+            messages.set(nc, queue);
             assertTrue(nc.iterator().hasNext());
             Iterator<Message> iterator = nc.iterator();
 
-            while(iterator.hasNext()){
-                logger.log(Level.INFO,iterator.next().getText());
+            while (iterator.hasNext()) {
+                logger.log(Level.INFO, iterator.next().getText());
             }
         } catch (NoSuchFieldException e) {
             e.printStackTrace();
@@ -118,20 +121,49 @@ public class NetworkConnectionTest {
         }
         nc.close();
     }
-    
+
     @Test
     public void testSendMessageException() {
         NetworkConnection nc = new NetworkConnection(sc);
         try {
-			sc.close();
-		} catch (IOException e) {
-			Logger logger = Logger.getGlobal();
-			logger.log(Level.INFO, ""+e.getStackTrace());
-		}
+            sc.close();
+        } catch (IOException e) {
+            Logger logger = Logger.getGlobal();
+            logger.log(Level.INFO, "" + e.getStackTrace());
+        }
         Message message = Message.makeBroadcastMessage(MessageConstants.SIMPLE_USER,
                 MessageConstants.BROADCAST_TEXT_MESSAGE);
         nc.sendMessage(message);
         nc.close();
     }
 
+    @Test(expected = AssertionError.class)
+    public void testConstructor() {
+        ServerSocketChannel serverSocketLocal = null;
+        try {
+            serverSocketLocal = ServerSocketChannel.open();
+            serverSocketLocal.configureBlocking(false);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        Boolean status = false;
+
+        try {
+            serverSocketLocal.socket().bind(new InetSocketAddress(ServerConstants.PORT));
+            Selector selector = SelectorProvider.provider().openSelector();
+            serverSocketLocal.register(selector, SelectionKey.OP_ACCEPT);
+
+            IMConnection connection1 = new IMConnection(ConnectionConstants.HOST,
+                    ConnectionConstants.PORT, MessageConstants.BROADCAST_TEXT_MESSAGE);
+            connection1.connect();
+
+            SocketChannel socket =serverSocketLocal.accept();
+            //serverSocketLocal.close();
+            socket.close();
+            NetworkConnection networkConnection = new NetworkConnection(socket);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }
