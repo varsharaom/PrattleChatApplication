@@ -123,5 +123,12 @@ public class MessageTest {
     	assertTrue(message2.terminate());
     	assertFalse(message1.terminate());
     }
+    
+    @Test
+	public void checkNullHandle() {
+		Message message1 = Message.makeMessage(MessageConstants.SIMPLE_USER, MessageConstants.SIMPLE_USER,
+				MessageConstants.SIMPLE_USER);
+		assertTrue(message1==null);		
+	}
 
 }

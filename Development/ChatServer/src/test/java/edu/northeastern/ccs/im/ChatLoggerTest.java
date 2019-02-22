@@ -1,19 +1,12 @@
 package edu.northeastern.ccs.im;
 
- import org.junit.Test;
+ import static org.junit.Assert.assertTrue;
+
+import org.junit.Test;
 
  public class ChatLoggerTest {
 
  	private static final String LOG_MESSAGE="TEST";
- 	
- 	private enum HandlerType {
- 	    /** The file handler. */
- 	    FILE,
- 	    /** The console handler. */
- 	    CONSOLE,
- 	    /** Both handlers. */
- 	    BOTH;
- 	  }
  	
  	@Test
  	public void testErrorLog() {
@@ -25,5 +18,19 @@ package edu.northeastern.ccs.im;
  		ChatLogger.warning(LOG_MESSAGE);
  	}
  	
-
+ 	@Test
+ 	public void testSetModeFile() {
+ 		ChatLogger.setMode(ChatLogger.getHandlerType(1));
+ 	}
+ 	
+ 	@Test
+ 	public void testSetModeConsole() {
+ 		ChatLogger.setMode(ChatLogger.getHandlerType(2));
+ 	}
+ 	
+ 	@Test
+ 	public void testSetModeBoth() {
+ 		ChatLogger.setMode(ChatLogger.getHandlerType(3));
+ 	}
+ 	
  }
