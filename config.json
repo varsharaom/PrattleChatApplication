@@ -1,11 +1,11 @@
 {
-"server":[
- {
-   "DNS": "ec2-54-89-62-84.compute-1.amazonaws.com",
-    "user":"ec2-user",
-    "directory":"/home/ec2-user",
-    "JARNAME": "prattle-0.0.1-SNAPSHOT.jar",
-    "PEM": "PrattleServerTeam101.pem"
- }
-]
+	"server":[
+	  {
+	   "DNS": "ec2-18-223-120-233.us-east-2.compute.amazonaws.com",
+	   "user":"ubuntu",
+	   "directory":"/home/ubuntu",
+	   "JARNAME": "prattle-0.0.1-SNAPSHOT.jar",
+	   "PEM": "msd_project_key.pem"
+	  }
+	]
 }
