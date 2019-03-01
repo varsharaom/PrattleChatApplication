@@ -73,7 +73,7 @@ stage('Master Branch Tasks') {
     def json = readJSON file:'config.json'
     sh 'cd ${WORKSPACE}'
     sh "chmod 400 ${json.server[0].PEM}"
-    sh "scp -oStrictHostKeyChecking=no -i ${json.server[0].PEM} Development/Prattle/target/${json.server[0].JARNAME} ${json.server[0].user}@${json.server[0].DNS}:${json.server[0].directory}"
+     sh "scp -oStrictHostKeyChecking=no -i ${json.server[0].PEM} Development/ChatServer/target/${json.server[0].JARNAME} ${json.server[0].user}@${json.server[0].DNS}:${json.server[0].directory}"
     sh "ssh -oStrictHostKeyChecking=no -i ${json.server[0].PEM} ${json.server[0].user}@${json.server[0].DNS}  pkill java &"
     sh "ssh -oStrictHostKeyChecking=no -i ${json.server[0].PEM} ${json.server[0].user}@${json.server[0].DNS}  nohup java -jar ${json.server[0].directory}/${json.server[0].JARNAME} >nohup.out 2>&1 &"
                  } //script
