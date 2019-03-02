@@ -1,6 +1,10 @@
 package edu.northeastern.ccs.im.persistence;
 
 public class QueryConstants {
+	
+	private QueryConstants() {
+		
+	}
 
     public static final String USER_TABLE = "users";
     public static final String GROUP_TABLE = "groups";

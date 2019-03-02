@@ -11,12 +11,14 @@ public class User {
     private final String userName;
     private final String nickName;
     private Set<User> connections;
+    private long lastLogin;
 
-    public User(Long userID, String userName, String nickName) {
+    public User(Long userID, String userName, String nickName, long time) {
         this.userID = userID;
         this.userName = userName;
         this.nickName = nickName;
-        connections = new HashSet<>();
+        this.connections = new HashSet<>();
+        this.lastLogin = time;
     }
 
     public Long getUserID() {
@@ -33,5 +35,9 @@ public class User {
 
     public Set<User> getConnections() {
         return connections;
+    }
+    
+    public long getLastLogin() {
+        return lastLogin;
     }
 }
