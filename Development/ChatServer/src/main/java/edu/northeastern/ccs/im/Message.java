@@ -1,5 +1,9 @@
 package edu.northeastern.ccs.im;
 
+import edu.northeastern.ccs.im.datahandler.EntityHandler;
+
+import java.util.Set;
+
 /**
  * Each instance of this class represents a single transmission by our IM
  * clients.
@@ -12,7 +16,7 @@ package edu.northeastern.ccs.im;
  * 
  * @version 1.3
  */
-public class Message {
+public class Message implements IMessage{
 
 	/** The string sent when a field is null. */
 	private static final String NULL_OUTPUT = "--";
@@ -190,5 +194,10 @@ public class Message {
 			result += " " + NULL_OUTPUT.length() + " " + NULL_OUTPUT;
 		}
 		return result;
+	}
+
+	@Override
+	public Set<User> getReceiver() {
+		return EntityHandler.getAllUsers();
 	}
 }
