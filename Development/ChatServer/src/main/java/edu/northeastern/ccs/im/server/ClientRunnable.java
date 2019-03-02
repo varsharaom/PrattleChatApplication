@@ -232,6 +232,23 @@ public class ClientRunnable implements Runnable {
 			Message msg = messageIter.next();
 			if (msg != null) {
 				// If the message is a broadcast message, send it out
+				if (isEntryOrExit(msg)) {
+					handleEntryExitMessages(msg);
+				}
+				else{
+					if (messageChecks(msg)) {
+						handleChatMessages(msg);
+					}
+					else {
+						Message sendMsg;
+						sendMsg = Message.makeBroadcastMessage(ServerConstants.BOUNCER_ID,
+								"Last message was rejected because it specified an incorrect user name.");
+						enqueueMessage(sendMsg);
+					}
+				}
+
+
+
 				if (msg.terminate()) {
 					// Stop sending the poor client message.
 					terminate = true;
@@ -254,6 +271,36 @@ public class ClientRunnable implements Runnable {
 				}
 			}
 		}
+	}
+
+	private void handleChatMessages(Message msg) {
+		if(msg.isPrivateMessage()) {
+			Prattle.handlePrivateMessage(msg);
+		}
+		else if(msg.isGroupMessage()) {
+			Prattle.handleGroupMessage(msg);
+		}
+	}
+
+	private void handleEntryExitMessages(Message msg) {
+		if(msg.isRegisterMessage()) {
+			Prattle.registerUser(msg);
+		}
+		else if(msg.isLoginMessage()) {
+			Prattle.loginUser(msg);
+		}
+		else if(msg.terminate()) {
+			// Stop sending the poor client message.
+			terminate = true;
+			// Reply with a quit message.
+			enqueueMessage(Message.makeQuitMessage(name));
+		}
+		
+	}
+
+
+	private boolean isEntryOrExit(Message msg) {
+		return (msg.isLoginMessage() || msg.isRegisterMessage() || msg.terminate());
 	}
 
 	/**

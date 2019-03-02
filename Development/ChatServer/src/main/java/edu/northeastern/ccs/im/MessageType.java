@@ -11,13 +11,34 @@ public enum  MessageType {
 	 * Message sent by the user attempting to login using a specified username.
 	 */
 	HELLO("HLO"),
+
+	/** Message whose contents is broadcast to all connected users. */
+	BROADCAST("BCT"),
+
+	REGISTER("RGSTR"),
+
+	REGISTER_SUCCESS("RGSTR_SCCSS"),
+
+	REGISTER_FAILURE("RGSTR_FLR"),
+
+	LOGIN("LGN"),
+
+	LOGIN_SUCCESS("LGN_SCCSS"),
+
+	LOGIN_FAILURE("LGN_FLR"),
+
+	PRIVATE("PVT"),
+
+	GROUP("GRP"),
+
 	/**
 	 * Message sent by the user to start the logging out process and sent by the
 	 * server once the logout process completes.
 	 */
-	QUIT("BYE"),
-	/** Message whose contents is broadcast to all connected users. */
-	BROADCAST("BCT");
+	QUIT("BYE");
+
+
+
 
 	/** Store the short name of this message type. */
 	private String abbreviation;

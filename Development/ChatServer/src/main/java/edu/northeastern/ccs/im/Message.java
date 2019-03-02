@@ -20,6 +20,12 @@ public class Message {
 	/** The handle of the message. */
 	private MessageType msgType;
 
+	/** The sender's user id*/
+	private long senderId;
+
+	/** This is either an user's id or a group's id - based on private or group message*/
+	private long receiverId;
+
 	/**
 	 * The first argument used in the message. This will be the sender's identifier.
 	 */
@@ -27,6 +33,14 @@ public class Message {
 
 	/** The second argument used in the message. */
 	private String msgText;
+
+	public long getSenderId() {
+		return senderId;
+	}
+
+	public long getReceiverId() {
+		return receiverId;
+	}
 
 	/**
 	 * Create a new message that contains actual IM text. The type of distribution
@@ -159,6 +173,23 @@ public class Message {
 	public boolean isInitialization() {
 		return (msgType == MessageType.HELLO);
 	}
+
+	public boolean isRegisterMessage() {
+		return (msgType == MessageType.REGISTER);
+	}
+
+	public boolean isLoginMessage() {
+		return (msgType == MessageType.LOGIN);
+	}
+
+	public boolean isPrivateMessage() {
+		return (msgType == MessageType.PRIVATE);
+	}
+
+	public boolean isGroupMessage() {
+		return (msgType == MessageType.GROUP);
+	}
+
 
 	/**
 	 * Determine if this message is a message signing off from the IM server.

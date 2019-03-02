@@ -7,8 +7,7 @@ import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.nio.channels.spi.SelectorProvider;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -47,6 +46,18 @@ public abstract class Prattle {
 		active = new ConcurrentLinkedQueue<>();
 	}
 
+	public static void registerUser(Message msg) {
+	}
+
+	public static void loginUser(Message msg) {
+//		TODO - first check whether the credientials match. based on that, send either a success
+//		 or failure message from this message object, extract all info and persist using the update
+//		 user call. Field to be updated - {last_login_time}
+
+
+//		Message message = new Message();
+	}
+
 	/**
 	 * Broadcast a given message to all the other IM clients currently on the
 	 * system. This message _will_ be sent to the client who originally sent it.
@@ -62,6 +73,32 @@ public abstract class Prattle {
 				tt.enqueueMessage(message);
 			}
 		}
+	}
+
+	public static void handlePrivateMessage(Message message) {
+		for (ClientRunnable tt : active) {
+			if (tt.isInitialized() && (tt.getUserId() == message.getReceiverId())) {
+				tt.enqueueMessage(message);
+			}
+		}
+//		TODO - persist this message
+
+	}
+
+	public static void handleGroupMessage(Message message) {
+		long groupId = message.getReceiverId();
+//		TODO - use the above groupId and get all the users in that group.
+//		 For now it is an empty new list
+		Set<Long> receiverIds = new HashSet<>();
+		receiverIds.add(356234L);
+
+		for (ClientRunnable tt : active) {
+			if (tt.isInitialized() && (receiverIds.contains(tt.getUserId()))) {
+				tt.enqueueMessage(message);
+			}
+		}
+
+//		TODO - persist this message
 	}
 
 	/**
