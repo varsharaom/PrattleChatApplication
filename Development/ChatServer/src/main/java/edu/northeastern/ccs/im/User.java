@@ -37,7 +37,7 @@ public class User {
         return connections;
     }
     
-    public long getLastLogin() {
+    public long getLastSeen() {
         return lastSeen;
     }
 }

@@ -18,7 +18,7 @@ public class MessageQueryHandler extends QueryHandler {
 
 	public List<Message> getMessagesSinceLastLogin(User user) {
 			String query = "Select * from " + QueryConstants.MESSAGE_TABLE + " where "
-			+ QueryConstants.MESSAGE_TIME + " > " + user.getLastLogin() + ";";
+			+ QueryConstants.MESSAGE_TIME + " > " + user.getLastSeen() + ";";
 			doSelectQuery(query);
 			return new ArrayList<>();
 	}
