@@ -16,7 +16,7 @@ public class QueryConstants {
     public static final String USER_ID = "id";
     public static final String USER_USERNAME = "name";
     public static final String USER_NICKNAME = "nickname";
-    public static final String USER_LAST_LOGIN = "last_login";
+    public static final String USER_LAST_SEEN = "last_seen";
 
     //GROUP
     public static final String GROUP_ID = "id";

@@ -2,12 +2,24 @@ package edu.northeastern.ccs.im.persistence;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class DBHandler {
+	
+	private DBHandler() {
+		
+	}
+
+	static final Logger logger = Logger.getGlobal();
+	
+	public static final String CLASS_EXCEPTION_MSG = "Class not found rxception";
+	public static final String CONNECTION_STRING = "jdbc:mysql://prattledb.c22lvtrn2mli.us-east-2.rds.amazonaws.com/prattledb";
+	public static final String DB_USER = "root";
+	public static final String DB_CRED = "prattledb";
+	
     private static Connection conn = null;
-    private static PreparedStatement statement = null;
 
     static Connection getConnection() {
         if (conn == null) {
@@ -18,15 +30,9 @@ public class DBHandler {
 
     private static void createConnection() {
         try {
-            Class.forName("com.mysql.jdbc.Driver");
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-        try {
-            conn = DriverManager.getConnection("jdbc:mysql://prattledb.c22lvtrn2mli.us-east-2.rds.amazonaws.com/prattledb",
-                    "root", "prattledb");
+            conn = DriverManager.getConnection(CONNECTION_STRING, DB_USER, DB_CRED);
         } catch (SQLException e) {
-            e.printStackTrace();
+        		logger.log(Level.INFO, CLASS_EXCEPTION_MSG);
         }
 
     }

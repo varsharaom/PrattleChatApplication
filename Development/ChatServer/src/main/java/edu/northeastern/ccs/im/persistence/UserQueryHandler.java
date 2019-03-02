@@ -23,7 +23,7 @@ public class UserQueryHandler extends QueryHandler {
 
     public void updateUserLastLogin(User user) {
         String query = "Update " + QueryConstants.USER_TABLE + " set "
-            + QueryConstants.USER_LAST_LOGIN + " = " + System.currentTimeMillis()
+            + QueryConstants.USER_LAST_SEEN + " = " + System.currentTimeMillis()
             + " where  " + QueryConstants.USER_ID + " = " + user.getUserID();
         doUpdateQuery(query);
     }
