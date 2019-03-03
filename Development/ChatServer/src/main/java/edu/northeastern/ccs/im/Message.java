@@ -38,10 +38,12 @@ public class Message implements IMessage{
 	/** The second argument used in the message. */
 	private String msgText;
 
+	/** The sender's unique user id */
 	public long getSenderId() {
 		return senderId;
 	}
 
+	/** The receiver's unique user id */
 	public long getReceiverId() {
 		return receiverId;
 	}
@@ -64,6 +66,11 @@ public class Message implements IMessage{
 		msgText = text;
 	}
 
+	private Message(MessageType handle, long senderId, String text) {
+		this.msgType = handle;
+		this.senderId = senderId;
+		this.msgText = text;
+	}
 	/**
 	 * Create a new message that contains a command sent the server that requires a
 	 * single argument. This message contains the given handle and the single
@@ -109,6 +116,14 @@ public class Message implements IMessage{
 		return new Message(MessageType.HELLO, null, text);
 	}
 
+	public static Message makeLoginAckMessage(MessageType handle, long senderId, String msgText) {
+		return new Message(handle, senderId, msgText);
+	}
+
+	public static Message makeRegisterAckMessage(MessageType handle, long senderId, String msgText) {
+		return new Message(handle, senderId, msgText);
+	}
+
 	/**
 	 * Given a handle, name and text, return the appropriate message instance or an
 	 * instance from a subclass of message.
@@ -130,6 +145,19 @@ public class Message implements IMessage{
 		}
 		return result;
 	}
+
+//	TODO - talk to team and see if this block is actually needed
+	protected static Message makeMessage(MessageType handle, long senderId, String msgText) {
+
+		Message result = null;
+
+		if (handle == MessageType.LOGIN) {
+			result = makeLoginAckMessage(handle, senderId, msgText);
+		}
+
+		return result;
+	}
+
 
 	/**
 	 * Create a new message for the early stages when the user logs in without all

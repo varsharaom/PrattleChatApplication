@@ -47,15 +47,23 @@ public abstract class Prattle {
 	}
 
 	public static void registerUser(Message msg) {
+		for (ClientRunnable tt : active) {
+			if ((tt.isInitialized()) && tt.getUserId() == msg.getSenderId()) {
+				tt.enqueueMessage(msg);
+			}
+		}
 	}
+
 
 	public static void loginUser(Message msg) {
 //		TODO - first check whether the credientials match. based on that, send either a success
 //		 or failure message from this message object, extract all info and persist using the update
 //		 user call. Field to be updated - {last_login_time}
-
-
-//		Message message = new Message();
+		for (ClientRunnable tt : active) {
+			if ((tt.isInitialized()) && tt.getUserId() == msg.getSenderId()) {
+				tt.enqueueMessage(msg);
+			}
+		}
 	}
 
 	/**
@@ -81,7 +89,6 @@ public abstract class Prattle {
 				tt.enqueueMessage(message);
 			}
 		}
-//		TODO - persist this message
 
 	}
 
@@ -97,8 +104,6 @@ public abstract class Prattle {
 				tt.enqueueMessage(message);
 			}
 		}
-
-//		TODO - persist this message
 	}
 
 	/**

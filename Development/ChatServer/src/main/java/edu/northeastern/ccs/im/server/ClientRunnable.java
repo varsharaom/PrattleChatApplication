@@ -7,7 +7,9 @@ import java.util.concurrent.ScheduledFuture;
 
 import edu.northeastern.ccs.im.ChatLogger;
 import edu.northeastern.ccs.im.Message;
+import edu.northeastern.ccs.im.MessageType;
 import edu.northeastern.ccs.im.NetworkConnection;
+import edu.northeastern.ccs.im.constants.ClientRunnableConstants;
 
 /**
  * Instances of this class handle all of the incoming communication from a
@@ -61,6 +63,8 @@ public class ClientRunnable implements Runnable {
 	/** Collection of messages queued up to be sent to this client. */
 	private Queue<Message> waitingList;
 
+	private ClientRunnableHelper clientRunnableHelper;
+
 	/**
 	 * Create a new thread with which we will communicate with this single client.
 	 * 
@@ -78,6 +82,8 @@ public class ClientRunnable implements Runnable {
 		// Mark that the client is active now and start the timer until we
 		// terminate for inactivity.
 		timer = new ClientTimer();
+
+		clientRunnableHelper = new ClientRunnableHelper(this);
 	}
 
 	/**
@@ -102,17 +108,6 @@ public class ClientRunnable implements Runnable {
 		}
 	}
 
-	/**
-	 * Check if the message is properly formed. At the moment, this means checking
-	 * that the identifier is set properly.
-	 * 
-	 * @param msg Message to be checked
-	 * @return True if message is correct; false otherwise
-	 */
-	private boolean messageChecks(Message msg) {
-		// Check that the message name matches.
-		return (msg.getName() != null) && (msg.getName().compareToIgnoreCase(getName()) == 0);
-	}
 
 	/**
 	 * Immediately send this message to the client. This returns if we were
@@ -231,76 +226,18 @@ public class ClientRunnable implements Runnable {
 			// Get the next message
 			Message msg = messageIter.next();
 			if (msg != null) {
-				// If the message is a broadcast message, send it out
-				if (isEntryOrExit(msg)) {
-					handleEntryExitMessages(msg);
-				}
-				else{
-					if (messageChecks(msg)) {
-						handleChatMessages(msg);
-					}
-					else {
-						Message sendMsg;
-						sendMsg = Message.makeBroadcastMessage(ServerConstants.BOUNCER_ID,
-								"Last message was rejected because it specified an incorrect user name.");
-						enqueueMessage(sendMsg);
-					}
-				}
-
-
 
 				if (msg.terminate()) {
 					// Stop sending the poor client message.
 					terminate = true;
 					// Reply with a quit message.
 					enqueueMessage(Message.makeQuitMessage(name));
-				} else {
-					// Check if the message is legal formatted
-					if (messageChecks(msg)) {
-						// Check for our "special messages"
-						if (msg.isBroadcastMessage()) {
-							// Check for our "special messages"
-							Prattle.broadcastMessage(msg);
-						}
-					} else {
-						Message sendMsg;
-						sendMsg = Message.makeBroadcastMessage(ServerConstants.BOUNCER_ID,
-								"Last message was rejected because it specified an incorrect user name.");
-						enqueueMessage(sendMsg);
-					}
+				}
+				else {
+					clientRunnableHelper.handleMessages(msg);
 				}
 			}
 		}
-	}
-
-	private void handleChatMessages(Message msg) {
-		if(msg.isPrivateMessage()) {
-			Prattle.handlePrivateMessage(msg);
-		}
-		else if(msg.isGroupMessage()) {
-			Prattle.handleGroupMessage(msg);
-		}
-	}
-
-	private void handleEntryExitMessages(Message msg) {
-		if(msg.isRegisterMessage()) {
-			Prattle.registerUser(msg);
-		}
-		else if(msg.isLoginMessage()) {
-			Prattle.loginUser(msg);
-		}
-		else if(msg.terminate()) {
-			// Stop sending the poor client message.
-			terminate = true;
-			// Reply with a quit message.
-			enqueueMessage(Message.makeQuitMessage(name));
-		}
-		
-	}
-
-
-	private boolean isEntryOrExit(Message msg) {
-		return (msg.isLoginMessage() || msg.isRegisterMessage() || msg.terminate());
 	}
 
 	/**
