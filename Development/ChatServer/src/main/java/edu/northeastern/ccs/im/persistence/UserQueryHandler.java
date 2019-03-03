@@ -11,7 +11,7 @@ public class UserQueryHandler extends QueryHandler {
 	
     public User createUser(String userName, String nickName) {
     		long time = System.currentTimeMillis();
-        String query = "Insert into " + QueryConstants.USER_TABLE
+        String query = "Insert into " + DBConstants.USER_TABLE
                 + " values(" + userName + "," + nickName
                 + "," + time + ")";
         long id = doInsertQuery(query);
@@ -22,17 +22,17 @@ public class UserQueryHandler extends QueryHandler {
     }
 
     public void updateUserLastLogin(User user) {
-        String query = "Update " + QueryConstants.USER_TABLE + " set "
-            + QueryConstants.USER_LAST_SEEN + " = " + System.currentTimeMillis()
-            + " where  " + QueryConstants.USER_ID + " = " + user.getUserID();
+        String query = "Update " + DBConstants.USER_TABLE + " set "
+            + DBConstants.USER_LAST_SEEN + " = " + System.currentTimeMillis()
+            + " where  " + DBConstants.USER_ID + " = " + user.getUserID();
         doUpdateQuery(query);
     }
 
     public List<Long> getCircles(User user) {
     		long userId = user.getUserID();
-    		String query = "Select * from " + QueryConstants.CIRCLES_TABLE + " where "
-				+ QueryConstants.CIRCLE_USER_1_ID + " = " + user.getUserID() + " OR "
-				+ QueryConstants.CIRCLE_USER_2_ID + " = " + user.getUserID() + ";";
+    		String query = "Select * from " + DBConstants.CIRCLES_TABLE + " where "
+				+ DBConstants.CIRCLE_USER_1_ID + " = " + user.getUserID() + " OR "
+				+ DBConstants.CIRCLE_USER_2_ID + " = " + user.getUserID() + ";";
     		List<Long> circle = new ArrayList<>();
     		ResultSet rs = doSelectQuery(query);
     		if (rs != null) {

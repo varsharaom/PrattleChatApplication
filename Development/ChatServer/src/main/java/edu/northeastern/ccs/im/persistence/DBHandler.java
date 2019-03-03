@@ -15,9 +15,6 @@ public class DBHandler {
 	static final Logger logger = Logger.getGlobal();
 	
 	public static final String CLASS_EXCEPTION_MSG = "Class not found rxception";
-	public static final String CONNECTION_STRING = "jdbc:mysql://prattledb.c22lvtrn2mli.us-east-2.rds.amazonaws.com/prattledb";
-	public static final String DB_USER = "root";
-	public static final String DB_CRED = "prattledb";
 	
     private static Connection conn = null;
 
@@ -30,10 +27,9 @@ public class DBHandler {
 
     private static void createConnection() {
         try {
-            conn = DriverManager.getConnection(CONNECTION_STRING, DB_USER, DB_CRED);
+            conn = DriverManager.getConnection(DBConstants.CONNECTION_STRING, DBConstants.DB_USER, DBConstants.DB_CRED);
         } catch (SQLException e) {
         		logger.log(Level.INFO, CLASS_EXCEPTION_MSG);
         }
-
     }
 }

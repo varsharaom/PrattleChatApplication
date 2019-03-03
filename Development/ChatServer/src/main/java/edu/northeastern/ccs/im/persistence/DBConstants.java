@@ -1,10 +1,16 @@
 package edu.northeastern.ccs.im.persistence;
 
-public class QueryConstants {
+public class DBConstants {
 	
-	private QueryConstants() {
+	private DBConstants() {
 		
 	}
+	
+	//JDBC
+	public static final String CONNECTION_STRING = "jdbc:mysql://prattledb.c22lvtrn2mli.us-east-2.rds.amazonaws.com/prattledb";
+	public static final String DB_USER = "root";
+	public static final String DB_CRED = "prattledb";
+
 
     public static final String USER_TABLE = "users";
     public static final String GROUP_TABLE = "groups";
