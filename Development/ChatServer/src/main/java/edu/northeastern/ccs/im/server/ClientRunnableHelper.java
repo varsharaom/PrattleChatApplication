@@ -37,8 +37,8 @@ class ClientRunnableHelper {
      * Specifically, this routes the control based on register / login / private / group messages.
      */
     void handleMessages(Message message) {
-        if (isEntryOrExit(message)) {
-            handleEntryControlMessages(message);
+        if (isRegisterOrLogin(message)) {
+            handleRegisterLoginMessages(message);
         }
         else{
             if (messageChecks(message)) {
@@ -69,7 +69,7 @@ class ClientRunnableHelper {
     /**
      * Checks if the action is register or login and performs the respective action.
      */
-    private void handleEntryControlMessages(Message msg) {
+    private void handleRegisterLoginMessages(Message msg) {
         if(msg.isRegisterMessage()) {
             handleRegisterMessage(msg);
         }
@@ -122,8 +122,8 @@ class ClientRunnableHelper {
     }
 
     /** Checks if the message is either a login or a registration request */
-    private boolean isEntryOrExit(Message msg) {
-        return (msg.isLoginMessage() || msg.isRegisterMessage());
+    private boolean isRegisterOrLogin(Message msg) {
+        return (msg.isRegisterMessage() || msg.isLoginMessage());
     }
 
     /**
