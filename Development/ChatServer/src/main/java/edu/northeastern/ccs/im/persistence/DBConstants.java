@@ -1,6 +1,16 @@
 package edu.northeastern.ccs.im.persistence;
 
-public class QueryConstants {
+public class DBConstants {
+	
+	private DBConstants() {
+		
+	}
+	
+	//JDBC
+	public static final String CONNECTION_STRING = "jdbc:mysql://prattledb.c22lvtrn2mli.us-east-2.rds.amazonaws.com/prattledb";
+	public static final String DB_USER = "root";
+	public static final String DB_CRED = "prattledb";
+
 
     public static final String USER_TABLE = "users";
     public static final String GROUP_TABLE = "groups";
@@ -12,7 +22,7 @@ public class QueryConstants {
     public static final String USER_ID = "id";
     public static final String USER_USERNAME = "name";
     public static final String USER_NICKNAME = "nickname";
-    public static final String USER_LAST_LOGIN = "last_login";
+    public static final String USER_LAST_SEEN = "last_seen";
 
     //GROUP
     public static final String GROUP_ID = "id";

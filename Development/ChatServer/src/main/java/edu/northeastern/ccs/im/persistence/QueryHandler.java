@@ -1,66 +1,45 @@
 package edu.northeastern.ccs.im.persistence;
 
-import edu.northeastern.ccs.im.Message;
-import edu.northeastern.ccs.im.User;
-
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-/**
- * Todo: All stubs and signatures, need to update the querying and updating part.
- */
 public class QueryHandler {
 
-    public static User createUser(String userName, String nickName) {
-        String query = "Insert into " + QueryConstants.USER_TABLE
-                + " values(" + userName + "," + nickName
-                + "," + System.currentTimeMillis() + ")";
-        return new User(doInsertQuery(query), userName, nickName);
-    }
-
-    public static void updateUserLastLogin(User user) {
-        String query = "Update " + QueryConstants.USER_TABLE + " set "
-                + QueryConstants.USER_LAST_LOGIN + " = " + System.currentTimeMillis()
-                + " where " + QueryConstants.USER_ID + "=";
-
-    }
-
-    public static List<Long> getCircles(User user) {
-        return new ArrayList<>();
-    }
-
-    //Todo : add msg type field (probably and enum).
-    public static void storeMessage(long senderID, long receiverID, String msgText) {
-    }
-
-    public static List<Message> getMessagesSinceLastLogin(User user) {
-        return new ArrayList<>();
-    }
-
-    private ResultSet doSelectQuery(String query) {
+	final Logger logger = Logger.getGlobal();
+	public static final String SQL_EXCEPTION_MSG = "SQL Exception";
+	private Connection connection;
+	
+	public QueryHandler() {
+		connection = DBHandler.getConnection();
+	}
+	
+	protected ResultSet doSelectQuery(String query) {
         PreparedStatement statement = null;
         try {
-            statement = DBHandler.getConnection().prepareStatement(query);
+            statement = connection.prepareStatement(query);
         } catch (SQLException e) {
-            e.printStackTrace();
+        		logger.log(Level.INFO, SQL_EXCEPTION_MSG);
         }
         ResultSet rs = null;
-        try {
-            rs = statement.executeQuery();
-            return rs;
-        } catch (SQLException e) {
-            e.printStackTrace();
+        if (statement != null) {
+	        try {
+	            rs = statement.executeQuery();
+	            return rs;
+	        } catch (SQLException e) {
+	        		logger.log(Level.INFO, SQL_EXCEPTION_MSG);
+	        }
         }
-        throw new RuntimeException("This is not expected to happen");
+        return null;
     }
 
-    private static long doInsertQuery(String query) {
+	protected long doInsertQuery(String query) {
         PreparedStatement statement = null;
         try {
-            statement = DBHandler.getConnection().prepareStatement(query);
+            statement = connection.prepareStatement(query);
             try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
                     return generatedKeys.getLong(1);
@@ -69,18 +48,18 @@ public class QueryHandler {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+        		logger.log(Level.INFO, SQL_EXCEPTION_MSG);
         }
-        throw new RuntimeException("Failed to insert");
+        return -1;
     }
 
-    private static int doUpdateQuery(String query) {
+	protected int doUpdateQuery(String query) {
         PreparedStatement statement = null;
         try {
-            statement = DBHandler.getConnection().prepareStatement(query);
+            statement = connection.prepareStatement(query);
             return statement.executeUpdate(query);
         } catch (SQLException e) {
-            e.printStackTrace();
+        		logger.log(Level.INFO, SQL_EXCEPTION_MSG);
         }
         return 0;
     }
