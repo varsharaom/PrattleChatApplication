@@ -24,6 +24,12 @@ public class Message implements IMessage{
 	/** The handle of the message. */
 	private MessageType msgType;
 
+	/** The sender's user id*/
+	private long senderId;
+
+	/** This is either an user's id or a group's id - based on private or group message*/
+	private long receiverId;
+
 	/**
 	 * The first argument used in the message. This will be the sender's identifier.
 	 */
@@ -31,6 +37,16 @@ public class Message implements IMessage{
 
 	/** The second argument used in the message. */
 	private String msgText;
+
+	/** The sender's unique user id */
+	public long getSenderId() {
+		return senderId;
+	}
+
+	/** The receiver's unique user id */
+	public long getReceiverId() {
+		return receiverId;
+	}
 
 	/**
 	 * Create a new message that contains actual IM text. The type of distribution
@@ -50,6 +66,11 @@ public class Message implements IMessage{
 		msgText = text;
 	}
 
+	private Message(MessageType handle, long senderId, String text) {
+		this.msgType = handle;
+		this.senderId = senderId;
+		this.msgText = text;
+	}
 	/**
 	 * Create a new message that contains a command sent the server that requires a
 	 * single argument. This message contains the given handle and the single
@@ -95,6 +116,14 @@ public class Message implements IMessage{
 		return new Message(MessageType.HELLO, null, text);
 	}
 
+	public static Message makeLoginAckMessage(MessageType handle, long senderId, String msgText) {
+		return new Message(handle, senderId, msgText);
+	}
+
+	public static Message makeRegisterAckMessage(MessageType handle, long senderId, String msgText) {
+		return new Message(handle, senderId, msgText);
+	}
+
 	/**
 	 * Given a handle, name and text, return the appropriate message instance or an
 	 * instance from a subclass of message.
@@ -116,6 +145,19 @@ public class Message implements IMessage{
 		}
 		return result;
 	}
+
+//	TODO - talk to team and see if this block is actually needed
+	protected static Message makeMessage(MessageType handle, long senderId, String msgText) {
+
+		Message result = null;
+
+		if (handle == MessageType.LOGIN) {
+			result = makeLoginAckMessage(handle, senderId, msgText);
+		}
+
+		return result;
+	}
+
 
 	/**
 	 * Create a new message for the early stages when the user logs in without all
@@ -163,6 +205,23 @@ public class Message implements IMessage{
 	public boolean isInitialization() {
 		return (msgType == MessageType.HELLO);
 	}
+
+	public boolean isRegisterMessage() {
+		return (msgType == MessageType.REGISTER);
+	}
+
+	public boolean isLoginMessage() {
+		return (msgType == MessageType.LOGIN);
+	}
+
+	public boolean isPrivateMessage() {
+		return (msgType == MessageType.PRIVATE);
+	}
+
+	public boolean isGroupMessage() {
+		return (msgType == MessageType.GROUP);
+	}
+
 
 	/**
 	 * Determine if this message is a message signing off from the IM server.
