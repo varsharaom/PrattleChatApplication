@@ -15,21 +15,21 @@ public enum  MessageType {
 	/** Message whose contents is broadcast to all connected users. */
 	BROADCAST("BCT"),
 
-	REGISTER("RGSTR"),
+	REGISTER("BCT"),
 
-	REGISTER_SUCCESS("RGSTR_SCCSS"),
+	REGISTER_SUCCESS("BCT"),
 
-	REGISTER_FAILURE("RGSTR_FLR"),
+	REGISTER_FAILURE("BCT"),
 
-	LOGIN("LGN"),
+	LOGIN("BCT"),
 
-	LOGIN_SUCCESS("LGN_SCCSS"),
+	LOGIN_SUCCESS("BCT"),
 
-	LOGIN_FAILURE("LGN_FLR"),
+	LOGIN_FAILURE("BCT"),
 
-	PRIVATE("PVT"),
+	PRIVATE("BCT"),
 
-	GROUP("GRP"),
+	GROUP("BCT"),
 
 	/**
 	 * Message sent by the user to start the logging out process and sent by the
