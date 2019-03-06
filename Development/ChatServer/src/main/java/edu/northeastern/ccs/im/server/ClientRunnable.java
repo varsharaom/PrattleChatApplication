@@ -7,9 +7,7 @@ import java.util.concurrent.ScheduledFuture;
 
 import edu.northeastern.ccs.im.ChatLogger;
 import edu.northeastern.ccs.im.Message;
-import edu.northeastern.ccs.im.MessageType;
 import edu.northeastern.ccs.im.NetworkConnection;
-import edu.northeastern.ccs.im.constants.ClientRunnableConstants;
 
 /**
  * Instances of this class handle all of the incoming communication from a
@@ -234,6 +232,8 @@ public class ClientRunnable implements Runnable {
 					enqueueMessage(Message.makeQuitMessage(name));
 				}
 				else {
+//					parsing and creating a sophisticated message object out of the actual one
+					msg = clientRunnableHelper.getCustomConstructedMessage(msg);
 					clientRunnableHelper.handleMessages(msg);
 				}
 			}

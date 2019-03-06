@@ -41,16 +41,16 @@ class ClientRunnableHelper {
             handleRegisterLoginMessages(message);
         }
         else{
-            if (messageChecks(message)) {
-                handleChatMessages(message);
-            }
-            else {
-//                TODO - modify it as per needs. In what situation would this block be reached
-                Message sendMsg;
-                sendMsg = Message.makeBroadcastMessage(ServerConstants.BOUNCER_ID,
-                        "Last message was rejected because it specified an incorrect user name.");
-                clientRunnable.enqueueMessage(sendMsg);
-            }
+//            if (messageChecks(message)) {
+            handleChatMessages(message);
+//            }
+//            else {
+////                TODO - modify it as per needs. In what situation would this block be reached
+//                Message sendMsg;
+//                sendMsg = Message.makeBroadcastMessage(ServerConstants.BOUNCER_ID,
+//                        "Last message was rejected because it specified an incorrect user name.");
+//                clientRunnable.enqueueMessage(sendMsg);
+//            }
         }
     }
     /**
@@ -58,7 +58,7 @@ class ClientRunnableHelper {
      */
     private void handleChatMessages(Message msg) {
         if(msg.isPrivateMessage()) {
-            Prattle.handlePrivateMessage(msg);
+            Prattle.handleDirectMessages(msg);
         }
         else if(msg.isGroupMessage()) {
             Prattle.handleGroupMessage(msg);
@@ -94,7 +94,7 @@ class ClientRunnableHelper {
             acknowledgementText = ClientRunnableConstants.REGISTER_FAILURE_MSG;
         }
 
-        handShakeMessage = Message.makeRegisterAckMessage(MessageType.REGISTER, message.getSenderId()
+        handShakeMessage = Message.makeRegisterAckMessage(MessageType.REGISTER, message.getName()
                 , acknowledgementText);
 
         //        TODO - persist the user info using a Create Operation.
@@ -137,5 +137,62 @@ class ClientRunnableHelper {
         // Check that the message name matches.
         return (msg.getName() != null) && (msg.getName()
                 .compareToIgnoreCase(clientRunnable.getName()) == 0);
+    }
+
+    public Message getCustomConstructedMessage(Message msg) {
+
+        String content = msg.getText();
+        Message message = msg;
+
+        if (msg.getText().startsWith(ClientRunnableConstants.CUSTOM_COMMAND_IDENTIFIER)) {
+
+            String[] arr = content.split(" ", 2);
+
+            if (arr.length > 1) {
+                String type = getType(arr[0]);
+                String restOfMessageText = arr[1];
+
+                if (type.equalsIgnoreCase(MessageType.REGISTER.toString())) {
+                    message = constructCustomRegisterMessage(restOfMessageText);
+                }
+                else if (type.equalsIgnoreCase(MessageType.DIRECT.toString())) {
+                    message = constructCustomDirectMessage(restOfMessageText);
+                }
+                else if (type.equalsIgnoreCase(MessageType.GROUP.toString())) {
+//                message = Message.make
+//                message = new Object();
+                }
+            }
+
+        }
+        return message;
+    }
+
+    private Message constructCustomRegisterMessage(String restOfMessageText) {
+        String[] arr = restOfMessageText.split(" ", 2);
+
+        String userName = arr[0];
+        String password = arr[1];
+
+        return Message.makeRegisterMessage(userName, password);
+
+    }
+
+    private Message constructCustomDirectMessage(String restOfMessageText) {
+        String[] arr = restOfMessageText.split(" ", 3);
+
+        String sender = arr[0];
+        String receiver = arr[1];
+        String actualContent = arr[2];
+
+        return Message.makeDirectMessage(sender, receiver, actualContent);
+    }
+
+    private String getType(String s) {
+        if(s.length() > 2) {
+//            removing $$ at the beginning and # at the end
+            return s.substring(2, s.length()-1);
+        }
+        return "";
     }
 }

@@ -83,7 +83,7 @@ public abstract class Prattle {
 		}
 	}
 
-	public static void handlePrivateMessage(Message message) {
+	public static void handleDirectMessages(Message message) {
 		for (ClientRunnable tt : active) {
 			if (tt.isInitialized() && (tt.getUserId() == message.getReceiverId())) {
 				tt.enqueueMessage(message);

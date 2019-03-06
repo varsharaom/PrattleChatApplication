@@ -233,5 +233,29 @@ public class ClientRunnableTest {
         clientRunnable.run();
         clientRunnable.run();
     }
+
+    @Test
+    public void testCustomRegisterMessage() {
+        Iterator<Message> messageIterator = NetworkConnectionTestUtil.
+                getIteratorWithCustomRegisterMessage();
+
+        when(networkConnection.iterator()).thenReturn(messageIterator);
+        when(networkConnection.sendMessage(any())).thenReturn(true);
+        clientRunnable = new ClientRunnable(networkConnection);
+        clientRunnable.run();
+        clientRunnable.run();
+    }
+
+    @Test
+    public void testCustomDirectMessage() {
+        Iterator<Message> messageIterator = NetworkConnectionTestUtil.
+                getIteratorWithCustomDirectMessage();
+
+        when(networkConnection.iterator()).thenReturn(messageIterator);
+        when(networkConnection.sendMessage(any())).thenReturn(true);
+        clientRunnable = new ClientRunnable(networkConnection);
+        clientRunnable.run();
+        clientRunnable.run();
+    }
  	
 }
