@@ -35,8 +35,12 @@ public class Message implements IMessage{
 	 */
 	private String msgSender;
 
+	private String msgReceiver;
+
 	/** The second argument used in the message. */
 	private String msgText;
+
+	private char[] password;
 
 	/** The sender's unique user id */
 	public long getSenderId() {
@@ -54,7 +58,7 @@ public class Message implements IMessage{
 	 * message recipient, and the text to send.
 	 * 
 	 * @param handle  Handle for the type of message being created.
-	 * @param srcName Name of the individual sending this message
+//	 * @param srcName Name of the individual sending this message
 	 * @param text    Text of the instant message
 	 */
 	private Message(MessageType handle, String srcName, String text) {
@@ -71,6 +75,20 @@ public class Message implements IMessage{
 		this.senderId = senderId;
 		this.msgText = text;
 	}
+
+	public Message(MessageType handle, String sender, String receiver, String text) {
+		this.msgType = handle;
+		this.msgSender = sender;
+		this.msgReceiver = receiver;
+		this.msgText = text;
+	}
+
+	private Message(MessageType handle, String msgSender, char[] password) {
+		this.msgType = handle;
+		this.msgSender = msgSender;
+		this.password = password;
+	}
+
 	/**
 	 * Create a new message that contains a command sent the server that requires a
 	 * single argument. This message contains the given handle and the single
@@ -81,7 +99,7 @@ public class Message implements IMessage{
 	 *                log-in to the IM server.
 	 */
 	private Message(MessageType handle, String srcName) {
-		this(handle, srcName, null);
+		this(handle, srcName, "");
 	}
 
 	/**
@@ -91,7 +109,7 @@ public class Message implements IMessage{
 	 * @return Instance of Message that specifies the process is logging out.
 	 */
 	public static Message makeQuitMessage(String myName) {
-		return new Message(MessageType.QUIT, myName, null);
+		return new Message(MessageType.QUIT, myName, "");
 	}
 
 	/**
@@ -116,12 +134,21 @@ public class Message implements IMessage{
 		return new Message(MessageType.HELLO, null, text);
 	}
 
+	public static Message makeRegisterMessage(String userName, String password) {
+		return new Message(MessageType.REGISTER, userName, password.toCharArray());
+	}
+
+
 	public static Message makeLoginAckMessage(MessageType handle, long senderId, String msgText) {
 		return new Message(handle, senderId, msgText);
 	}
 
-	public static Message makeRegisterAckMessage(MessageType handle, long senderId, String msgText) {
-		return new Message(handle, senderId, msgText);
+	public static Message makeRegisterAckMessage(MessageType handle, String msgSender, String msgText) {
+		return new Message(handle, msgSender, msgText);
+	}
+
+	public static Message makeDirectMessage(String msgSender, String msgReceiver, String msgText) {
+		return new Message(MessageType.DIRECT, msgSender, msgReceiver, msgText);
 	}
 
 	/**
@@ -215,7 +242,7 @@ public class Message implements IMessage{
 	}
 
 	public boolean isPrivateMessage() {
-		return (msgType == MessageType.PRIVATE);
+		return (msgType == MessageType.DIRECT);
 	}
 
 	public boolean isGroupMessage() {
