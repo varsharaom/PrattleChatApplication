@@ -1,4 +1,4 @@
-package edu.northeastern.ccs.im;
+package edu.northeastern.ccs.serverim;
 
 import java.io.IOException;
 import java.util.logging.ConsoleHandler;

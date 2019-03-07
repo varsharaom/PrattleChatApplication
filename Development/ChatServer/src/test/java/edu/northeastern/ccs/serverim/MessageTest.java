@@ -1,6 +1,9 @@
-package edu.northeastern.ccs.im;
+package edu.northeastern.ccs.serverim;
 
 import edu.northeastern.ccs.im.constants.MessageConstants;
+import edu.northeastern.ccs.serverim.Message;
+import edu.northeastern.ccs.serverim.MessageType;
+
 import org.junit.Test;
 
 import static org.junit.Assert.*;

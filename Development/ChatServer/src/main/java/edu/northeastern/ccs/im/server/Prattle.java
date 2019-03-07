@@ -14,9 +14,9 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import edu.northeastern.ccs.im.ChatLogger;
-import edu.northeastern.ccs.im.Message;
-import edu.northeastern.ccs.im.NetworkConnection;
+import edu.northeastern.ccs.serverim.ChatLogger;
+import edu.northeastern.ccs.serverim.Message;
+import edu.northeastern.ccs.serverim.NetworkConnection;
 
 /**
  * A network server that communicates with IM clients that connect to it. This

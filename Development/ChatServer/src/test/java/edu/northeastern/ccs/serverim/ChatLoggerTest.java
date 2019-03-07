@@ -1,6 +1,8 @@
-package edu.northeastern.ccs.im;
+package edu.northeastern.ccs.serverim;
 
 import org.junit.Test;
+
+import edu.northeastern.ccs.serverim.ChatLogger;
 
 import static org.junit.Assert.*;
 

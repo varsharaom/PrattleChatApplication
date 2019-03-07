@@ -1,4 +1,4 @@
-package edu.northeastern.ccs.im;
+package edu.northeastern.ccs.serverim;
 
 import java.util.HashSet;
 import java.util.Set;

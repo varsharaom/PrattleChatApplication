@@ -1,4 +1,4 @@
-package edu.northeastern.ccs.im;
+package edu.northeastern.ccs.serverim;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -12,6 +12,8 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+
+
 
 /**
  * This class is similar to the java.io.PrintWriter class, but this class's

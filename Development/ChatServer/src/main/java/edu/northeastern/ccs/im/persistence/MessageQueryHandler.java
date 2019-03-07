@@ -6,9 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
-import edu.northeastern.ccs.im.Message;
-import edu.northeastern.ccs.im.MessageType;
-import edu.northeastern.ccs.im.User;
+import edu.northeastern.ccs.serverim.Message;
+import edu.northeastern.ccs.serverim.MessageType;
+import edu.northeastern.ccs.serverim.User;
 
 public class MessageQueryHandler extends QueryHandler {
 	

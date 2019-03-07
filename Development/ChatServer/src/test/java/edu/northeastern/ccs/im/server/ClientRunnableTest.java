@@ -1,10 +1,11 @@
 package edu.northeastern.ccs.im.server;
 
-import edu.northeastern.ccs.im.Message;
-import edu.northeastern.ccs.im.NetworkConnection;
 import edu.northeastern.ccs.im.constants.ConnectionConstants;
 import edu.northeastern.ccs.im.constants.MessageConstants;
 import edu.northeastern.ccs.im.utils.NetworkConnectionTestUtil;
+import edu.northeastern.ccs.serverim.Message;
+import edu.northeastern.ccs.serverim.NetworkConnection;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
