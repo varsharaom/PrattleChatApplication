@@ -5,9 +5,8 @@ import java.util.Arrays;
 import edu.northeastern.ccs.im.Message;
 import edu.northeastern.ccs.im.MessageType;
 import edu.northeastern.ccs.im.constants.ClientRunnableConstants;
-import edu.northeastern.ccs.im.persistence.MessageQueryHandler;
-import edu.northeastern.ccs.im.persistence.QueryHandler;
-import edu.northeastern.ccs.im.persistence.UserQueryHandler;
+import edu.northeastern.ccs.im.persistence.IQueryHandler;
+import edu.northeastern.ccs.im.persistence.QueryHandlerMySQLImpl;
 
 /**
  * Class that handles all the control flow for chat messages. Every instance of this class is
@@ -18,24 +17,22 @@ import edu.northeastern.ccs.im.persistence.UserQueryHandler;
 class ClientRunnableHelper {
 
     private ClientRunnable clientRunnable;
-    private UserQueryHandler userQueryHandler;
-    private MessageQueryHandler messageQueryHandler;
+    private IQueryHandler queryHandler;
     
-    ClientRunnableHelper(ClientRunnable clientRunnable, UserQueryHandler userQueryHandler, MessageQueryHandler messageQueryHandler) {
+    ClientRunnableHelper(ClientRunnable clientRunnable, IQueryHandler queryHandler) {
         this.clientRunnable = clientRunnable;
-        this.userQueryHandler = userQueryHandler;
-        this.messageQueryHandler = messageQueryHandler;
+        this.queryHandler = queryHandler;
     }
 
     /** Checks if the login credentials entered are valid*/
     private boolean isValidLoginCredentials(Message msg) {
-    		String password = userQueryHandler.getPassword(msg.getName());
+    		String password = queryHandler.getPassword(msg.getName());
         return password.equals(Arrays.toString(msg.getPassword()));
     }
 
     /** Checks if the registration information are all valid enough to allow a new user creation */
     private boolean isValidRegistrationInfo(Message msg) {
-        return userQueryHandler.checkUserNameExists(msg.getName());
+        return queryHandler.checkUserNameExists(msg.getName());
     }
 
     /**

@@ -14,13 +14,13 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class QueryHandler {
+public class QueryHandlerMySQLImpl implements IQueryHandler{
 
     final Logger logger = Logger.getGlobal();
     public static final String SQL_EXCEPTION_MSG = "SQL Exception";
     private Connection connection;
 
-    public QueryHandler() {
+    public QueryHandlerMySQLImpl() {
         connection = DBHandler.getConnection();
     }
 
@@ -68,6 +68,21 @@ public class QueryHandler {
         return circle;
     }
 
+    public String getPassword(String name) {
+        String query = String.format("SELECT %s FROM %s WHERE %s = '%s'",
+                DBConstants.USER_PASS, DBConstants.USER_TABLE, DBConstants.USER_USERNAME, name);
+        ResultSet rs = doSelectQuery(query);
+        if (rs != null) {
+            try {
+                rs.next();
+                return rs.getString(1);
+            } catch (SQLException e) {
+                logger.log(Level.INFO, SQL_EXCEPTION_MSG);
+            }
+        }
+        return "";
+    }
+
 
     //-----------------Message Queries-------------------
     public void storeMessage(long senderID, long receiverID, MessageType type, String msgText) {
@@ -107,21 +122,6 @@ public class QueryHandler {
             }
         }
         return false;
-    }
-
-    public String getPassword(String name) {
-        String query = String.format("SELECT %s FROM %s WHERE %s = '%s'",
-                DBConstants.USER_PASS, DBConstants.USER_TABLE, DBConstants.USER_USERNAME, name);
-        ResultSet rs = doSelectQuery(query);
-        if (rs != null) {
-            try {
-                rs.next();
-                return rs.getString(1);
-            } catch (SQLException e) {
-                logger.log(Level.INFO, SQL_EXCEPTION_MSG);
-            }
-        }
-        return "";
     }
 
     private ResultSet doSelectQuery(String query) {
