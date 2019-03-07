@@ -255,6 +255,9 @@ public class Message implements IMessage{
 		return (msgType == MessageType.GROUP);
 	}
 
+	public void setMessageType(MessageType type) {
+		msgType = type; 
+	}
 
 	/**
 	 * Determine if this message is a message signing off from the IM server.

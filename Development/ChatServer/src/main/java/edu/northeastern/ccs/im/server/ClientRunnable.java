@@ -235,6 +235,7 @@ public class ClientRunnable implements Runnable {
 				else {
 //					parsing and creating a sophisticated message object out of the actual one
 					msg = clientRunnableHelper.getCustomConstructedMessage(msg);
+					this.setUserName(msg.getName());
 					clientRunnableHelper.handleMessages(msg);
 				}
 			}
