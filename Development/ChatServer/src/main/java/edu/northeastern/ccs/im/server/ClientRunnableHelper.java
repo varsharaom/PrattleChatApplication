@@ -2,8 +2,8 @@ package edu.northeastern.ccs.im.server;
 
 import java.util.Arrays;
 
-import edu.northeastern.ccs.im.Message;
-import edu.northeastern.ccs.im.MessageType;
+import edu.northeastern.ccs.serverim.Message;
+import edu.northeastern.ccs.serverim.MessageType;
 import edu.northeastern.ccs.im.constants.ClientRunnableConstants;
 import edu.northeastern.ccs.im.persistence.IQueryHandler;
 import edu.northeastern.ccs.im.persistence.QueryHandlerMySQLImpl;

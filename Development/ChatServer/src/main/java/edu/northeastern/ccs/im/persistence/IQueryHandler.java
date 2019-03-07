@@ -1,8 +1,8 @@
 package edu.northeastern.ccs.im.persistence;
 
-import edu.northeastern.ccs.im.Message;
-import edu.northeastern.ccs.im.MessageType;
-import edu.northeastern.ccs.im.User;
+import edu.northeastern.ccs.serverim.Message;
+import edu.northeastern.ccs.serverim.MessageType;
+import edu.northeastern.ccs.serverim.User;
 
 import java.util.List;
 
