@@ -1,4 +1,4 @@
-package edu.northeastern.ccs.im;
+package edu.northeastern.ccs.serverim;
 
 /**
  * Enumeration for the different types of messages.

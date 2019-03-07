@@ -97,6 +97,15 @@
 			<scope>test</scope>
 		</dependency>
 		
+		<dependency>
+         <groupId>Chatter</groupId>
+         <artifactId>Chatter</artifactId>
+         <scope>system</scope>
+         <version>1.0</version>
+         <systemPath>${basedir}\src\lib\Chatter.jar</systemPath>
+      </dependency>
+		
+		
 		<!-- <dependency>
 			<groupId>org.powermock</groupId>
 			<artifactId>powermock-module-testng</artifactId>
