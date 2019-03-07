@@ -102,7 +102,7 @@
          <artifactId>Chatter</artifactId>
          <scope>system</scope>
          <version>1.0</version>
-         <systemPath>${basedir}\src\lib\Chatter.jar</systemPath>
+         <systemPath>${basedir}/src/lib/Chatter.jar</systemPath>
       </dependency>
 		
 		

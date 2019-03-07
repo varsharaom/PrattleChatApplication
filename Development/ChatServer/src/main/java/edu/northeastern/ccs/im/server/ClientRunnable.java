@@ -5,6 +5,7 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ScheduledFuture;
 
+import edu.northeastern.ccs.im.persistence.QueryHandlerMySQLImpl;
 import edu.northeastern.ccs.serverim.ChatLogger;
 import edu.northeastern.ccs.serverim.Message;
 import edu.northeastern.ccs.serverim.NetworkConnection;
@@ -81,7 +82,7 @@ public class ClientRunnable implements Runnable {
 		// terminate for inactivity.
 		timer = new ClientTimer();
 
-		clientRunnableHelper = new ClientRunnableHelper(this);
+		clientRunnableHelper = new ClientRunnableHelper(this, new QueryHandlerMySQLImpl());
 	}
 
 	/**
