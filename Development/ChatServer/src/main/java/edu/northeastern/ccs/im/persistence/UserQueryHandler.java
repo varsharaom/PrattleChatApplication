@@ -1,6 +1,6 @@
 package edu.northeastern.ccs.im.persistence;
 
-import edu.northeastern.ccs.im.User;
+import edu.northeastern.ccs.serverim.User;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;

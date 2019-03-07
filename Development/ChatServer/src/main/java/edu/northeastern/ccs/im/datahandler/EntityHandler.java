@@ -1,12 +1,12 @@
 package edu.northeastern.ccs.im.datahandler;
 
-import edu.northeastern.ccs.im.Message;
-import edu.northeastern.ccs.im.User;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import edu.northeastern.ccs.serverim.Message;
+import edu.northeastern.ccs.serverim.User;
 
 /**
  * This class handles the user, group and message data from the persistence.

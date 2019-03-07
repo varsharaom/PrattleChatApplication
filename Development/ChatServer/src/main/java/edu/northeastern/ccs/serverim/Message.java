@@ -1,4 +1,5 @@
-package edu.northeastern.ccs.im;
+package edu.northeastern.ccs.serverim;
+
 
 import edu.northeastern.ccs.im.datahandler.EntityHandler;
 

@@ -1,7 +1,7 @@
 package edu.northeastern.ccs.im.utils;
 
-import edu.northeastern.ccs.im.Message;
 import edu.northeastern.ccs.im.constants.MessageConstants;
+import edu.northeastern.ccs.serverim.Message;
 
 import java.util.*;
 
