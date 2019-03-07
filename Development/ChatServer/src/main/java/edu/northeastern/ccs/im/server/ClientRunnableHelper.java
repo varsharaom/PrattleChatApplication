@@ -26,8 +26,8 @@ class ClientRunnableHelper {
 
     /** Checks if the login credentials entered are valid*/
     private boolean isValidLoginCredentials(Message msg) {
-    		String password = queryHandler.getPassword(msg.getName());
-        return password.equals(Arrays.toString(msg.getPassword()));
+        String password = queryHandler.getPassword(msg.getName());
+        return password.equals(msg.getText());
     }
 
     /** Checks if the registration information are all valid enough to allow a new user creation */
