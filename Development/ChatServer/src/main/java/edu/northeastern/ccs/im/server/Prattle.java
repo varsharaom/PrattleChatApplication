@@ -16,6 +16,7 @@ import java.util.concurrent.TimeUnit;
 
 import edu.northeastern.ccs.serverim.ChatLogger;
 import edu.northeastern.ccs.serverim.Message;
+import edu.northeastern.ccs.serverim.MessageType;
 import edu.northeastern.ccs.serverim.NetworkConnection;
 
 /**
@@ -84,8 +85,9 @@ public abstract class Prattle {
 	}
 
 	public static void handleDirectMessages(Message message) {
+		message.setMessageType(MessageType.BROADCAST);
 		for (ClientRunnable tt : active) {
-			if (tt.isInitialized() && (tt.getUserId() == message.getReceiverId())) {
+			if (tt.isInitialized() && (tt.getName().equals(message.getName()))) {
 				tt.enqueueMessage(message);
 			}
 		}

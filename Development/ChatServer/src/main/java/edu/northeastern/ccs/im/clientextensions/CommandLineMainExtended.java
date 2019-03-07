@@ -141,10 +141,10 @@ public class CommandLineMainExtended {
 						connect.sendMessage(msgOpt + " " + username + " " + msgReceiver + " " + line);
 					}
 				}
-
+			}
 				// Get any recent messages received from the IM server.
 				if (mess.hasNext()) {
-
+					
 					Message message = mess.next();
 					if (!message.getSender().equals(connect.getUserName())) {
 						// get the text part of the message
@@ -156,7 +156,7 @@ public class CommandLineMainExtended {
 					}
 				}
 
-			}
+			
 		}
 
 		System.out.println("Program complete.");
