@@ -144,7 +144,7 @@ class ClientRunnableHelper {
         String content = msg.getText();
         Message message = msg;
 
-        if (msg.getText().startsWith(ClientRunnableConstants.CUSTOM_COMMAND_IDENTIFIER)) {
+        if (msg.getText().startsWith(ClientRunnableConstants.CUSTOM_COMMAND_PREFIX)) {
 
             String[] arr = content.split(" ", 2);
 

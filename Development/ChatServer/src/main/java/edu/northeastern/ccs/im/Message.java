@@ -123,6 +123,22 @@ public class Message implements IMessage{
 		return new Message(MessageType.BROADCAST, myName, text);
 	}
 
+	public String getMsgSender() {
+		return msgSender;
+	}
+
+	public void setMsgSender(String msgSender) {
+		this.msgSender = msgSender;
+	}
+
+	public String getMsgReceiver() {
+		return msgReceiver;
+	}
+
+	public void setMsgReceiver(String msgReceiver) {
+		this.msgReceiver = msgReceiver;
+	}
+
 	/**
 	 * Create a new message stating the name with which the user would like to
 	 * login.
