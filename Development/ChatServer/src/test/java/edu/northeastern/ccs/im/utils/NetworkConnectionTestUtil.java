@@ -193,4 +193,85 @@ public class NetworkConnectionTestUtil {
 			}
 		};
 	}
+	
+	public static Iterator<Message> getMessageIteratorWithNullAndNonNullMessages() {
+
+		return new Iterator<Message>() {
+			Message message1 = Message.makeBroadcastMessage(MessageConstants.SIMPLE_USER,
+					MessageConstants.BROADCAST_TEXT_MESSAGE);
+			List<Message> messageList = new ArrayList<>(Arrays.asList(message1, null));
+			int index = 0;
+
+			@Override
+			public boolean hasNext() {
+				return index < messageList.size();
+			}
+
+			@Override
+			public Message next() {
+				if (hasNext()) {
+					return messageList.get(index++);
+				} else {
+					throw new NoSuchElementException();
+				}
+
+			}
+		};
+	}
+
+
+	public static Iterator<Message> getIteratorWithCustomRegisterMessage() {
+
+		return new Iterator<Message>() {
+			Message message1 = Message.makeBroadcastMessage(MessageConstants.SIMPLE_USER,
+					MessageConstants.CUSTOM_REGISTER_MESSAGE);
+			Message message2 = Message.makeBroadcastMessage(MessageConstants.SIMPLE_USER,
+					MessageConstants.CUSTOM_REGISTER_MESSAGE);
+
+			List<Message> messageList = new ArrayList<>(Arrays.asList(message1, message2));
+			int index = 0;
+
+			@Override
+			public boolean hasNext() {
+				return index < messageList.size();
+			}
+
+			@Override
+			public Message next() {
+				if (hasNext()) {
+					return messageList.get(index++);
+				} else {
+					throw new NoSuchElementException();
+				}
+
+			}
+		};
+	}
+
+	public static Iterator<Message> getIteratorWithCustomDirectMessage() {
+
+		return new Iterator<Message>() {
+			Message message1 = Message.makeBroadcastMessage(MessageConstants.SIMPLE_USER,
+					MessageConstants.SIMPLE_DRCT_MESSAGE);
+			Message message2 = Message.makeBroadcastMessage(MessageConstants.SIMPLE_USER,
+					MessageConstants.SIMPLE_DRCT_MESSAGE);
+			List<Message> messageList = new ArrayList<>(Arrays.asList(message1, message2));
+			int index = 0;
+
+			@Override
+			public boolean hasNext() {
+				return index < messageList.size();
+			}
+
+			@Override
+			public Message next() {
+				if (hasNext()) {
+					return messageList.get(index++);
+				} else {
+					throw new NoSuchElementException();
+				}
+
+			}
+		};
+	}
 }

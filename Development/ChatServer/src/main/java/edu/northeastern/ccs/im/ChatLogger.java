@@ -11,7 +11,7 @@ import java.util.logging.SimpleFormatter;
 
 /**
  * Logger class that handles logging of all levels of messages.
- * 
+ *
  * @author Maria Jump and Riya Nadkarni
  * @version 12-20-2018
  */
@@ -31,7 +31,7 @@ public class ChatLogger {
   static {
     setMode(HandlerType.BOTH);
   }
-  
+
   /**
    * Private constructor. This class cannot be instantiated.
    */
@@ -41,7 +41,7 @@ public class ChatLogger {
 
   /**
    * Logs the error messages.
-   * 
+   *
    * @param msg error message to be logged
    */
   public static final void error(String msg) {
@@ -50,7 +50,7 @@ public class ChatLogger {
 
   /**
    * Logs the warnings.
-   * 
+   *
    * @param msg warning to be logged
    */
   public static final void warning(String msg) {
@@ -59,7 +59,7 @@ public class ChatLogger {
 
   /**
    * Logs the general messages.
-   * 
+   *
    * @param msg message to be logged
    */
   public static final void info(String msg) {
@@ -68,23 +68,23 @@ public class ChatLogger {
 
   /**
    * Toggles between the handler types.
-   * 
+   *
    * @param type the type of handler to be used by the logger
    */
   public static void setMode(HandlerType type) {
 
     switch (type) {
-    case FILE:
-      switchToFile();
-      break;
-    case CONSOLE:
-      switchToConsole();
-      break;
-    case BOTH:
-      switchToBoth();
-      break;
-    default:
-      throw new IllegalArgumentException("Invalid handler type.");
+      case FILE:
+        switchToFile();
+        break;
+      case CONSOLE:
+        switchToConsole();
+        break;
+      case BOTH:
+        switchToBoth();
+        break;
+      default:
+        throw new IllegalArgumentException("Invalid handler type.");
     }
     LOGGER.setLevel(Level.ALL);
     LOGGER.setUseParentHandlers(false);
@@ -92,7 +92,7 @@ public class ChatLogger {
 
   /**
    * Writes to the logger.
-   * 
+   *
    * @param lvl the level of severity of the message being logged
    * @param msg the message being logged.
    * @return true if the message was logged, false otherwise
@@ -150,6 +150,22 @@ public class ChatLogger {
     /** The console handler. */
     CONSOLE,
     /** Both handlers. */
-    BOTH;
+    BOTH,
+    /** Invalid handlers */
+    INVALID;
   }
+
+  protected static HandlerType getHandlerType(int mode) {
+    switch(mode) {
+      case 1:
+        return HandlerType.FILE;
+      case 2:
+        return HandlerType.CONSOLE;
+      case 3:
+        return HandlerType.BOTH;
+      default:
+        return HandlerType.INVALID;
+    }
+  }
+
 }

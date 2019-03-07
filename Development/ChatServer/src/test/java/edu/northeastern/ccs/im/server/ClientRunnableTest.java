@@ -188,4 +188,74 @@ public class ClientRunnableTest {
 		clientRunnable.run();
 		networkConnection.close();
 	}
+	
+	/**
+ 	 * Test single message queue.
+ 	 */
+ 	@Test
+ 	public void testSingleMessageQueue() {
+ 		Iterator<Message> messageIterator = NetworkConnectionTestUtil.getMessageIteratorWithManyMessages();
+ 		when(networkConnection.iterator()).thenReturn(messageIterator);
+ 		clientRunnable = new ClientRunnable(networkConnection);
+ 		clientRunnable.run();
+ 		logger.log(Level.INFO, ""+clientRunnable.getUserId());
+ 		ScheduledExecutorService ses = Executors.newScheduledThreadPool(1);
+ 		Runnable task2 = () -> logger.log(Level.INFO, "Starting new task");
+ 		ScheduledFuture<?> scheduledFuture = ses.schedule(task2, ConnectionConstants.SCHEDULER_DELAY, TimeUnit.SECONDS);
+ 		clientRunnable.setFuture(scheduledFuture);
+ 		while(messageIterator.hasNext()) {
+ 			messageIterator.next();
+ 		}
+ 		clientRunnable.run();
+ 		networkConnection.close();
+ 	}
+ 	
+ 	@Test
+    public void testNullConnection() {
+        Iterator<Message> messageIterator = NetworkConnectionTestUtil
+                .getMessageIteratorWithDifferentUsers();
+
+        when(networkConnection.iterator()).thenReturn(messageIterator);
+        when(networkConnection.sendMessage(any())).thenReturn(true);
+        clientRunnable = new ClientRunnable(null);
+        clientRunnable.run();
+        clientRunnable.run();
+    }
+ 	
+ 	@Test
+    public void testNullMessage() {
+        Iterator<Message> messageIterator = NetworkConnectionTestUtil
+                .getMessageIteratorWithNullAndNonNullMessages();
+
+        when(networkConnection.iterator()).thenReturn(messageIterator);
+        when(networkConnection.sendMessage(any())).thenReturn(true);
+        clientRunnable = new ClientRunnable(networkConnection);
+        clientRunnable.run();
+        clientRunnable.run();
+    }
+
+    @Test
+    public void testCustomRegisterMessage() {
+        Iterator<Message> messageIterator = NetworkConnectionTestUtil.
+                getIteratorWithCustomRegisterMessage();
+
+        when(networkConnection.iterator()).thenReturn(messageIterator);
+        when(networkConnection.sendMessage(any())).thenReturn(true);
+        clientRunnable = new ClientRunnable(networkConnection);
+        clientRunnable.run();
+        clientRunnable.run();
+    }
+
+    @Test
+    public void testCustomDirectMessage() {
+        Iterator<Message> messageIterator = NetworkConnectionTestUtil.
+                getIteratorWithCustomDirectMessage();
+
+        when(networkConnection.iterator()).thenReturn(messageIterator);
+        when(networkConnection.sendMessage(any())).thenReturn(true);
+        clientRunnable = new ClientRunnable(networkConnection);
+        clientRunnable.run();
+        clientRunnable.run();
+    }
+ 	
 }

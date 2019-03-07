@@ -9,9 +9,13 @@ import edu.northeastern.ccs.im.constants.MessageConstants;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.nio.channels.SelectableChannel;
+import java.nio.channels.SelectionKey;
+import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
@@ -49,7 +53,6 @@ public class PrattleTest {
             logger.log(Level.INFO, "Stack trace: " + e.getStackTrace());
         }
     }
-
 
     @Test
     public void testStopServer() {
@@ -117,9 +120,7 @@ public class PrattleTest {
         catch (Exception e) {
             Prattle.stopServer();
         }
-
     }
-    
     
     @Test
     public void testRemoveNonExistantClient() throws IllegalAccessException, NoSuchFieldException {
@@ -146,6 +147,59 @@ public class PrattleTest {
         @Override
         public void run() {
             Prattle.main(new String[0]);
+        }
+    }
+    
+    @Test
+    public void testBroadcastMessage() throws IllegalAccessException, NoSuchFieldException {
+
+        ConcurrentLinkedQueue<ClientRunnable> queue = new ConcurrentLinkedQueue<>();
+
+        ClientRunnable c1 = Mockito.mock(ClientRunnable.class);
+        Mockito.when(c1.isInitialized()).thenReturn(true);
+
+        queue.add(c1);
+        Field active = Prattle.class.getDeclaredField(ACTIVE);
+        active.setAccessible(true);
+        active.set(null, queue);
+
+        Prattle.broadcastMessage(Message.makeBroadcastMessage(MessageConstants.SIMPLE_USER,
+                MessageConstants.BROADCAST_TEXT_MESSAGE));
+    }
+    
+    @Test
+    public void testPrattleMainException() {
+
+        IMConnection connection1;
+        IMConnection connection2;
+
+        try{
+            Thread thread = new Thread(new MainTest());
+            thread.start();
+
+            Class pr = Prattle.class;
+            Field isReady = pr.getDeclaredField("isReady");
+            isReady.setAccessible(true);
+            isReady.set(pr, false);
+            
+            Prattle.broadcastMessage(Message.makeBroadcastMessage(MessageConstants.SIMPLE_USER,
+                    MessageConstants.BROADCAST_TEXT_MESSAGE));
+            connection1 = new IMConnection(ConnectionConstants.HOST,
+                    ConnectionConstants.PORT, MessageConstants.BROADCAST_TEXT_MESSAGE);
+            connection1.connect();
+
+            connection2 = new IMConnection(ConnectionConstants.HOST,
+                    ConnectionConstants.PORT, MessageConstants.BROADCAST_TEXT_MESSAGE);
+            connection2.connect();
+
+            connection1.sendMessage(MessageConstants.BROADCAST_TEXT_MESSAGE);
+            connection2.sendMessage(MessageConstants.BROADCAST_TEXT_MESSAGE);
+
+            Prattle.broadcastMessage(Message.makeBroadcastMessage(MessageConstants.SIMPLE_USER,
+                    MessageConstants.BROADCAST_TEXT_MESSAGE));
+        }
+        catch (Exception e) {
+            Prattle.stopServer();
         }
     }
 

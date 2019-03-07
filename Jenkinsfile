@@ -73,7 +73,7 @@ stage('Master Branch Tasks') {
     def json = readJSON file:'config.json'
     sh 'cd ${WORKSPACE}'
     sh "chmod 400 ${json.server[0].PEM}"
-    sh "scp -oStrictHostKeyChecking=no -i ${json.server[0].PEM} Development/Prattle/target/${json.server[0].JARNAME} ${json.server[0].user}@${json.server[0].DNS}:${json.server[0].directory}"
+     sh "scp -oStrictHostKeyChecking=no -i ${json.server[0].PEM} Development/ChatServer/target/${json.server[0].JARNAME} ${json.server[0].user}@${json.server[0].DNS}:${json.server[0].directory}"
     sh "ssh -oStrictHostKeyChecking=no -i ${json.server[0].PEM} ${json.server[0].user}@${json.server[0].DNS}  pkill java &"
     sh "ssh -oStrictHostKeyChecking=no -i ${json.server[0].PEM} ${json.server[0].user}@${json.server[0].DNS}  nohup java -jar ${json.server[0].directory}/${json.server[0].JARNAME} >nohup.out 2>&1 &"
                  } //script
@@ -84,10 +84,10 @@ stage('Master Branch Tasks') {
 
  post {      
      success {
-            slackSend (baseUrl: "https://nu-cs5500.slack.com/services/hooks/jenkins-ci/", token: "SKyTnf0m1UkBTDZjdqrEfkPM", channel: "#cs5500-team-209-SP19", color: '#00FF00', message: "SUCCESSFUL: Job '${env.JOB_NAME}")
+            slackSend (baseUrl: "https://nu-cs5500.slack.com/services/hooks/jenkins-ci/", token: "SKyTnf0m1UkBTDZjdqrEfkPM", channel: "#team-209-sp19", color: '#00FF00', message: "SUCCESSFUL: Job '${env.JOB_NAME}")
             }
    failure {  
-         slackSend (baseUrl: "https://nu-cs5500.slack.com/services/hooks/jenkins-ci/", token: "SKyTnf0m1UkBTDZjdqrEfkPM", channel: "#cs5500-team-209-SP19", color: '#FF0000', message: "FAILED: Job '${env.JOB_NAME}")
+         slackSend (baseUrl: "https://nu-cs5500.slack.com/services/hooks/jenkins-ci/", token: "SKyTnf0m1UkBTDZjdqrEfkPM", channel: "#team-209-sp19", color: '#FF0000', message: "FAILED: Job '${env.JOB_NAME}")
          }
    }
 } //pipeline

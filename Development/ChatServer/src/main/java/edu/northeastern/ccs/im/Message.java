@@ -1,5 +1,9 @@
 package edu.northeastern.ccs.im;
 
+import edu.northeastern.ccs.im.datahandler.EntityHandler;
+
+import java.util.Set;
+
 /**
  * Each instance of this class represents a single transmission by our IM
  * clients.
@@ -12,7 +16,7 @@ package edu.northeastern.ccs.im;
  * 
  * @version 1.3
  */
-public class Message {
+public class Message implements IMessage{
 
 	/** The string sent when a field is null. */
 	private static final String NULL_OUTPUT = "--";
@@ -20,13 +24,33 @@ public class Message {
 	/** The handle of the message. */
 	private MessageType msgType;
 
+	/** The sender's user id*/
+	private long senderId;
+
+	/** This is either an user's id or a group's id - based on private or group message*/
+	private long receiverId;
+
 	/**
 	 * The first argument used in the message. This will be the sender's identifier.
 	 */
 	private String msgSender;
 
+	private String msgReceiver;
+
 	/** The second argument used in the message. */
 	private String msgText;
+
+	private char[] password;
+
+	/** The sender's unique user id */
+	public long getSenderId() {
+		return senderId;
+	}
+
+	/** The receiver's unique user id */
+	public long getReceiverId() {
+		return receiverId;
+	}
 
 	/**
 	 * Create a new message that contains actual IM text. The type of distribution
@@ -34,7 +58,7 @@ public class Message {
 	 * message recipient, and the text to send.
 	 * 
 	 * @param handle  Handle for the type of message being created.
-	 * @param srcName Name of the individual sending this message
+//	 * @param srcName Name of the individual sending this message
 	 * @param text    Text of the instant message
 	 */
 	private Message(MessageType handle, String srcName, String text) {
@@ -44,6 +68,25 @@ public class Message {
 		msgSender = srcName;
 		// Save the text of the message.
 		msgText = text;
+	}
+
+	private Message(MessageType handle, long senderId, String text) {
+		this.msgType = handle;
+		this.senderId = senderId;
+		this.msgText = text;
+	}
+
+	public Message(MessageType handle, String sender, String receiver, String text) {
+		this.msgType = handle;
+		this.msgSender = sender;
+		this.msgReceiver = receiver;
+		this.msgText = text;
+	}
+
+	private Message(MessageType handle, String msgSender, char[] password) {
+		this.msgType = handle;
+		this.msgSender = msgSender;
+		this.password = password;
 	}
 
 	/**
@@ -56,7 +99,7 @@ public class Message {
 	 *                log-in to the IM server.
 	 */
 	private Message(MessageType handle, String srcName) {
-		this(handle, srcName, null);
+		this(handle, srcName, "");
 	}
 
 	/**
@@ -66,7 +109,7 @@ public class Message {
 	 * @return Instance of Message that specifies the process is logging out.
 	 */
 	public static Message makeQuitMessage(String myName) {
-		return new Message(MessageType.QUIT, myName, null);
+		return new Message(MessageType.QUIT, myName, "");
 	}
 
 	/**
@@ -91,6 +134,23 @@ public class Message {
 		return new Message(MessageType.HELLO, null, text);
 	}
 
+	public static Message makeRegisterMessage(String userName, String password) {
+		return new Message(MessageType.REGISTER, userName, password.toCharArray());
+	}
+
+
+	public static Message makeLoginAckMessage(MessageType handle, long senderId, String msgText) {
+		return new Message(handle, senderId, msgText);
+	}
+
+	public static Message makeRegisterAckMessage(MessageType handle, String msgSender, String msgText) {
+		return new Message(handle, msgSender, msgText);
+	}
+
+	public static Message makeDirectMessage(String msgSender, String msgReceiver, String msgText) {
+		return new Message(MessageType.DIRECT, msgSender, msgReceiver, msgText);
+	}
+
 	/**
 	 * Given a handle, name and text, return the appropriate message instance or an
 	 * instance from a subclass of message.
@@ -112,6 +172,19 @@ public class Message {
 		}
 		return result;
 	}
+
+//	TODO - talk to team and see if this block is actually needed
+	protected static Message makeMessage(MessageType handle, long senderId, String msgText) {
+
+		Message result = null;
+
+		if (handle == MessageType.LOGIN) {
+			result = makeLoginAckMessage(handle, senderId, msgText);
+		}
+
+		return result;
+	}
+
 
 	/**
 	 * Create a new message for the early stages when the user logs in without all
@@ -160,6 +233,23 @@ public class Message {
 		return (msgType == MessageType.HELLO);
 	}
 
+	public boolean isRegisterMessage() {
+		return (msgType == MessageType.REGISTER);
+	}
+
+	public boolean isLoginMessage() {
+		return (msgType == MessageType.LOGIN);
+	}
+
+	public boolean isPrivateMessage() {
+		return (msgType == MessageType.DIRECT);
+	}
+
+	public boolean isGroupMessage() {
+		return (msgType == MessageType.GROUP);
+	}
+
+
 	/**
 	 * Determine if this message is a message signing off from the IM server.
 	 * 
@@ -190,5 +280,10 @@ public class Message {
 			result += " " + NULL_OUTPUT.length() + " " + NULL_OUTPUT;
 		}
 		return result;
+	}
+
+	@Override
+	public Set<User> getReceiver() {
+		return EntityHandler.getAllUsers();
 	}
 }
