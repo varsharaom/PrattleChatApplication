@@ -1,8 +1,13 @@
 package edu.northeastern.ccs.im.server;
 
+import java.util.Arrays;
+
 import edu.northeastern.ccs.im.Message;
 import edu.northeastern.ccs.im.MessageType;
 import edu.northeastern.ccs.im.constants.ClientRunnableConstants;
+import edu.northeastern.ccs.im.persistence.MessageQueryHandler;
+import edu.northeastern.ccs.im.persistence.QueryHandler;
+import edu.northeastern.ccs.im.persistence.UserQueryHandler;
 
 /**
  * Class that handles all the control flow for chat messages. Every instance of this class is
@@ -13,23 +18,24 @@ import edu.northeastern.ccs.im.constants.ClientRunnableConstants;
 class ClientRunnableHelper {
 
     private ClientRunnable clientRunnable;
-
-    ClientRunnableHelper(ClientRunnable clientRunnable) {
+    private UserQueryHandler userQueryHandler;
+    private MessageQueryHandler messageQueryHandler;
+    
+    ClientRunnableHelper(ClientRunnable clientRunnable, UserQueryHandler userQueryHandler, MessageQueryHandler messageQueryHandler) {
         this.clientRunnable = clientRunnable;
+        this.userQueryHandler = userQueryHandler;
+        this.messageQueryHandler = messageQueryHandler;
     }
-
 
     /** Checks if the login credentials entered are valid*/
     private boolean isValidLoginCredentials(Message msg) {
-        //	TODO - make a DB call to verify user credentials and then permit login
-        return false;
+    		String password = userQueryHandler.getPassword(msg.getName());
+        return password.equals(Arrays.toString(msg.getPassword()));
     }
 
     /** Checks if the registration information are all valid enough to allow a new user creation */
     private boolean isValidRegistrationInfo(Message msg) {
-        //	TODO - make a DB call to verify user credentials and then permit register.
-        //	 Checks needed: validate data types and constraints. validate exclusiveness of credentials
-        return false;
+        return userQueryHandler.checkUserNameExists(msg.getName());
     }
 
     /**

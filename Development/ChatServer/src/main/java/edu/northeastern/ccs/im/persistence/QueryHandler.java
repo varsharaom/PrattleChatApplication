@@ -40,12 +40,12 @@ public class QueryHandler {
         PreparedStatement statement = null;
         try {
             statement = connection.prepareStatement(query);
-            try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
-                if (generatedKeys.next()) {
-                    return generatedKeys.getLong(1);
-                } else {
-                    throw new SQLException("Creating user failed, no ID obtained.");
-                }
+            statement.executeUpdate();
+            ResultSet generatedKeys = statement.getGeneratedKeys();
+            if (generatedKeys.next()) {
+                return generatedKeys.getLong(1);
+            } else {
+                throw new SQLException("Creating user failed, no ID obtained.");
             }
         } catch (SQLException e) {
         		logger.log(Level.INFO, SQL_EXCEPTION_MSG);
