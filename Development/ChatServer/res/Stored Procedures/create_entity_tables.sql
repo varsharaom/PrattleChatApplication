@@ -3,9 +3,10 @@ BEGIN
 
 create table users (
 	id INTEGER PRIMARY KEY NOT NULL auto_increment,
-    name VARCHAR(50) NOT NULL,
+	name VARCHAR(50) NOT NULL,
+    password VARCHAR(50),
     nickname VARCHAR(50),
-    last_seen DATETIME
+    last_login DATETIME
 );
 
 create table circles (

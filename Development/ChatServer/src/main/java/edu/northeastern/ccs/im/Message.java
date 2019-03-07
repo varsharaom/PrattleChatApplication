@@ -2,6 +2,7 @@ package edu.northeastern.ccs.im;
 
 import edu.northeastern.ccs.im.datahandler.EntityHandler;
 
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -50,6 +51,10 @@ public class Message implements IMessage{
 	/** The receiver's unique user id */
 	public long getReceiverId() {
 		return receiverId;
+	}
+	
+	public char[] getPassword() {
+		return password;
 	}
 
 	/**

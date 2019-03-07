@@ -21,6 +21,7 @@ public class DBConstants {
     //USER
     public static final String USER_ID = "id";
     public static final String USER_USERNAME = "name";
+    public static final String USER_PASS = "password";
     public static final String USER_NICKNAME = "nickname";
     public static final String USER_LAST_SEEN = "last_seen";
 
