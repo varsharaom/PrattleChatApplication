@@ -1,5 +1,8 @@
 package edu.northeastern.ccs.serverim;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Enumeration for the different types of messages.
  * 
@@ -37,17 +40,39 @@ public enum  MessageType {
 	 */
 	QUIT("BYE");
 
-
-
-
 	/** Store the short name of this message type. */
-	public String abbreviation;
+	private String abbreviation;
+	
+	/** Integer equivalent for the key. */
+	private int index;
+	
+	private static final Map<Integer, MessageType> lookup = new HashMap<>();
+	
+	static {
+		// Create a reverse lookup hash map
+		for(MessageType t : MessageType.values()) {
+			lookup.put(t.getMessageTypeValue(), t);
+		}
+	}
+	
+	public static MessageType get(int messageType) {
+		return lookup.get(messageType);
+	}
+	
+	public int getMessageTypeValue() {
+		return index;
+	}
 
 	/**
 	 * Define the message type and specify its short name.
 	 * 
 	 * @param abbrev Short name of this message type, as a String.
 	 */
+	private MessageType(String abbrev, int type) {
+		abbreviation = abbrev;
+		index = type;
+	}
+	
 	private MessageType(String abbrev) {
 		abbreviation = abbrev;
 	}

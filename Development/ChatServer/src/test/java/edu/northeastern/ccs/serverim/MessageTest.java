@@ -1,8 +1,6 @@
 package edu.northeastern.ccs.serverim;
 
 import edu.northeastern.ccs.im.constants.MessageConstants;
-import edu.northeastern.ccs.serverim.Message;
-import edu.northeastern.ccs.serverim.MessageType;
 
 import org.junit.Test;
 
@@ -129,14 +127,7 @@ public class MessageTest {
 	public void testNullHandle() {
 		Message message1 = Message.makeMessage(MessageConstants.SIMPLE_USER, MessageConstants.SIMPLE_USER,
 				MessageConstants.SIMPLE_USER);
-		assertTrue(message1==null);		
-	}
-    
-    @Test
-	public void testNullMessageType() {
-		Message message1 = Message.makeMessage(MessageConstants.SIMPLE_USER, MessageConstants.SIMPLE_USER,
-				MessageConstants.SIMPLE_USER);
-		assertTrue(message1==null);		
+		assertNull(message1);		
 	}
 
 }

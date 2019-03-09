@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.net.InetSocketAddress;
 
-import edu.northeastern.ccs.im.client.utilities.IMConnection;
+import edu.northeastern.ccs.im.IMConnection;
 import edu.northeastern.ccs.im.constants.ConnectionConstants;
 import edu.northeastern.ccs.im.constants.MessageConstants;
 import edu.northeastern.ccs.serverim.Message;
