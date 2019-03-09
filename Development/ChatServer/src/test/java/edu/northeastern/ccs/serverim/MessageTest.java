@@ -58,7 +58,6 @@ public class MessageTest {
         Message message = Message.makeQuitMessage(MessageConstants.SIMPLE_USER);
         assertEquals(MessageConstants.SIMPLE_USER, message.getName());
 
-        assertNull(message.getText());
         assertTrue(message.terminate());
     }
     
@@ -68,7 +67,6 @@ public class MessageTest {
         String userName = MessageConstants.SIMPLE_USER;
         Message message = Message.makeSimpleLoginMessage(userName);
         assertEquals(userName, message.getName());
-        assertNull(message.getText());
         assertTrue(message.isInitialization());
     }
 

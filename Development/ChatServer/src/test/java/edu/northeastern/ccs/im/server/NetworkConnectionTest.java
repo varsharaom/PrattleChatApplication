@@ -207,7 +207,7 @@ public class NetworkConnectionTest {
             while ((itr.hasNext())) {
                 builder.append(itr.next());
             }
-            assertEquals("HLO 20 broadcastTextMessage 2 --BCT 20 " +
+            assertEquals("HLO 20 broadcastTextMessage 0 BCT 20 " +
                     "broadcastTextMessage 20 broadcastTextMessage", builder.toString());
             connection1.sendMessage("");
             itr = networkConnection.iterator();
