@@ -1,6 +1,6 @@
 package edu.northeastern.ccs.im.server;
 
-import edu.northeastern.ccs.im.client.utilities.IMConnection;
+import edu.northeastern.ccs.im.IMConnection;
 import edu.northeastern.ccs.im.constants.ConnectionConstants;
 import edu.northeastern.ccs.im.constants.MessageConstants;
 import edu.northeastern.ccs.serverim.Message;
@@ -13,9 +13,6 @@ import org.mockito.Mockito;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.nio.channels.SelectableChannel;
-import java.nio.channels.SelectionKey;
-import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
@@ -177,7 +174,7 @@ public class PrattleTest {
             Thread thread = new Thread(new MainTest());
             thread.start();
 
-            Class pr = Prattle.class;
+            Class<Prattle> pr = Prattle.class;
             Field isReady = pr.getDeclaredField("isReady");
             isReady.setAccessible(true);
             isReady.set(pr, false);

@@ -11,14 +11,14 @@ public interface IQueryHandler {
     //User Queries
     public User createUser(String userName, String pass, String nickName);
 
-    public void updateUserLastLogin(User user);
+    public int updateUserLastLogin(User user);
 
     public List<Long> getCircles(User user);
 
     public String getPassword(String name);
 
     //Message Queries
-    public void storeMessage(long senderID, long receiverID, MessageType type, String msgText);
+    public long storeMessage(long senderID, long receiverID, MessageType type, String msgText);
 
     public List<Message> getMessagesSinceLastLogin(User user);
 

@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.net.InetSocketAddress;
 
-import edu.northeastern.ccs.im.client.utilities.IMConnection;
+import edu.northeastern.ccs.im.IMConnection;
 import edu.northeastern.ccs.im.constants.ConnectionConstants;
 import edu.northeastern.ccs.im.constants.MessageConstants;
 import edu.northeastern.ccs.serverim.Message;
@@ -207,7 +207,7 @@ public class NetworkConnectionTest {
             while ((itr.hasNext())) {
                 builder.append(itr.next());
             }
-            assertEquals("HLO 20 broadcastTextMessage 2 --BCT 20 " +
+            assertEquals("HLO 20 broadcastTextMessage 0 BCT 20 " +
                     "broadcastTextMessage 20 broadcastTextMessage", builder.toString());
             connection1.sendMessage("");
             itr = networkConnection.iterator();
