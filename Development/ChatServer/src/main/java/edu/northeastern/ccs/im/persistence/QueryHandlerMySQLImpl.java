@@ -8,6 +8,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -27,9 +28,10 @@ public class QueryHandlerMySQLImpl implements IQueryHandler{
     //-----------------User Queries-------------------
     public User createUser(String userName, String pass, String nickName) {
         Date date = new Date(System.currentTimeMillis());
-        String query = String.format("INSERT into %s (%s,%s,%s,%s) VALUES('%s','%s','%s',%tc);", DBConstants.USER_TABLE,
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String query = String.format("INSERT into %s (%s,%s,%s,%s) VALUES('%s','%s','%s','%s');", DBConstants.USER_TABLE,
                 DBConstants.USER_USERNAME, DBConstants.USER_PASS, DBConstants.USER_NICKNAME, DBConstants.USER_LAST_SEEN,
-                userName, pass, nickName, date);
+                userName, pass, nickName, format.format(date));
         long id = doInsertQuery(query);
         if (id != -1) {
             return new User(id, userName, nickName, date.getTime());
@@ -37,11 +39,13 @@ public class QueryHandlerMySQLImpl implements IQueryHandler{
         return null;
     }
 
-    public void updateUserLastLogin(User user) {
-        String query = String.format("UPDATE %s set %s = %d WHERE %s = %d;",
-                DBConstants.USER_TABLE, DBConstants.USER_LAST_SEEN, System.currentTimeMillis(),
+    public int updateUserLastLogin(User user) {
+    		Date date = new Date(System.currentTimeMillis());
+    		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String query = String.format("UPDATE %s set %s = '%s' WHERE %s = %d;",
+                DBConstants.USER_TABLE, DBConstants.USER_LAST_SEEN, format.format(date),
                 DBConstants.USER_ID, user.getUserID());
-        doUpdateQuery(query);
+        return doUpdateQuery(query);
     }
 
     public List<Long> getCircles(User user) {
@@ -72,29 +76,30 @@ public class QueryHandlerMySQLImpl implements IQueryHandler{
         String query = String.format("SELECT %s FROM %s WHERE %s = '%s'",
                 DBConstants.USER_PASS, DBConstants.USER_TABLE, DBConstants.USER_USERNAME, name);
         ResultSet rs = doSelectQuery(query);
-        if (rs != null) {
-            try {
-                rs.next();
-                return rs.getString(1);
-            } catch (SQLException e) {
-                logger.log(Level.INFO, SQL_EXCEPTION_MSG);
-            }
-        }
-        return "";
+    		try {
+				if (rs.next()) {
+				return rs.getString(1);
+				}
+			} catch (SQLException e) {
+				logger.log(Level.INFO, SQL_EXCEPTION_MSG);
+			}
+    		return "";
     }
 
 
     //-----------------Message Queries-------------------
-    public void storeMessage(long senderID, long receiverID, MessageType type, String msgText) {
-        String query = String.format("INSERT INTO %s (%s,%s,%s,%s,%s) VALUES(%d,%d,%s,%s,%d);",
+    public long storeMessage(long senderID, long receiverID, MessageType type, String msgText) {
+    		Date date = new Date(System.currentTimeMillis());
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String query = String.format("INSERT INTO %s (%s,%s,%s,%s,%s) VALUES(%d,%d,'%s','%s','%s');",
                 DBConstants.MESSAGE_TABLE, DBConstants.MESSAGE_SENDER_ID, DBConstants.MESSAGE_RECEIVER_ID,
                 DBConstants.MESSAGE_TYPE, DBConstants.MESSAGE_BODY,  DBConstants.MESSAGE_TIME,
-                senderID, receiverID, type+"", msgText, System.currentTimeMillis());
-        doInsertQuery(query);
+                senderID, receiverID, type, msgText, format.format(date));
+        return doInsertQuery(query);
     }
 
     public List<Message> getMessagesSinceLastLogin(User user) {
-        String query = String.format("SELECT * from %s WHERE %d > %d;",
+        String query = String.format("SELECT * from %s WHERE %s > %d;",
                 DBConstants.MESSAGE_TABLE, DBConstants.MESSAGE_TIME, user.getLastSeen());
         ResultSet rs = doSelectQuery(query);
         List<Message> messages = new ArrayList<>();
@@ -104,7 +109,7 @@ public class QueryHandlerMySQLImpl implements IQueryHandler{
                 messages.add(m);
             }
         } catch (SQLException e) {
-            logger.log(Level.INFO, "SQL Exception");
+            logger.log(Level.INFO, DBConstants.EXCEPTION_MESSAGE);
         }
         return messages;
     }
@@ -114,17 +119,15 @@ public class QueryHandlerMySQLImpl implements IQueryHandler{
         String query = String.format("SELECT * FROM %s WHERE %s = '%s';",
                 DBConstants.USER_TABLE, DBConstants.USER_USERNAME, name);
         ResultSet rs = doSelectQuery(query);
-        if (rs != null) {
-            try {
-                return rs.next();
-            } catch (SQLException e) {
-                logger.log(Level.INFO, SQL_EXCEPTION_MSG);
-            }
-        }
-        return false;
+        try {
+			return rs.next();
+		} catch (SQLException e) {
+			logger.log(Level.INFO, DBConstants.EXCEPTION_MESSAGE);
+		}
+        return false; 
     }
 
-    private ResultSet doSelectQuery(String query) {
+    public ResultSet doSelectQuery(String query) {
         PreparedStatement statement = null;
         try {
             statement = connection.prepareStatement(query);
@@ -143,7 +146,7 @@ public class QueryHandlerMySQLImpl implements IQueryHandler{
         return null;
     }
 
-    private long doInsertQuery(String query) {
+    public long doInsertQuery(String query) {
         PreparedStatement statement = null;
         try {
             statement = connection.prepareStatement(query);
@@ -160,7 +163,7 @@ public class QueryHandlerMySQLImpl implements IQueryHandler{
         return -1;
     }
 
-    private int doUpdateQuery(String query) {
+    public int doUpdateQuery(String query) {
         PreparedStatement statement = null;
         try {
             statement = connection.prepareStatement(query);
