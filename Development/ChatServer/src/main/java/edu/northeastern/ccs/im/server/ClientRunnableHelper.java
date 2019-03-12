@@ -1,12 +1,9 @@
 package edu.northeastern.ccs.im.server;
 
-import java.util.Arrays;
-
 import edu.northeastern.ccs.serverim.Message;
 import edu.northeastern.ccs.serverim.MessageType;
 import edu.northeastern.ccs.im.constants.ClientRunnableConstants;
 import edu.northeastern.ccs.im.persistence.IQueryHandler;
-import edu.northeastern.ccs.im.persistence.QueryHandlerMySQLImpl;
 
 /**
  * Class that handles all the control flow for chat messages. Every instance of this class is
@@ -26,8 +23,8 @@ class ClientRunnableHelper {
 
     /** Checks if the login credentials entered are valid*/
     private boolean isValidLoginCredentials(Message msg) {
-    		String password = queryHandler.getPassword(msg.getName());
-        return password.equals(Arrays.toString(msg.getPassword()));
+        String password = queryHandler.getPassword(msg.getName());
+        return password.equals(msg.getText());
     }
 
     /** Checks if the registration information are all valid enough to allow a new user creation */
@@ -147,7 +144,7 @@ class ClientRunnableHelper {
         String content = msg.getText();
         Message message = msg;
 
-        if (msg.getText().startsWith(ClientRunnableConstants.CUSTOM_COMMAND_IDENTIFIER)) {
+        if (msg.getText().startsWith(ClientRunnableConstants.CUSTOM_COMMAND_PREFIX)) {
 
             String[] arr = content.split(" ", 2);
 
@@ -161,6 +158,9 @@ class ClientRunnableHelper {
                 else if (type.equalsIgnoreCase(MessageType.DIRECT.toString())) {
                     message = constructCustomDirectMessage(restOfMessageText);
                 }
+                else if (type.equalsIgnoreCase(MessageType.LOGIN.toString())) {
+                    message = constructCustomLoginMessage(restOfMessageText);
+                }
                 else if (type.equalsIgnoreCase(MessageType.GROUP.toString())) {
 //                message = Message.make
 //                message = new Object();
@@ -169,6 +169,15 @@ class ClientRunnableHelper {
 
         }
         return message;
+    }
+
+    private Message constructCustomLoginMessage(String restOfMessageText) {
+        String[] arr = restOfMessageText.split(" ", 2);
+
+        String userName = arr[0];
+        String password = arr[1];
+
+        return Message.makeLoginMessage(userName, password);
     }
 
     private Message constructCustomRegisterMessage(String restOfMessageText) {

@@ -42,7 +42,6 @@ public class Message implements IMessage{
 	/** The second argument used in the message. */
 	private String msgText;
 
-	private char[] password;
 
 	/** The sender's unique user id */
 	public long getSenderId() {
@@ -54,9 +53,6 @@ public class Message implements IMessage{
 		return receiverId;
 	}
 	
-	public char[] getPassword() {
-		return password;
-	}
 
 	/**
 	 * Create a new message that contains actual IM text. The type of distribution
@@ -89,11 +85,6 @@ public class Message implements IMessage{
 		this.msgText = text;
 	}
 
-	private Message(MessageType handle, String msgSender, char[] password) {
-		this.msgType = handle;
-		this.msgSender = msgSender;
-		this.password = password;
-	}
 
 	/**
 	 * Create a new message that contains a command sent the server that requires a
@@ -129,6 +120,22 @@ public class Message implements IMessage{
 		return new Message(MessageType.BROADCAST, myName, text);
 	}
 
+	public String getMsgSender() {
+		return msgSender;
+	}
+
+	public void setMsgSender(String msgSender) {
+		this.msgSender = msgSender;
+	}
+
+	public String getMsgReceiver() {
+		return msgReceiver;
+	}
+
+	public void setMsgReceiver(String msgReceiver) {
+		this.msgReceiver = msgReceiver;
+	}
+
 	/**
 	 * Create a new message stating the name with which the user would like to
 	 * login.
@@ -141,9 +148,12 @@ public class Message implements IMessage{
 	}
 
 	public static Message makeRegisterMessage(String userName, String password) {
-		return new Message(MessageType.REGISTER, userName, password.toCharArray());
+		return new Message(MessageType.REGISTER, userName, password);
 	}
 
+	public static Message makeLoginMessage(String userName, String password) {
+		return new Message(MessageType.LOGIN, userName, password);
+	}
 
 	public static Message makeLoginAckMessage(MessageType handle, long senderId, String msgText) {
 		return new Message(handle, senderId, msgText);
