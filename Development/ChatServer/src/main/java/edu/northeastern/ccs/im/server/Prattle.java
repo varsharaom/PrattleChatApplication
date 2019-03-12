@@ -91,7 +91,6 @@ public abstract class Prattle {
 				tt.enqueueMessage(message);
 			}
 		}
-
 	}
 
 	public static void handleGroupMessage(Message message) {
