@@ -12,4 +12,11 @@ public class ClientRunnableHelperUtil {
                         + ClientRunnableConstants.REGISTER_MSG_IDENTIFIER +
                         ClientRunnableConstants.CUSTOM_COMMAND_SUFFIX);
     }
+
+    public static boolean isValidLoginMessageIdentifer(String registerMessageIdentifier) {
+        return registerMessageIdentifier.equalsIgnoreCase(
+                ClientRunnableConstants.CUSTOM_COMMAND_PREFIX
+                        + ClientRunnableConstants.LOGIN_MSG_IDENTIFIER +
+                        ClientRunnableConstants.CUSTOM_COMMAND_SUFFIX);
+    }
 }

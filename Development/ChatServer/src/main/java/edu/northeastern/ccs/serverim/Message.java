@@ -151,6 +151,9 @@ public class Message implements IMessage{
 		return new Message(MessageType.REGISTER, userName, password);
 	}
 
+	public static Message makeLoginMessage(String userName, String password) {
+		return new Message(MessageType.LOGIN, userName, password);
+	}
 
 	public static Message makeLoginAckMessage(MessageType handle, long senderId, String msgText) {
 		return new Message(handle, senderId, msgText);
