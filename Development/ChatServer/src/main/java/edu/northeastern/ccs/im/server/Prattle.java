@@ -87,7 +87,7 @@ public abstract class Prattle {
 	public static void handleDirectMessages(Message message) {
 		message.setMessageType(MessageType.BROADCAST);
 		for (ClientRunnable tt : active) {
-			if (tt.isInitialized() && (tt.getName().equals(message.getName()))) {
+			if (tt.isInitialized() && (tt.getName().equals(message.getMsgReceiver()))) {
 				tt.enqueueMessage(message);
 			}
 		}

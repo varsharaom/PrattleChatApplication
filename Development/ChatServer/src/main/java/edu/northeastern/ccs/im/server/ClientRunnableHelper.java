@@ -165,7 +165,6 @@ class ClientRunnableHelper {
 //                message = new Object();
                 }
             }
-
         }
         return message;
     }
