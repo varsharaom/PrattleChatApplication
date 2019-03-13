@@ -69,7 +69,7 @@ public class ClientRunnable implements Runnable {
 	 * 
 	 * @param network NetworkConnection used by this new client
 	 */
-	public ClientRunnable(NetworkConnection network) {
+	ClientRunnable(NetworkConnection network) {
 		// Create the class we will use to send and receive communication
 		connection = network;
 		// Mark that we are not initialized
@@ -82,7 +82,7 @@ public class ClientRunnable implements Runnable {
 		// terminate for inactivity.
 		timer = new ClientTimer();
 
-		clientRunnableHelper = new ClientRunnableHelper(this, new QueryHandlerMySQLImpl());
+		clientRunnableHelper = new ClientRunnableHelper(new QueryHandlerMySQLImpl());
 	}
 
 	/**
@@ -147,7 +147,7 @@ public class ClientRunnable implements Runnable {
 	 * 
 	 * @param message Complete message to be sent.
 	 */
-	public void enqueueMessage(Message message) {
+	void enqueueMessage(Message message) {
 		waitingList.add(message);
 	}
 
@@ -216,7 +216,7 @@ public class ClientRunnable implements Runnable {
 	 * Checks incoming messages and performs appropriate actions based on the type
 	 * of message.
 	 */
-	protected void handleIncomingMessages() {
+	private void handleIncomingMessages() {
 		// Client has already been initialized, so we should first check
 		// if there are any input
 		// messages.
@@ -245,7 +245,7 @@ public class ClientRunnable implements Runnable {
 	/**
 	 * Sends the enqueued messages to the printer and makes sure they were sent out.
 	 */
-	protected void handleOutgoingMessages() {
+	private void handleOutgoingMessages() {
 		// Check to make sure we have a client to send to.
 		boolean keepAlive = true;
 		if (!waitingList.isEmpty()) {
@@ -271,7 +271,7 @@ public class ClientRunnable implements Runnable {
 	 * @param future Instance controlling when the runnable is executed from within
 	 *               the thread pool.
 	 */
-	public void setFuture(ScheduledFuture<?> future) {
+	void setFuture(ScheduledFuture<?> future) {
 		runnableMe = future;
 	}
 
@@ -279,7 +279,7 @@ public class ClientRunnable implements Runnable {
 	 * Terminate a client that we wish to remove. This termination could happen at
 	 * the client's request or due to system need.
 	 */
-	public void terminateClient() {
+	void terminateClient() {
 		// Once the communication is done, close this connection.
 		connection.close();
 		// Remove the client from our client listing.

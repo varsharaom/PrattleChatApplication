@@ -7,7 +7,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.mockito.Matchers.anyString;
@@ -23,7 +22,7 @@ public class ClientRunnableHelperTests {
     IQueryHandler iQueryHandler;
 
     @Test
-    public void testHandleRegisterMessage() {
+    public void testHandleRegisterMessageWithValidCredentials() {
         Message message = MessageUtil.getValidRegisterBroadcastMessage();
 
         when(iQueryHandler.checkUserNameExists(anyString())).thenReturn(false);
@@ -34,13 +33,33 @@ public class ClientRunnableHelperTests {
     }
 
     @Test
-    public void testHandleLoginMessage() {
-        Message message = MessageUtil.getValidLoginBroadcastMessage();
+    public void testHandleRegisterMessageWithInvalidCredentials() {
+        Message message = MessageUtil.getValidRegisterBroadcastMessage();
 
+        when(iQueryHandler.checkUserNameExists(anyString())).thenReturn(true);
+        when(iQueryHandler.createUser(anyString(), anyString(), anyString())).thenReturn(null);
+        Message registerMessage = clientRunnableHelper.getCustomConstructedMessage(message);
+        clientRunnableHelper.handleMessages(registerMessage);
+
+    }
+
+    @Test
+    public void testHandleValidLogin() {
+        Message message = MessageUtil.getValidLoginBroadcastMessage();
+        Message loginMessage = clientRunnableHelper.getCustomConstructedMessage(message);
+
+        when(iQueryHandler.getPassword(anyString())).thenReturn(loginMessage.getText());
+        clientRunnableHelper.handleMessages(loginMessage);
+
+    }
+
+    @Test
+    public void testHandleInvalidLogin() {
+        Message message = MessageUtil.getValidLoginBroadcastMessage();
+//       the text is a compound string sent from client which in turn is used as invalid password
         when(iQueryHandler.getPassword(anyString())).thenReturn(message.getText());
         Message loginMessage = clientRunnableHelper.getCustomConstructedMessage(message);
         clientRunnableHelper.handleMessages(loginMessage);
-
     }
 
     @Test
