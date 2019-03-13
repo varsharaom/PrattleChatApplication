@@ -225,7 +225,6 @@ public class ClientRunnable implements Runnable {
 			// Get the next message
 			Message msg = messageIter.next();
 			if (msg != null) {
-
 				if (msg.terminate()) {
 					// Stop sending the poor client message.
 					terminate = true;
@@ -241,6 +240,7 @@ public class ClientRunnable implements Runnable {
 			}
 		}
 	}
+	
 
 	/**
 	 * Sends the enqueued messages to the printer and makes sure they were sent out.

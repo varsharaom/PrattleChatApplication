@@ -42,7 +42,8 @@ public class Message implements IMessage{
 	/** The second argument used in the message. */
 	private String msgText;
 
-	private char[] password;
+	private Set<String> groupMembers;
+
 
 	/** The sender's unique user id */
 	public long getSenderId() {
@@ -54,9 +55,6 @@ public class Message implements IMessage{
 		return receiverId;
 	}
 	
-	public char[] getPassword() {
-		return password;
-	}
 
 	/**
 	 * Create a new message that contains actual IM text. The type of distribution
@@ -89,11 +87,6 @@ public class Message implements IMessage{
 		this.msgText = text;
 	}
 
-	private Message(MessageType handle, String msgSender, char[] password) {
-		this.msgType = handle;
-		this.msgSender = msgSender;
-		this.password = password;
-	}
 
 	/**
 	 * Create a new message that contains a command sent the server that requires a
@@ -129,6 +122,18 @@ public class Message implements IMessage{
 		return new Message(MessageType.BROADCAST, myName, text);
 	}
 
+	public String getMsgSender() {
+		return msgSender;
+	}
+
+	public String getMsgReceiver() {
+		return msgReceiver;
+	}
+
+	public MessageType getMessageType() {
+		return msgType;
+	}
+
 	/**
 	 * Create a new message stating the name with which the user would like to
 	 * login.
@@ -136,17 +141,20 @@ public class Message implements IMessage{
 	 * @param text Name the user wishes to use as their screen name.
 	 * @return Instance of Message that can be sent to the server to try and login.
 	 */
-	protected static Message makeHelloMessage(String text) {
+	static Message makeHelloMessage(String text) {
 		return new Message(MessageType.HELLO, null, text);
 	}
 
 	public static Message makeRegisterMessage(String userName, String password) {
-		return new Message(MessageType.REGISTER, userName, password.toCharArray());
+		return new Message(MessageType.REGISTER, userName, password);
 	}
 
+	public static Message makeLoginMessage(String userName, String password) {
+		return new Message(MessageType.LOGIN, userName, password);
+	}
 
-	public static Message makeLoginAckMessage(MessageType handle, long senderId, String msgText) {
-		return new Message(handle, senderId, msgText);
+	public static Message makeLoginAckMessage(MessageType handle, String sender, String receiver, String msgText) {
+		return new Message(handle, sender, receiver, msgText);
 	}
 
 	public static Message makeRegisterAckMessage(MessageType handle, String msgSender, String msgText) {
@@ -155,6 +163,10 @@ public class Message implements IMessage{
 
 	public static Message makeDirectMessage(String msgSender, String msgReceiver, String msgText) {
 		return new Message(MessageType.DIRECT, msgSender, msgReceiver, msgText);
+	}
+
+	public static Message makeGroupMessage(String msgSender, String groupName, String msgText) {
+		return new Message(MessageType.GROUP, msgSender, groupName, msgText);
 	}
 
 	/**
@@ -167,7 +179,7 @@ public class Message implements IMessage{
 	 * @return Instance of Message (or its subclasses) representing the handle,
 	 *         name, & text.
 	 */
-	protected static Message makeMessage(String handle, String srcName, String text) {
+	static Message makeMessage(String handle, String srcName, String text) {
 		Message result = null;
 		if (handle.compareTo(MessageType.QUIT.toString()) == 0) {
 			result = makeQuitMessage(srcName);
@@ -183,11 +195,11 @@ public class Message implements IMessage{
 	protected static Message makeMessage(MessageType handle, long senderId, String msgText) {
 
 		Message result = null;
-
-		if (handle == MessageType.LOGIN) {
-			result = makeLoginAckMessage(handle, senderId, msgText);
-		}
-
+//
+//		if (handle == MessageType.LOGIN) {
+//			result = makeLoginAckMessage(handle, senderId, msgText);
+//		}
+//
 		return result;
 	}
 
@@ -226,7 +238,7 @@ public class Message implements IMessage{
 	 * 
 	 * @return True if the message is a broadcast message; false otherwise.
 	 */
-	public boolean isBroadcastMessage() {
+	boolean isBroadcastMessage() {
 		return (msgType == MessageType.BROADCAST);
 	}
 
@@ -235,7 +247,7 @@ public class Message implements IMessage{
 	 * 
 	 * @return True if the message is an initialization message; false otherwise
 	 */
-	public boolean isInitialization() {
+	boolean isInitialization() {
 		return (msgType == MessageType.HELLO);
 	}
 
@@ -247,7 +259,7 @@ public class Message implements IMessage{
 		return (msgType == MessageType.LOGIN);
 	}
 
-	public boolean isPrivateMessage() {
+	public boolean isDirectMessage() {
 		return (msgType == MessageType.DIRECT);
 	}
 

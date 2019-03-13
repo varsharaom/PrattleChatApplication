@@ -48,8 +48,9 @@ public abstract class Prattle {
 	}
 
 	public static void registerUser(Message msg) {
+		msg.setMessageType(MessageType.BROADCAST);
 		for (ClientRunnable tt : active) {
-			if ((tt.isInitialized()) && tt.getUserId() == msg.getSenderId()) {
+			if ((tt.isInitialized()) && tt.getName().equals(msg.getMsgSender())) {
 				tt.enqueueMessage(msg);
 			}
 		}
@@ -57,11 +58,9 @@ public abstract class Prattle {
 
 
 	public static void loginUser(Message msg) {
-//		TODO - first check whether the credientials match. based on that, send either a success
-//		 or failure message from this message object, extract all info and persist using the update
-//		 user call. Field to be updated - {last_login_time}
+		msg.setMessageType(MessageType.BROADCAST);
 		for (ClientRunnable tt : active) {
-			if ((tt.isInitialized()) && tt.getUserId() == msg.getSenderId()) {
+			if ((tt.isInitialized()) && tt.getName().equals(msg.getMsgSender())) {
 				tt.enqueueMessage(msg);
 			}
 		}
@@ -87,22 +86,22 @@ public abstract class Prattle {
 	public static void handleDirectMessages(Message message) {
 		message.setMessageType(MessageType.BROADCAST);
 		for (ClientRunnable tt : active) {
-			if (tt.isInitialized() && (tt.getName().equals(message.getName()))) {
+			if (tt.isInitialized() && (tt.getName().equals(message.getMsgReceiver()))) {
 				tt.enqueueMessage(message);
 			}
 		}
-
 	}
 
 	public static void handleGroupMessage(Message message) {
-		long groupId = message.getReceiverId();
+		String groupName = message.getMsgReceiver();
+
+		Set<String> groupMembers = null;
+
 //		TODO - use the above groupId and get all the users in that group.
 //		 For now it is an empty new list
-		Set<Long> receiverIds = new HashSet<>();
-		receiverIds.add(356234L);
 
 		for (ClientRunnable tt : active) {
-			if (tt.isInitialized() && (receiverIds.contains(tt.getUserId()))) {
+			if (tt.isInitialized() && (groupMembers.contains(tt.getName()))) {
 				tt.enqueueMessage(message);
 			}
 		}

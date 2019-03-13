@@ -10,10 +10,10 @@ public final class MessageConstants {
     public static final String SIMPLE_USER = "logUser";   
     public static final String BROADCAST_TEXT_MESSAGE = "broadcastTextMessage";
 
-    public static final String CUSTOM_REGISTER_MESSAGE = CUSTOM_COMMAND_IDENTIFIER +
+    public static final String CUSTOM_REGISTER_MESSAGE = CUSTOM_COMMAND_PREFIX +
             REGISTER_MSG_IDENTIFIER +  " userName password";
 
-    public static final String SIMPLE_DRCT_MESSAGE = CUSTOM_COMMAND_IDENTIFIER
+    public static final String SIMPLE_DRCT_MESSAGE = CUSTOM_COMMAND_PREFIX
             + DIRECT_MSG_IDENTIFIER + " sender receiver hi receiver. This is a private message";
 
 
