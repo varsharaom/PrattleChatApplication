@@ -102,7 +102,7 @@ public class QueryHandlerMySQLImplTest {
 		long msgId = handler.storeMessage(QueryConstants.SENDER_ID, user.getUserID(), MessageType.DIRECT, QueryConstants.MESSAGE_TEXT);
 
 		List<Message> messages = handler.getMessagesSinceLastLogin(user);
-		assertEquals(messages.get(0).getText(), QueryConstants.MESSAGE_TEXT);
+		assertEquals(QueryConstants.MESSAGE_TEXT, messages.get(0).getText());
 
 		// Tear down
 		String query = String.format(QueryConstants.TEARDOWN_DELETE, DBConstants.USER_TABLE, DBConstants.USER_ID, user.getUserID());

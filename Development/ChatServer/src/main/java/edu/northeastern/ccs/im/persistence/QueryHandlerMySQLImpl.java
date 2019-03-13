@@ -99,8 +99,8 @@ public class QueryHandlerMySQLImpl implements IQueryHandler{
     }
 
     public List<Message> getMessagesSinceLastLogin(User user) {
-        String query = String.format("SELECT * from %s WHERE %s > %d;",
-                DBConstants.MESSAGE_TABLE, DBConstants.MESSAGE_TIME, user.getLastSeen());
+        String query = String.format("SELECT * from %s WHERE %s > %d AND %s = %s;",
+                DBConstants.MESSAGE_TABLE, DBConstants.MESSAGE_TIME, user.getLastSeen(), DBConstants.MESSAGE_RECEIVER_ID, user.getUserID());
         ResultSet rs = doSelectQuery(query);
         List<Message> messages = new ArrayList<>();
         try {
