@@ -1,8 +1,6 @@
 package edu.northeastern.ccs.im.utils;
 
-import edu.northeastern.ccs.im.Message;
 import edu.northeastern.ccs.im.constants.ClientRunnableConstants;
-import edu.northeastern.ccs.im.constants.MessageConstants;
 
 public class ClientRunnableHelperUtil {
 
@@ -17,6 +15,20 @@ public class ClientRunnableHelperUtil {
         return registerMessageIdentifier.equalsIgnoreCase(
                 ClientRunnableConstants.CUSTOM_COMMAND_PREFIX
                         + ClientRunnableConstants.LOGIN_MSG_IDENTIFIER +
+                        ClientRunnableConstants.CUSTOM_COMMAND_SUFFIX);
+    }
+
+    public static boolean isValidDirectMessageIdentifer(String registerMessageIdentifier) {
+        return registerMessageIdentifier.equalsIgnoreCase(
+                ClientRunnableConstants.CUSTOM_COMMAND_PREFIX
+                        + ClientRunnableConstants.DIRECT_MSG_IDENTIFIER +
+                        ClientRunnableConstants.CUSTOM_COMMAND_SUFFIX);
+    }
+
+    public static boolean isValidGroupMessageIdentifer(String registerMessageIdentifier) {
+        return registerMessageIdentifier.equalsIgnoreCase(
+                ClientRunnableConstants.CUSTOM_COMMAND_PREFIX
+                        + ClientRunnableConstants.GROUP_MSG_IDENTIFIER +
                         ClientRunnableConstants.CUSTOM_COMMAND_SUFFIX);
     }
 }

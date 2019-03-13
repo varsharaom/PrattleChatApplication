@@ -17,6 +17,30 @@ public final class MessageUtil {
                 getValidLoginMessageText());
     }
 
+    public static Message getValidDirectBroadcastMessage() {
+        return Message.makeBroadcastMessage(MessageConstants.SIMPLE_USER,
+                getValidDirectMessageText());
+    }
+
+    public static Message getValidGroupBroadcastMessage() {
+        return Message.makeBroadcastMessage(MessageConstants.SIMPLE_USER,
+                getValidGroupMessageText());
+    }
+
+    private static String getValidGroupMessageText() {
+        return ClientRunnableConstants.CUSTOM_COMMAND_PREFIX
+                + ClientRunnableConstants.GROUP_MSG_IDENTIFIER
+                + ClientRunnableConstants.CUSTOM_COMMAND_SUFFIX
+                + " receiverName Hey this is a group message to multiple senders";
+    }
+
+    private static String getValidDirectMessageText() {
+        return ClientRunnableConstants.CUSTOM_COMMAND_PREFIX
+                + ClientRunnableConstants.DIRECT_MSG_IDENTIFIER
+                + ClientRunnableConstants.CUSTOM_COMMAND_SUFFIX
+                + " receiverName Hey this is a direct message to sender";
+    }
+
     private static String getValidRegisterMessageText() {
         return ClientRunnableConstants.CUSTOM_COMMAND_PREFIX
                 + ClientRunnableConstants.REGISTER_MSG_IDENTIFIER
