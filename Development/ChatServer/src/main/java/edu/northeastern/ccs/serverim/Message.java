@@ -126,18 +126,10 @@ public class Message implements IMessage{
 		return msgSender;
 	}
 
-	public void setMsgSender(String msgSender) {
-		this.msgSender = msgSender;
-	}
-
 	public String getMsgReceiver() {
 		return msgReceiver;
 	}
 
-	public void setMsgReceiver(String msgReceiver) {
-		this.msgReceiver = msgReceiver;
-	}
-	
 	public MessageType getMessageType() {
 		return msgType;
 	}
@@ -149,7 +141,7 @@ public class Message implements IMessage{
 	 * @param text Name the user wishes to use as their screen name.
 	 * @return Instance of Message that can be sent to the server to try and login.
 	 */
-	protected static Message makeHelloMessage(String text) {
+	static Message makeHelloMessage(String text) {
 		return new Message(MessageType.HELLO, null, text);
 	}
 
@@ -187,7 +179,7 @@ public class Message implements IMessage{
 	 * @return Instance of Message (or its subclasses) representing the handle,
 	 *         name, & text.
 	 */
-	protected static Message makeMessage(String handle, String srcName, String text) {
+	static Message makeMessage(String handle, String srcName, String text) {
 		Message result = null;
 		if (handle.compareTo(MessageType.QUIT.toString()) == 0) {
 			result = makeQuitMessage(srcName);
@@ -246,7 +238,7 @@ public class Message implements IMessage{
 	 * 
 	 * @return True if the message is a broadcast message; false otherwise.
 	 */
-	public boolean isBroadcastMessage() {
+	boolean isBroadcastMessage() {
 		return (msgType == MessageType.BROADCAST);
 	}
 
@@ -255,7 +247,7 @@ public class Message implements IMessage{
 	 * 
 	 * @return True if the message is an initialization message; false otherwise
 	 */
-	public boolean isInitialization() {
+	boolean isInitialization() {
 		return (msgType == MessageType.HELLO);
 	}
 

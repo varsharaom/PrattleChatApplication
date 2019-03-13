@@ -42,10 +42,10 @@ public enum  MessageType {
 
 	/** Store the short name of this message type. */
 	private String abbreviation;
-	
+
 	/** Integer equivalent for the key. */
 	private int index;
-	
+
 	private static final Map<Integer, MessageType> lookup = new HashMap<>();
 	
 	static {
@@ -65,15 +65,15 @@ public enum  MessageType {
 
 	/**
 	 * Define the message type and specify its short name.
-	 * 
+	 *
 	 * @param abbrev Short name of this message type, as a String.
 	 */
 	private MessageType(String abbrev, int type) {
 		abbreviation = abbrev;
 		index = type;
 	}
-	
-	private MessageType(String abbrev) {
+
+	MessageType(String abbrev) {
 		abbreviation = abbrev;
 	}
 

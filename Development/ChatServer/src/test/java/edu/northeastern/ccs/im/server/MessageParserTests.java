@@ -7,7 +7,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-public class ClientRunnableHelperTest {
+public class MessageParserTests {
 
     @Test
     public void testParseValidRegisterMessage() {
@@ -85,4 +85,5 @@ public class ClientRunnableHelperTest {
         assertEquals(constructedMessage.getText(), content[2]);
         assertEquals(constructedMessage.getMsgSender(), message.getMsgSender());
     }
+
 }

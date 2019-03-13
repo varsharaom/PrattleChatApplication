@@ -94,14 +94,15 @@ public abstract class Prattle {
 	}
 
 	public static void handleGroupMessage(Message message) {
-		long groupId = message.getReceiverId();
+		String groupName = message.getMsgReceiver();
+
+		Set<String> groupMembers = null;
+
 //		TODO - use the above groupId and get all the users in that group.
 //		 For now it is an empty new list
-		Set<Long> receiverIds = new HashSet<>();
-		receiverIds.add(356234L);
 
 		for (ClientRunnable tt : active) {
-			if (tt.isInitialized() && (receiverIds.contains(tt.getUserId()))) {
+			if (tt.isInitialized() && (groupMembers.contains(tt.getName()))) {
 				tt.enqueueMessage(message);
 			}
 		}
