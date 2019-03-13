@@ -153,8 +153,8 @@ public class Message implements IMessage{
 		return new Message(MessageType.LOGIN, userName, password);
 	}
 
-	public static Message makeLoginAckMessage(MessageType handle, long senderId, String msgText) {
-		return new Message(handle, senderId, msgText);
+	public static Message makeLoginAckMessage(MessageType handle, String sender, String receiver, String msgText) {
+		return new Message(handle, sender, receiver, msgText);
 	}
 
 	public static Message makeRegisterAckMessage(MessageType handle, String msgSender, String msgText) {
@@ -195,11 +195,11 @@ public class Message implements IMessage{
 	protected static Message makeMessage(MessageType handle, long senderId, String msgText) {
 
 		Message result = null;
-
-		if (handle == MessageType.LOGIN) {
-			result = makeLoginAckMessage(handle, senderId, msgText);
-		}
-
+//
+//		if (handle == MessageType.LOGIN) {
+//			result = makeLoginAckMessage(handle, senderId, msgText);
+//		}
+//
 		return result;
 	}
 
