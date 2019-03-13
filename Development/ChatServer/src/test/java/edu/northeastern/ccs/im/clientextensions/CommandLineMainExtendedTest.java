@@ -1,10 +1,10 @@
 package edu.northeastern.ccs.im.clientextensions;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+
 import java.util.Iterator;
 import java.util.List;
-import java.util.NoSuchElementException;
+
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.net.InetSocketAddress;
@@ -13,7 +13,6 @@ import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.nio.channels.spi.SelectorProvider;
 
-import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
 import org.junit.After;
@@ -33,7 +32,9 @@ import edu.northeastern.ccs.im.constants.ClientStringConstants;
 import edu.northeastern.ccs.im.constants.ConnectionConstants;
 
 import edu.northeastern.ccs.im.utils.CommandLineMainUtils;
+import edu.northeastern.ccs.im.utils.LogAppender;
 import edu.northeastern.ccs.serverim.NetworkConnection;
+
 
 public class CommandLineMainExtendedTest {
 
@@ -59,8 +60,8 @@ public class CommandLineMainExtendedTest {
 
 	private ServerSocketChannel serverSocket;
 	private Selector selector;
-	private SocketChannel sc;
-
+	private SocketChannel sc;	
+	
 	@Before
 	public void init() {
 
@@ -72,7 +73,7 @@ public class CommandLineMainExtendedTest {
 			serverSocket.socket().bind(new InetSocketAddress(ClientStringConstants.TEST_PORT));
 			sc.connect(serverSocket.socket().getLocalSocketAddress());
 		} catch (IOException e) {
-			//logger.log(Level.INFO, "IOException: " + e.getStackTrace());
+			
 		}
 
 	}
@@ -83,12 +84,7 @@ public class CommandLineMainExtendedTest {
 		serverSocket.socket().close();
 		serverSocket.close();
 		selector.close();
-	}
-
-	
-		
-	
-	
+	}	
 	
 	@Test
 	public void testLogs() {
@@ -98,11 +94,6 @@ public class CommandLineMainExtendedTest {
 		try {
 			String[] arr = { "localhost", Integer.toString(ClientStringConstants.TEST_PORT) };
 
-			/*systemInMock.provideLines("", null, "$$RG username password", null, "Register me", "Login me",
-					"$$LGN# username", "$$LGN# myusername password", "$$GRP# mygroup", "$$GRP mygroup hi",
-					"$$DRCT# rcvr", "$$DRCT receiver hello", "$$GRP# mygroup hi", null, "hello", "", "CHANGE",
-					"$$DRCT# directmsg hello", "$$Direct", "", null, "/quit");
-*/
 			systemInMock.provideLines("",
 					ClientStringConstants.WRONG_LOGIN_MSG1,
 					ClientStringConstants.WRONG_LOGIN_MSG2,
@@ -161,21 +152,14 @@ public class CommandLineMainExtendedTest {
 			la.close();
 			
 			logger.removeAppender(la);
-			 nc.close();
-
-			
+			 nc.close();			
 
 		} catch (Exception e) {
-			// Prattle.stopServer();
+			
 		}
 
 	}
 	
-	
-	
-	
-	
-
 	@Test
 	public void testReadMessages() {
 		Logger logger = CommandLineMainExtended.getLogger();
@@ -202,59 +186,21 @@ public class CommandLineMainExtendedTest {
 			
 			msgs.add(ClientStringConstants.CORRECT_REG_MSG);
 			messages1.set(k, msgs);
-
 			CommandLineMainExtended.logInUser(c1, k);
 			
 			List<LoggingEvent> log = la.getLogs();
 			
 			assertEquals(ClientStringConstants.ERROR_MSG,(String) log.get(2).getMessage());
-			//assertEquals(ClientStringConstants.ERROR_MSG,(String) log.get(2).getMessage());
-			logger.removeAppender(la);
-			
+
+			logger.removeAppender(la);		
 			
 			c1.disconnect();
-		} catch (NoSuchFieldException e) {
+		} catch (Exception e) {
 			
-		} catch (IllegalAccessException e) {
-
-		}
+		} 
 
 		c1.disconnect();
 
-	}
-
-
-}
-
-/**
- * 
- * Appender class to capture the log messages
- *
- */
-class LogAppender extends AppenderSkeleton {
-
-	List<LoggingEvent> logs = new ArrayList<>();
-
-	@Override
-	public void close() {
-		logs.clear();
-
-	}
-
-	@Override
-	public boolean requiresLayout() {
-
-		return false;
-	}
-
-	@Override
-	protected void append(LoggingEvent l) {
-		logs.add(l);
-
-	}
-
-	public List<LoggingEvent> getLogs() {
-		return logs;
 	}
 
 }
