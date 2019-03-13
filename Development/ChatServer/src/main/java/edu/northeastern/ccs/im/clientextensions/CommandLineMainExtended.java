@@ -46,7 +46,6 @@ public class CommandLineMainExtended {
 
 		if (parts.length < 3) {
 			logger.info(Keywords.ERROR_MSG);
-
 		} else {
 			msgOpt = parts[0];
 			msgReceiver = parts[1];
@@ -56,15 +55,11 @@ public class CommandLineMainExtended {
 
 			if (msgOpt.equalsIgnoreCase(Keywords.DRCT_MESSAGE) || msgOpt.equalsIgnoreCase(Keywords.GRP_MESSAGE)) {
 				selected = true;
-
 				connect.sendMessage(msgOpt + " " + username + " " + msgReceiver + " " + msgBody);
-
 			} else {
 				logger.info(Keywords.ERROR_MSG);
 			}
-
 		}
-
 	}
 
 	/**
@@ -80,16 +75,12 @@ public class CommandLineMainExtended {
 
 		// Get any recent messages received from the IM server.
 		if (mess.hasNext()) {
-
 			Message message = mess.next();
 			if (!message.getSender().equals(connect.getUserName())) {
-
 				// get the text part of the message
 				String messageText = message.getText();
-
 				logger.info(message.getSender() + ": " + MessageParser.getMsgType(messageText));
 				logger.info(MessageParser.getMsgBody(messageText));
-
 			}
 		}
 	}
@@ -105,47 +96,48 @@ public class CommandLineMainExtended {
 	 * @return a string which is the username of the user who just logged
 	 *         in/registered
 	 */
-	public static String logInUser(IMConnection connect, KeyboardScanner scan) {
+	public static String logInUser(IMConnection connect, KeyboardScanner scan, MessageScanner mess) {
 
 		// use broadcast message to login or register or send any messages
 		boolean fail = true;
 		String uname = "";
 		do {
-
 			// Check if the user has typed in a line of text to broadcast to the IM server.
 			// If there is a line of text to be
 			// broadcast:
 			if (scan.hasNext()) {
-
-				
 				// Read in the text they typed
 				String userinput = scan.nextLine();
- 
-				
+
 				String[] strs = userinput.split(" ");
 				if (strs.length != 3) {
-
 					logger.info(Keywords.ERROR_MSG);
 				} else {
 					switch (strs[0].toUpperCase()) {
-					case Keywords.LOGIN:
-					case Keywords.REGISTER:
-						fail = false;
-						uname = strs[1];
-						// this is a broadcast message
-
-						connect.sendMessage(userinput);
-						break;
-					default:
-						logger.info(Keywords.ERROR_MSG);
-						break;
+						case Keywords.LOGIN:
+						case Keywords.REGISTER:
+							uname = strs[1];
+							// this is a broadcast message
+							connect.sendMessage(userinput);
+							break;
+						default:
+							logger.info(Keywords.ERROR_MSG);
 					}
-
 				}
-
 			}
-		} while (fail);
+			
+			if (mess.hasNext()) {
+				Message message = mess.next();
+				String messageText = message.getText();
+				logger.info(messageText);
+				if (messageText.equals(Keywords.LOGIN_SUCCESS_MSG) || messageText.equals(Keywords.REGISTER_SUCCESS_MSG)) {
+					fail = false;
+				} else {
+					logger.info(Keywords.LOGIN_MSG);
+				}
+			}
 
+		} while (fail);
 		return uname;
 	}
 
@@ -166,16 +158,13 @@ public class CommandLineMainExtended {
 
 		logger.info(Keywords.LOGIN_MSG);
 
-		username = logInUser(connect, scan);
+		username = logInUser(connect, scan, mess);
 
 		logger.info(Keywords.MSG_FORMAT);
 
 		while (connect.connectionActive()) {
-
 			if (!selected && scan.hasNext()) {
-
 				sendFirstMessage(scan, connect);
-
 			}
 
 			if (selected && scan.hasNext()) {
@@ -197,18 +186,13 @@ public class CommandLineMainExtended {
 				else if (line.equalsIgnoreCase(Keywords.CHANGE_OPTION)) {
 					selected = false;
 					logger.info(Keywords.MSG_FORMAT);
-
 				} else {
 					// Else, send the text so that it is broadcast to all users logged in to the IM
 					// server.
-
 					connect.sendMessage(msgOpt + " " + username + " " + msgReceiver + " " + line);
 				}
 			}
-
 			readNewMessages(mess, connect);
-
 		}
-
 	}
 }
