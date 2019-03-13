@@ -6,7 +6,6 @@ import edu.northeastern.ccs.serverim.Message;
 import edu.northeastern.ccs.serverim.MessageType;
 import edu.northeastern.ccs.im.constants.ClientRunnableConstants;
 import edu.northeastern.ccs.im.persistence.IQueryHandler;
-import edu.northeastern.ccs.im.persistence.QueryHandlerMySQLImpl;
 
 /**
  * Class that handles all the control flow for chat messages. Every instance of this class is
@@ -18,19 +17,22 @@ class ClientRunnableHelper {
 
     private ClientRunnable clientRunnable;
     private IQueryHandler queryHandler;
-    
+
     ClientRunnableHelper(ClientRunnable clientRunnable, IQueryHandler queryHandler) {
         this.clientRunnable = clientRunnable;
         this.queryHandler = queryHandler;
     }
 
-    /** Checks if the login credentials entered are valid*/
+    /**
+     * Checks if the login credentials entered are valid
+     */
     private boolean isValidLoginCredentials(Message msg) {
-    		String password = queryHandler.getPassword(msg.getName());
-        return password.equals(Arrays.toString(msg.getPassword()));
+        return queryHandler.validateLogin(msg.getName(), msg.getPassword().toString());
     }
 
-    /** Checks if the registration information are all valid enough to allow a new user creation */
+    /**
+     * Checks if the registration information are all valid enough to allow a new user creation
+     */
     private boolean isValidRegistrationInfo(Message msg) {
         return queryHandler.checkUserNameExists(msg.getName());
     }
@@ -42,8 +44,7 @@ class ClientRunnableHelper {
     void handleMessages(Message message) {
         if (isRegisterOrLogin(message)) {
             handleRegisterLoginMessages(message);
-        }
-        else{
+        } else {
 //            if (messageChecks(message)) {
             handleChatMessages(message);
 //            }
@@ -56,14 +57,14 @@ class ClientRunnableHelper {
 //            }
         }
     }
+
     /**
      * Checks the type of message and routes the control to either private or group message handler.
      */
     private void handleChatMessages(Message msg) {
-        if(msg.isPrivateMessage()) {
+        if (msg.isPrivateMessage()) {
             Prattle.handleDirectMessages(msg);
-        }
-        else if(msg.isGroupMessage()) {
+        } else if (msg.isGroupMessage()) {
             Prattle.handleGroupMessage(msg);
         }
 //		TODO - persist the message. (Caveat: check if group & pvt msgs are to be differently persisted)
@@ -73,10 +74,9 @@ class ClientRunnableHelper {
      * Checks if the action is register or login and performs the respective action.
      */
     private void handleRegisterLoginMessages(Message msg) {
-        if(msg.isRegisterMessage()) {
+        if (msg.isRegisterMessage()) {
             handleRegisterMessage(msg);
-        }
-        else if(msg.isLoginMessage()) {
+        } else if (msg.isLoginMessage()) {
             handleLoginMessage(msg);
         }
     }
@@ -92,8 +92,7 @@ class ClientRunnableHelper {
 //       message object (or wrapper).
         if (isValidRegistrationInfo(message)) {
             acknowledgementText = ClientRunnableConstants.REGISTER_SUCCESS_MSG;
-        }
-        else {
+        } else {
             acknowledgementText = ClientRunnableConstants.REGISTER_FAILURE_MSG;
         }
 
@@ -106,16 +105,17 @@ class ClientRunnableHelper {
     }
 
 
-    /** On a login request, this verifies user credentials and then acknowledges the user with
-     * a success / failure message */
+    /**
+     * On a login request, this verifies user credentials and then acknowledges the user with
+     * a success / failure message
+     */
     private void handleLoginMessage(Message message) {
         Message handShakeMessage;
         String acknowledgementText;
 
         if (isValidLoginCredentials(message)) {
             acknowledgementText = ClientRunnableConstants.LOGIN_SUCCESS_MSG;
-        }
-        else {
+        } else {
             acknowledgementText = ClientRunnableConstants.LOGIN_FAILURE_MSG;
         }
 
@@ -124,7 +124,9 @@ class ClientRunnableHelper {
         Prattle.loginUser(handShakeMessage);
     }
 
-    /** Checks if the message is either a login or a registration request */
+    /**
+     * Checks if the message is either a login or a registration request
+     */
     private boolean isRegisterOrLogin(Message msg) {
         return (msg.isRegisterMessage() || msg.isLoginMessage());
     }
@@ -157,11 +159,9 @@ class ClientRunnableHelper {
 
                 if (type.equalsIgnoreCase(MessageType.REGISTER.toString())) {
                     message = constructCustomRegisterMessage(restOfMessageText);
-                }
-                else if (type.equalsIgnoreCase(MessageType.DIRECT.toString())) {
+                } else if (type.equalsIgnoreCase(MessageType.DIRECT.toString())) {
                     message = constructCustomDirectMessage(restOfMessageText);
-                }
-                else if (type.equalsIgnoreCase(MessageType.GROUP.toString())) {
+                } else if (type.equalsIgnoreCase(MessageType.GROUP.toString())) {
 //                message = Message.make
 //                message = new Object();
                 }
@@ -192,9 +192,9 @@ class ClientRunnableHelper {
     }
 
     private String getType(String s) {
-        if(s.length() > 2) {
+        if (s.length() > 2) {
 //            removing $$ at the beginning and # at the end
-            return s.substring(2, s.length()-1);
+            return s.substring(2, s.length() - 1);
         }
         return "";
     }

@@ -72,20 +72,20 @@ public class QueryHandlerMySQLImpl implements IQueryHandler{
         return circle;
     }
 
-    public String getPassword(String name) {
-        String query = String.format("SELECT %s FROM %s WHERE %s = '%s'",
-                DBConstants.USER_PASS, DBConstants.USER_TABLE, DBConstants.USER_USERNAME, name);
+    @Override
+    public Boolean validateLogin(String username, String password) {
+        String query = String.format("SELECT * from %s WHERE %s = %s and %s = %s",
+                DBConstants.USER_TABLE, DBConstants.USER_USERNAME, username, DBConstants.USER_PASS, password);
         ResultSet rs = doSelectQuery(query);
-    		try {
-				if (rs.next()) {
-				return rs.getString(1);
-				}
-			} catch (SQLException e) {
-				logger.log(Level.INFO, SQL_EXCEPTION_MSG);
-			}
-    		return "";
+        try {
+            while(rs.next()) {
+                return true;
+            }
+        } catch (SQLException e) {
+            logger.log(Level.INFO, DBConstants.EXCEPTION_MESSAGE);
+        }
+        return false;
     }
-
 
     //-----------------Message Queries-------------------
     public long storeMessage(long senderID, long receiverID, MessageType type, String msgText) {

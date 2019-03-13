@@ -59,26 +59,24 @@ public class QueryHandlerMySQLImplTest {
 		String query = String.format(QueryConstants.TEARDOWN_DELETE, DBConstants.USER_TABLE, DBConstants.USER_ID, res.getUserID());
 		handler.doUpdateQuery(query);
 	}
-	
+
 	@Test
 	public void testGetPasswordSuccess() {
 		handler = new QueryHandlerMySQLImpl();
 		User res = handler.createUser(QueryConstants.USERNAME, QueryConstants.PASS, QueryConstants.NICKNAME);
-		String pass = handler.getPassword(res.getUserName());
-		assertEquals(pass, QueryConstants.PASS);
-		
+		assertTrue(handler.validateLogin(QueryConstants.USERNAME, QueryConstants.PASS));
+
 		// Tear down
 		String query = String.format(QueryConstants.TEARDOWN_DELETE, DBConstants.USER_TABLE, DBConstants.USER_ID, res.getUserID());
 		handler.doUpdateQuery(query);
 	}
-	
+
 	@Test
 	public void testGetPasswordFailure() {
 		handler = new QueryHandlerMySQLImpl();
 		User res = handler.createUser(QueryConstants.USERNAME, QueryConstants.PASS, QueryConstants.NICKNAME);
-		String pass = handler.getPassword(QueryConstants.INVALID_USERNAME);
-		assertEquals(pass, "");
-		
+		assertFalse(handler.validateLogin(QueryConstants.USERNAME, ""));
+
 		// Tear down
 		String query = String.format(QueryConstants.TEARDOWN_DELETE, DBConstants.USER_TABLE, DBConstants.USER_ID, res.getUserID());
 		handler.doUpdateQuery(query);
