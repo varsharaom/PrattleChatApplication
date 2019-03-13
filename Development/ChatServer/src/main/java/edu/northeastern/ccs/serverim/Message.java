@@ -137,6 +137,10 @@ public class Message implements IMessage{
 	public void setMsgReceiver(String msgReceiver) {
 		this.msgReceiver = msgReceiver;
 	}
+	
+	public MessageType getMessageType() {
+		return msgType;
+	}
 
 	/**
 	 * Create a new message stating the name with which the user would like to

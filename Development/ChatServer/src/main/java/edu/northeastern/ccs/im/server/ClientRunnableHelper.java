@@ -2,6 +2,7 @@ package edu.northeastern.ccs.im.server;
 
 import edu.northeastern.ccs.serverim.Message;
 import edu.northeastern.ccs.serverim.MessageType;
+import edu.northeastern.ccs.serverim.User;
 import edu.northeastern.ccs.im.constants.ClientRunnableConstants;
 import edu.northeastern.ccs.im.persistence.IQueryHandler;
 
@@ -29,7 +30,7 @@ class ClientRunnableHelper {
 
     /** Checks if the registration information are all valid enough to allow a new user creation */
     private boolean isValidRegistrationInfo(Message msg) {
-        return queryHandler.checkUserNameExists(msg.getName());
+        return !queryHandler.checkUserNameExists(msg.getName());
     }
 
     /**
@@ -64,6 +65,7 @@ class ClientRunnableHelper {
             Prattle.handleGroupMessage(msg);
         }
 //		TODO - persist the message. (Caveat: check if group & pvt msgs are to be differently persisted)
+        queryHandler.storeMessage(msg.getSenderId(), msg.getReceiverId(), msg.getMessageType(), msg.getText());
     }
 
     /**
@@ -85,19 +87,17 @@ class ClientRunnableHelper {
         Message handShakeMessage;
         String acknowledgementText;
 
-//      TODO - For this the credentials needs to be parsed / extracted from the
-//       message object (or wrapper).
         if (isValidRegistrationInfo(message)) {
             acknowledgementText = ClientRunnableConstants.REGISTER_SUCCESS_MSG;
+
+            // Persist user details
+            queryHandler.createUser(message.getName(), message.getText(), message.getName());
         }
         else {
             acknowledgementText = ClientRunnableConstants.REGISTER_FAILURE_MSG;
         }
 
-        handShakeMessage = Message.makeRegisterAckMessage(MessageType.REGISTER, message.getName()
-                , acknowledgementText);
-
-        //        TODO - persist the user info using a Create Operation.
+        handShakeMessage = Message.makeRegisterAckMessage(MessageType.REGISTER, message.getName(), acknowledgementText);
 
         Prattle.registerUser(handShakeMessage);
     }
@@ -116,8 +116,7 @@ class ClientRunnableHelper {
             acknowledgementText = ClientRunnableConstants.LOGIN_FAILURE_MSG;
         }
 
-        handShakeMessage = Message.makeLoginAckMessage(MessageType.LOGIN, message.getSenderId()
-                , acknowledgementText);
+        handShakeMessage = Message.makeLoginAckMessage(MessageType.LOGIN, message.getSenderId(), acknowledgementText);
         Prattle.loginUser(handShakeMessage);
     }
 
@@ -165,7 +164,6 @@ class ClientRunnableHelper {
                     message = constructCustomGroupMessage(restOfMessageText, message.getMsgSender());
                 }
             }
-
         }
         return message;
     }

@@ -19,13 +19,13 @@ public class Keywords {
 	
 	protected static final String CHANGE_OPTION = "CHANGE";
 	
-	protected static final String LOGIN_MSG = "\"Enter $$LGN# username password, if you want to login\\n\"\r\n" + 
-			"				+ \"Enter $$RGSTR# username password, if you want to register. Username and password\"\r\n" + 
-			"				+ \" should not contain spaces\"";
+	protected static final String LOGIN_MSG = "Enter $$LGN# <username> <password>, if you want to login.\r\n" + 
+			"      Enter $$RGSTR# <username> <password>, if you are a new user and want to register.\r\n" + 
+			"      Username and password should not contain spaces.";
 	
-	protected static final String MSG_FORMAT = "\"Send direct message or group message? \\nEnter $$GRP# receiver_grp_name message_string\"\r\n" + 
-			"				+ \"  to send group message \"\r\n" + 
-			"				+ \"or $$DRCT# receiver_name message_string to send direct message.\"";
+	protected static final String MSG_FORMAT = "Enter $$DRCT# <receiver_name> <message_text> to send direct message.\r\n" + 
+			"      or\r\n" + 
+			"      Enter $$GRP# <receiver_grp_id> <message_text> to send group message.\r\n";
 	
 	protected static final String ERROR_MSG = "Enter the command in the specified format";
 }
