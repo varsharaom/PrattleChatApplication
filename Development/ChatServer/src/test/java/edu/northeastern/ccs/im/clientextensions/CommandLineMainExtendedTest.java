@@ -57,6 +57,7 @@ public class CommandLineMainExtendedTest {
 		la = new LogAppender();
 
 	}
+	private Logger logger ;
 
 	private ServerSocketChannel serverSocket;
 	private Selector selector;
@@ -76,6 +77,8 @@ public class CommandLineMainExtendedTest {
 			
 		}
 
+		logger = CommandLineMainExtended.getLogger();
+		logger.addAppender(la);
 	}
 
 	@After
@@ -84,13 +87,15 @@ public class CommandLineMainExtendedTest {
 		serverSocket.socket().close();
 		serverSocket.close();
 		selector.close();
+		la.close();
+		
+		logger.removeAppender(la);
 	}	
 	
 	@Test
 	public void testLogs() {
 		 NetworkConnection nc = new NetworkConnection(sc);
-		Logger logger = CommandLineMainExtended.getLogger();
-		logger.addAppender(la);
+
 		try {
 			String[] arr = { "localhost", Integer.toString(ClientStringConstants.TEST_PORT) };
 
@@ -149,9 +154,6 @@ public class CommandLineMainExtendedTest {
 			assertEquals( ClientStringConstants.ERROR_MSG,(String) log.get(16).getMessage());
 			assertEquals( ClientStringConstants.DISCONNECT,(String) log.get(17).getMessage());
 			
-			la.close();
-			
-			logger.removeAppender(la);
 			 nc.close();			
 
 		} catch (Exception e) {
@@ -162,8 +164,7 @@ public class CommandLineMainExtendedTest {
 	
 	@Test
 	public void testReadMessages() {
-		Logger logger = CommandLineMainExtended.getLogger();
-		logger.addAppender(la);
+		
 		IMConnection c1 = new IMConnection(ConnectionConstants.HOST, ClientStringConstants.TEST_PORT, ClientStringConstants.TEST_USER);
 		c1.connect();
 
@@ -191,8 +192,6 @@ public class CommandLineMainExtendedTest {
 			List<LoggingEvent> log = la.getLogs();
 			
 			assertEquals(ClientStringConstants.ERROR_MSG,(String) log.get(2).getMessage());
-
-			logger.removeAppender(la);		
 			
 			c1.disconnect();
 		} catch (Exception e) {
