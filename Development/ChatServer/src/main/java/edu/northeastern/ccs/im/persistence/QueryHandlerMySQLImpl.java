@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class QueryHandlerMySQLImpl implements IQueryHandler{
+public class QueryHandlerMySQLImpl implements IQueryHandler {
 
     final Logger logger = Logger.getGlobal();
     public static final String SQL_EXCEPTION_MSG = "SQL Exception";
@@ -40,8 +40,8 @@ public class QueryHandlerMySQLImpl implements IQueryHandler{
     }
 
     public int updateUserLastLogin(User user) {
-    		Date date = new Date(System.currentTimeMillis());
-    		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date date = new Date(System.currentTimeMillis());
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String query = String.format("UPDATE %s set %s = '%s' WHERE %s = %d;",
                 DBConstants.USER_TABLE, DBConstants.USER_LAST_SEEN, format.format(date),
                 DBConstants.USER_ID, user.getUserID());
@@ -72,28 +72,28 @@ public class QueryHandlerMySQLImpl implements IQueryHandler{
         return circle;
     }
 
-    public String getPassword(String name) {
-        String query = String.format("SELECT %s FROM %s WHERE %s = '%s'",
-                DBConstants.USER_PASS, DBConstants.USER_TABLE, DBConstants.USER_USERNAME, name);
+    @Override
+    public Boolean validateLogin(String username, String password) {
+        String query = String.format("SELECT * from %s WHERE %s =\"%s\" and %s = \"%s\"",
+                DBConstants.USER_TABLE, DBConstants.USER_USERNAME, username, DBConstants.USER_PASS, password);
         ResultSet rs = doSelectQuery(query);
-    		try {
-				if (rs.next()) {
-				return rs.getString(1);
-				}
-			} catch (SQLException e) {
-				logger.log(Level.INFO, SQL_EXCEPTION_MSG);
-			}
-    		return "";
+        try {
+            while (rs.next()) {
+                return true;
+            }
+        } catch (SQLException e) {
+            logger.log(Level.INFO, DBConstants.EXCEPTION_MESSAGE);
+        }
+        return false;
     }
-
 
     //-----------------Message Queries-------------------
     public long storeMessage(long senderID, long receiverID, MessageType type, String msgText) {
-    		Date date = new Date(System.currentTimeMillis());
+        Date date = new Date(System.currentTimeMillis());
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String query = String.format("INSERT INTO %s (%s,%s,%s,%s,%s) VALUES(%d,%d,'%s','%s','%s');",
                 DBConstants.MESSAGE_TABLE, DBConstants.MESSAGE_SENDER_ID, DBConstants.MESSAGE_RECEIVER_ID,
-                DBConstants.MESSAGE_TYPE, DBConstants.MESSAGE_BODY,  DBConstants.MESSAGE_TIME,
+                DBConstants.MESSAGE_TYPE, DBConstants.MESSAGE_BODY, DBConstants.MESSAGE_TIME,
                 senderID, receiverID, type, msgText, format.format(date));
         return doInsertQuery(query);
     }
@@ -104,7 +104,7 @@ public class QueryHandlerMySQLImpl implements IQueryHandler{
         ResultSet rs = doSelectQuery(query);
         List<Message> messages = new ArrayList<>();
         try {
-            while(rs.next()) {
+            while (rs.next()) {
                 Message m = Message.makeBroadcastMessage("placeholder", rs.getString("body"));
                 messages.add(m);
             }
@@ -120,11 +120,11 @@ public class QueryHandlerMySQLImpl implements IQueryHandler{
                 DBConstants.USER_TABLE, DBConstants.USER_USERNAME, name);
         ResultSet rs = doSelectQuery(query);
         try {
-			return rs.next();
-		} catch (SQLException e) {
-			logger.log(Level.INFO, DBConstants.EXCEPTION_MESSAGE);
-		}
-        return false; 
+            return rs.next();
+        } catch (SQLException e) {
+            logger.log(Level.INFO, DBConstants.EXCEPTION_MESSAGE);
+        }
+        return false;
     }
 
     public ResultSet doSelectQuery(String query) {

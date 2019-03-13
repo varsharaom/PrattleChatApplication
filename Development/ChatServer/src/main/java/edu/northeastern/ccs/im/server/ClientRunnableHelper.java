@@ -22,13 +22,16 @@ class ClientRunnableHelper {
         this.queryHandler = queryHandler;
     }
 
-    /** Checks if the login credentials entered are valid*/
+    /**
+     * Checks if the login credentials entered are valid
+     */
     private boolean isValidLoginCredentials(Message msg) {
-        String password = queryHandler.getPassword(msg.getName());
-        return password.equals(msg.getText());
+        return queryHandler.validateLogin(msg.getName(), msg.getText());
     }
 
-    /** Checks if the registration information are all valid enough to allow a new user creation */
+    /**
+     * Checks if the registration information are all valid enough to allow a new user creation
+     */
     private boolean isValidRegistrationInfo(Message msg) {
         return !queryHandler.checkUserNameExists(msg.getName());
     }

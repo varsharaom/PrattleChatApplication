@@ -15,7 +15,7 @@ public interface IQueryHandler {
 
     public List<Long> getCircles(User user);
 
-    public String getPassword(String name);
+    public Boolean validateLogin(String username, String password);
 
     //Message Queries
     public long storeMessage(long senderID, long receiverID, MessageType type, String msgText);

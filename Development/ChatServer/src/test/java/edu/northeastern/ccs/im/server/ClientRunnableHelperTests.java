@@ -37,7 +37,7 @@ public class ClientRunnableHelperTests {
     public void testHandleLoginMessage() {
         Message message = MessageUtil.getValidLoginBroadcastMessage();
 
-        when(iQueryHandler.getPassword(anyString())).thenReturn(message.getText());
+        when(iQueryHandler.validateLogin(anyString(),anyString())).thenReturn(true);
         Message loginMessage = clientRunnableHelper.getCustomConstructedMessage(message);
         clientRunnableHelper.handleMessages(loginMessage);
 
