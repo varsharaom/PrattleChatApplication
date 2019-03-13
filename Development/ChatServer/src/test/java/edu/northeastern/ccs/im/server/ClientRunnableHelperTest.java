@@ -48,4 +48,41 @@ public class ClientRunnableHelperTest {
         assertEquals(constructedMessage.getText(), content[2]);
     }
 
+    @Test
+    public void testParseValidDirectMessage() {
+        Message message = MessageUtil.getValidDirectBroadcastMessage();
+
+        ClientRunnableHelper clientRunnableHelper = new ClientRunnableHelper(null, null);
+        Message constructedMessage = clientRunnableHelper.getCustomConstructedMessage(message);
+
+        assertTrue(constructedMessage.isDirectMessage());
+        assertNotNull("Constructed message content is empty", message.getText());
+
+        String[] content = message.getText().split(" ", 3);
+        assertEquals(3, content.length);
+
+        assertTrue(ClientRunnableHelperUtil.isValidDirectMessageIdentifer(content[0]));
+        assertEquals(constructedMessage.getMsgReceiver(), content[1]);
+        assertEquals(constructedMessage.getText(), content[2]);
+        assertEquals(constructedMessage.getMsgSender(), message.getMsgSender());
+    }
+
+    @Test
+    public void testParseValidGroupMessage() {
+        Message message = MessageUtil.getValidGroupBroadcastMessage();
+
+        ClientRunnableHelper clientRunnableHelper = new ClientRunnableHelper(null, null);
+        Message constructedMessage = clientRunnableHelper.getCustomConstructedMessage(message);
+
+        assertTrue(constructedMessage.isGroupMessage());
+        assertNotNull("Constructed message content is empty", message.getText());
+
+        String[] content = message.getText().split(" ", 3);
+        assertEquals(3, content.length);
+
+        assertTrue(ClientRunnableHelperUtil.isValidGroupMessageIdentifer(content[0]));
+        assertEquals(constructedMessage.getMsgReceiver(), content[1]);
+        assertEquals(constructedMessage.getText(), content[2]);
+        assertEquals(constructedMessage.getMsgSender(), message.getMsgSender());
+    }
 }

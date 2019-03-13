@@ -57,7 +57,7 @@ class ClientRunnableHelper {
      * Checks the type of message and routes the control to either private or group message handler.
      */
     private void handleChatMessages(Message msg) {
-        if(msg.isPrivateMessage()) {
+        if(msg.isDirectMessage()) {
             Prattle.handleDirectMessages(msg);
         }
         else if(msg.isGroupMessage()) {
@@ -156,14 +156,13 @@ class ClientRunnableHelper {
                     message = constructCustomRegisterMessage(restOfMessageText);
                 }
                 else if (type.equalsIgnoreCase(MessageType.DIRECT.toString())) {
-                    message = constructCustomDirectMessage(restOfMessageText);
+                    message = constructCustomDirectMessage(restOfMessageText, message.getMsgSender());
                 }
                 else if (type.equalsIgnoreCase(MessageType.LOGIN.toString())) {
                     message = constructCustomLoginMessage(restOfMessageText);
                 }
                 else if (type.equalsIgnoreCase(MessageType.GROUP.toString())) {
-//                message = Message.make
-//                message = new Object();
+                    message = constructCustomGroupMessage(restOfMessageText, message.getMsgSender());
                 }
             }
 
@@ -190,14 +189,22 @@ class ClientRunnableHelper {
 
     }
 
-    private Message constructCustomDirectMessage(String restOfMessageText) {
-        String[] arr = restOfMessageText.split(" ", 3);
+    private Message constructCustomDirectMessage(String restOfMessageText, String sender) {
+        String[] arr = restOfMessageText.split(" ", 2);
 
-        String sender = arr[0];
-        String receiver = arr[1];
-        String actualContent = arr[2];
+        String receiver = arr[0];
+        String actualContent = arr[1];
 
         return Message.makeDirectMessage(sender, receiver, actualContent);
+    }
+
+    private Message constructCustomGroupMessage(String restOfMessageText, String sender) {
+        String[] arr = restOfMessageText.split(" ", 2);
+
+        String groupName = arr[0];
+        String actualContent = arr[1];
+
+        return Message.makeGroupMessage(sender, groupName, actualContent);
     }
 
     private String getType(String s) {

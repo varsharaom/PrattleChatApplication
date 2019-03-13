@@ -42,6 +42,8 @@ public class Message implements IMessage{
 	/** The second argument used in the message. */
 	private String msgText;
 
+	private Set<String> groupMembers;
+
 
 	/** The sender's unique user id */
 	public long getSenderId() {
@@ -167,6 +169,10 @@ public class Message implements IMessage{
 		return new Message(MessageType.DIRECT, msgSender, msgReceiver, msgText);
 	}
 
+	public static Message makeGroupMessage(String msgSender, String groupName, String msgText) {
+		return new Message(MessageType.GROUP, msgSender, groupName, msgText);
+	}
+
 	/**
 	 * Given a handle, name and text, return the appropriate message instance or an
 	 * instance from a subclass of message.
@@ -257,7 +263,7 @@ public class Message implements IMessage{
 		return (msgType == MessageType.LOGIN);
 	}
 
-	public boolean isPrivateMessage() {
+	public boolean isDirectMessage() {
 		return (msgType == MessageType.DIRECT);
 	}
 
