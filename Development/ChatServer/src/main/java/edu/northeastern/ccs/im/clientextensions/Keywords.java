@@ -28,4 +28,11 @@ public class Keywords {
 			"      Enter $$GRP# <receiver_grp_id> <message_text> to send group message.\r\n";
 	
 	protected static final String ERROR_MSG = "Enter the command in the specified format";
+	
+
+	protected static final String COMMAND_PREFIX ="$$";
+	
+	protected static final String COMMAND_SUFFIX = "#";
+	
+	protected static final String DISCONNECT = "Disconnecting..";
 }

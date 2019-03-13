@@ -6,13 +6,17 @@ public class ClientStringConstants {
 		
 	}
 
+		
+	public static final String LOGIN_MSG = "Enter $$LGN# <username> <password>, if you want to login.\r\n" + 
+			"      Enter $$RGSTR# <username> <password>, if you are a new user and want to register.\r\n" + 
+			"      Username and password should not contain spaces.";
+	
+	public static final String MSG_FORMAT = "Enter $$DRCT# <receiver_name> <message_text> to send direct message.\r\n" + 
+			"      or\r\n" + 
+			"      Enter $$GRP# <receiver_grp_id> <message_text> to send group message.\r\n";
+	
 	public static final String ERROR_MSG = "Enter the command in the specified format";
-	public static final String LOGIN_MSG = "Enter $$LGN# username password, if you want to login\n"
-			+ "Enter $$RGSTR# username password, if you want to register. \nUsername and password "
-			+ "should not contain spaces";
-
-	public static final String MSG_FORMAT = "Send direct message or group message? \nEnter $$GRP# receiver_grp_name message_string"
-			+ "  to send group message " + " or $$DRCT# receiver_name message_string to send direct message.";
+	
 
 	 public static final int TEST_PORT = 4560;
 	 public static final String TEST_USER ="testuser";
@@ -43,11 +47,11 @@ public class ClientStringConstants {
 	 
 	 public static final String WRONG_GRP_MSG = "$$GRP receivername message";
 	 
-	 public static final String WRONG_GRP_MSG2 = "$$GRP# receivername ";
+	 public static final String WRONG_GRP_MSG2 = "$$$GRP# receivername ";
 	 
 	 public static final String WRONG_GRP_MSG3 = "Groupmessage ";
 	 
-	 public static final String WRONG_DRCT_MSG1 = "$$DRCT# receivername ";
+	 public static final String WRONG_DRCT_MSG1 = "$$$DRCT# receivername ";
 	 
 	 public static final String WRONG_DRCT_MSG2 = "DirectMsg receivername ";
 	 
@@ -63,6 +67,7 @@ public class ClientStringConstants {
 	 
 	 public static final String BYE_MSG = "/quit";
 	 
+	 public static final String DISCONNECT = "Disconnecting..";
 	 
 	 
 	 
