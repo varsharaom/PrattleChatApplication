@@ -49,29 +49,29 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
     }
 
     public List<Long> getCircles(User user) {
-        long userId = user.getUserID();
-        String query = String.format("SELECT * from %s WHERE %s = %d OR %s = %d;",
-                DBConstants.CIRCLES_TABLE, DBConstants.CIRCLE_USER_1_ID, user.getUserID(),
-                DBConstants.CIRCLE_USER_2_ID, user.getUserID());
-        List<Long> circle = new ArrayList<>();
-        ResultSet rs = doSelectQuery(query);
-        if (rs != null) {
-            try {
-                while (rs.next()) {
-                    if (rs.getLong(2) != userId) {
-                        circle.add(rs.getLong(2));
-                    }
-                    if (rs.getLong(3) != userId) {
-                        circle.add(rs.getLong(3));
-                    }
-                }
-            } catch (SQLException e) {
-                logger.log(Level.INFO, SQL_EXCEPTION_MSG);
-            }
-        }
-        return circle;
+//        long userId = user.getUserID();
+//        String query = String.format("SELECT * from %s WHERE %s = %d OR %s = %d;",
+//                DBConstants.CIRCLES_TABLE, DBConstants.CIRCLE_USER_1_ID, user.getUserID(),
+//                DBConstants.CIRCLE_USER_2_ID, user.getUserID());
+//        List<Long> circle = new ArrayList<>();
+//        ResultSet rs = doSelectQuery(query);
+//        if (rs != null) {
+//            try {
+//                while (rs.next()) {
+//                    if (rs.getLong(2) != userId) {
+//                        circle.add(rs.getLong(2));
+//                    }
+//                    if (rs.getLong(3) != userId) {
+//                        circle.add(rs.getLong(3));
+//                    }
+//                }
+//            } catch (SQLException e) {
+//                logger.log(Level.INFO, SQL_EXCEPTION_MSG);
+//            }
+//        }
+//        return circle;
+        return new ArrayList<>();
     }
-
     @Override
     public Boolean validateLogin(String username, String password) {
         String query = String.format("SELECT * from %s WHERE %s =\"%s\" and %s = \"%s\"",
@@ -119,12 +119,13 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
         String query = String.format("SELECT * FROM %s WHERE %s = '%s';",
                 DBConstants.USER_TABLE, DBConstants.USER_USERNAME, name);
         ResultSet rs = doSelectQuery(query);
+        boolean isNameFound = false;
         try {
-            return rs.next();
+            isNameFound = rs.next();
         } catch (SQLException e) {
             logger.log(Level.INFO, DBConstants.EXCEPTION_MESSAGE);
         }
-        return false;
+        return isNameFound;
     }
 
     public ResultSet doSelectQuery(String query) {
@@ -138,40 +139,41 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
         if (statement != null) {
             try {
                 rs = statement.executeQuery();
-                return rs;
             } catch (SQLException e) {
                 logger.log(Level.INFO, SQL_EXCEPTION_MSG);
             }
         }
-        return null;
+        return rs;
     }
 
     public long doInsertQuery(String query) {
         PreparedStatement statement = null;
+        long key = -1;
         try {
             statement = connection.prepareStatement(query);
             statement.executeUpdate();
             ResultSet generatedKeys = statement.getGeneratedKeys();
             if (generatedKeys.next()) {
-                return generatedKeys.getLong(1);
+                key = generatedKeys.getLong(1);
             } else {
                 throw new SQLException("Creating user failed, no ID obtained.");
             }
         } catch (SQLException e) {
             logger.log(Level.INFO, SQL_EXCEPTION_MSG);
         }
-        return -1;
+        return key;
     }
 
     public int doUpdateQuery(String query) {
         PreparedStatement statement = null;
+        int updateCode = 0;
         try {
             statement = connection.prepareStatement(query);
-            return statement.executeUpdate(query);
+            updateCode = statement.executeUpdate(query);
         } catch (SQLException e) {
             logger.log(Level.INFO, SQL_EXCEPTION_MSG);
         }
-        return 0;
+        return updateCode;
     }
 
 }

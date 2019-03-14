@@ -119,9 +119,9 @@ class ClientRunnableHelper {
     Message getCustomConstructedMessage(Message msg) {
 
         String content = msg.getText();
-        Message message = null;
+        Message message = msg;
 
-        if (msg.getText().startsWith(ClientRunnableConstants.CUSTOM_COMMAND_PREFIX)) {
+        if (content.startsWith(ClientRunnableConstants.CUSTOM_COMMAND_PREFIX)) {
 
             String[] arr = content.split(" ", 2);
 
@@ -138,7 +138,7 @@ class ClientRunnableHelper {
                 else if (type.equalsIgnoreCase(MessageType.LOGIN.toString())) {
                     message = constructCustomLoginMessage(restOfMessageText);
                 }
-                else if (type.equalsIgnoreCase(MessageType.GROUP.toString())) {
+                else {
                     message = constructCustomGroupMessage(restOfMessageText, msg.getMsgSender());
                 }
 
