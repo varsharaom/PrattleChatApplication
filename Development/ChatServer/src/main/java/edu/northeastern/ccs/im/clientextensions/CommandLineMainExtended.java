@@ -197,6 +197,6 @@ public class CommandLineMainExtended {
 			}
 			readNewMessages(mess, connect);
 		}
-		System.out.println("Program end");
+		
 	}
 }
