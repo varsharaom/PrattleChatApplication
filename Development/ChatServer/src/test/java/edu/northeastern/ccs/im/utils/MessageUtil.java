@@ -37,6 +37,17 @@ public final class MessageUtil {
                 getValidGroupMessageText());
     }
 
+    public static Message getInvalidBroadcastMessage() {
+        return Message.makeBroadcastMessage(MessageConstants.SIMPLE_USER,
+                getInvalidMessageText());
+    }
+
+    private static String getInvalidMessageText() {
+        return ClientRunnableConstants.CUSTOM_COMMAND_PREFIX
+                + ClientRunnableConstants.GROUP_MSG_IDENTIFIER
+                + ClientRunnableConstants.CUSTOM_COMMAND_SUFFIX;
+    }
+
     private static String getValidGroupMessageText() {
         return ClientRunnableConstants.CUSTOM_COMMAND_PREFIX
                 + ClientRunnableConstants.GROUP_MSG_IDENTIFIER

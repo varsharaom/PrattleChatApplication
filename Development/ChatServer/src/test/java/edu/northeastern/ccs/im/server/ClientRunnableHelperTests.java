@@ -15,6 +15,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
@@ -275,6 +276,13 @@ public class ClientRunnableHelperTests {
         Message groupMessage = clientRunnableHelper.getCustomConstructedMessage(message);
         clientRunnableHelper.handleMessages(groupMessage);
 
+    }
+
+    @Test
+    public void testInvalidMessageInput() {
+        Message message = MessageUtil.getInvalidBroadcastMessage();
+        Message invalidMessage = clientRunnableHelper.getCustomConstructedMessage(message);
+        assertEquals(message, invalidMessage);
     }
     
 }
