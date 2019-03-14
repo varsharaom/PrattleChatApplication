@@ -84,7 +84,7 @@ public class ClientRunnableHelperTests {
         
         tt.run();
 
-        when(iQueryHandler.getPassword(anyString())).thenReturn(message.getText());
+        when(iQueryHandler.validateLogin(anyString(), anyString())).thenReturn(true);
         Message loginMessage = clientRunnableHelper.getCustomConstructedMessage(message);
         clientRunnableHelper.handleMessages(loginMessage);
     }
@@ -111,7 +111,7 @@ public class ClientRunnableHelperTests {
         
         tt.run();
 
-        when(iQueryHandler.getPassword(anyString())).thenReturn(message.getText());
+        when(iQueryHandler.validateLogin(anyString(), anyString())).thenReturn(true);
         Message loginMessage = clientRunnableHelper.getCustomConstructedMessage(message);
         clientRunnableHelper.handleMessages(loginMessage);
     }
@@ -131,7 +131,7 @@ public class ClientRunnableHelperTests {
         
         tt.run();
 
-        when(iQueryHandler.getPassword(anyString())).thenReturn(message.getText());
+        when(iQueryHandler.validateLogin(anyString(), anyString())).thenReturn(true);
         Message loginMessage = clientRunnableHelper.getCustomConstructedMessage(message);
         clientRunnableHelper.handleMessages(loginMessage);
     }
@@ -154,7 +154,6 @@ public class ClientRunnableHelperTests {
         when(iQueryHandler.checkUserNameExists(anyString())).thenReturn(true);
         Message directMessage = clientRunnableHelper.getCustomConstructedMessage(message);
         clientRunnableHelper.handleMessages(directMessage);
-
     }
     
     @Test
@@ -179,7 +178,7 @@ public class ClientRunnableHelperTests {
         
         tt.run();
 
-        when(iQueryHandler.getPassword(anyString())).thenReturn(message.getText());
+        when(iQueryHandler.validateLogin(anyString(), anyString())).thenReturn(true);
         Message directMessage = clientRunnableHelper.getCustomConstructedMessage(message);
         clientRunnableHelper.handleMessages(directMessage);
     }
@@ -206,7 +205,7 @@ public class ClientRunnableHelperTests {
         
         tt.run();
 
-        when(iQueryHandler.getPassword(anyString())).thenReturn(message.getText());
+        when(iQueryHandler.validateLogin(anyString(), anyString())).thenReturn(true);
         Message directMessage = clientRunnableHelper.getCustomConstructedMessage(message);
         clientRunnableHelper.handleMessages(directMessage);
     }
@@ -226,7 +225,7 @@ public class ClientRunnableHelperTests {
         
         tt.run();
 
-        when(iQueryHandler.getPassword(anyString())).thenReturn(message.getText());
+        when(iQueryHandler.validateLogin(anyString(), anyString())).thenReturn(true);
         Message directMessage = clientRunnableHelper.getCustomConstructedMessage(message);
         clientRunnableHelper.handleMessages(directMessage);
     }
