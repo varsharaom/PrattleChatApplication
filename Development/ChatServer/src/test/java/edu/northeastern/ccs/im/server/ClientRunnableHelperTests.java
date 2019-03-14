@@ -12,7 +12,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.mockito.Matchers.anyString;
@@ -64,9 +63,9 @@ public class ClientRunnableHelperTests {
 
     @Test
     public void testHandleLoginMessageQueued()  throws NoSuchFieldException, IllegalAccessException {
-    		ConcurrentLinkedQueue<ClientRunnable> queue = new ConcurrentLinkedQueue<>();
-    	
-    		ClientRunnable tt = new ClientRunnable(nc);
+        ConcurrentLinkedQueue<ClientRunnable> queue = new ConcurrentLinkedQueue<>();
+
+        ClientRunnable tt = new ClientRunnable(nc);
         tt.setName(MessageConstants.SIMPLE_USER);
         queue.add(tt);
         Field active = Prattle.class.getDeclaredField("active");
@@ -91,9 +90,9 @@ public class ClientRunnableHelperTests {
     
     @Test
     public void testHandleLoginMessageNotQueued()  throws NoSuchFieldException, IllegalAccessException {
-    		ConcurrentLinkedQueue<ClientRunnable> queue = new ConcurrentLinkedQueue<>();
-    	
-    		ClientRunnable tt = new ClientRunnable(nc);
+        ConcurrentLinkedQueue<ClientRunnable> queue = new ConcurrentLinkedQueue<>();
+
+        ClientRunnable tt = new ClientRunnable(nc);
         tt.setName(MessageConstants.SIMPLE_USER);
         queue.add(tt);
         Field active = Prattle.class.getDeclaredField("active");
@@ -118,9 +117,9 @@ public class ClientRunnableHelperTests {
     
     @Test
     public void testHandleLoginMessageNotInitialized() throws NoSuchFieldException, IllegalAccessException {
-    		ConcurrentLinkedQueue<ClientRunnable> queue = new ConcurrentLinkedQueue<>();
-    	
-    		ClientRunnable tt = new ClientRunnable(nc);
+        ConcurrentLinkedQueue<ClientRunnable> queue = new ConcurrentLinkedQueue<>();
+
+        ClientRunnable tt = new ClientRunnable(nc);
         tt.setName(MessageConstants.SIMPLE_USER);
         queue.add(tt);
         Field active = Prattle.class.getDeclaredField("active");
@@ -148,6 +147,37 @@ public class ClientRunnableHelperTests {
     }
 
     @Test
+    public void testHandleRegisterMessageWithInvalidCredentials() {
+        Message message = MessageUtil.getValidRegisterBroadcastMessage();
+
+        when(iQueryHandler.checkUserNameExists(anyString())).thenReturn(true);
+        when(iQueryHandler.createUser(anyString(), anyString(), anyString())).thenReturn(null);
+        Message registerMessage = clientRunnableHelper.getCustomConstructedMessage(message);
+        clientRunnableHelper.handleMessages(registerMessage);
+
+    }
+
+    @Test
+    public void testHandleValidLogin() {
+        Message message = MessageUtil.getValidLoginBroadcastMessage();
+        Message loginMessage = clientRunnableHelper.getCustomConstructedMessage(message);
+
+        when(iQueryHandler.validateLogin(anyString(), anyString()))
+                .thenReturn(true);
+        clientRunnableHelper.handleMessages(loginMessage);
+
+    }
+
+    @Test
+    public void testHandleInvalidLogin() {
+        Message message = MessageUtil.getValidLoginBroadcastMessage();
+//       the text is a compound string sent from client which in turn is used as invalid password
+        when(iQueryHandler.validateLogin(anyString(),anyString())).thenReturn(false);
+        Message loginMessage = clientRunnableHelper.getCustomConstructedMessage(message);
+        clientRunnableHelper.handleMessages(loginMessage);
+    }
+
+    @Test
     public void testHandleDirectMessage() {
         Message message = MessageUtil.getValidDirectBroadcastMessage();
 
@@ -158,9 +188,9 @@ public class ClientRunnableHelperTests {
     
     @Test
     public void testHandleDirectMessageQueued()  throws NoSuchFieldException, IllegalAccessException {
-    		ConcurrentLinkedQueue<ClientRunnable> queue = new ConcurrentLinkedQueue<>();
-    	
-    		ClientRunnable tt = new ClientRunnable(nc);
+        ConcurrentLinkedQueue<ClientRunnable> queue = new ConcurrentLinkedQueue<>();
+
+        ClientRunnable tt = new ClientRunnable(nc);
         tt.setName(MessageConstants.SIMPLE_USER);
         queue.add(tt);
         Field active = Prattle.class.getDeclaredField("active");
@@ -185,9 +215,9 @@ public class ClientRunnableHelperTests {
     
     @Test
     public void testHandleDirectMessageNotQueued()  throws NoSuchFieldException, IllegalAccessException {
-    		ConcurrentLinkedQueue<ClientRunnable> queue = new ConcurrentLinkedQueue<>();
-    	
-    		ClientRunnable tt = new ClientRunnable(nc);
+        ConcurrentLinkedQueue<ClientRunnable> queue = new ConcurrentLinkedQueue<>();
+
+        ClientRunnable tt = new ClientRunnable(nc);
         tt.setName(MessageConstants.SIMPLE_USER);
         queue.add(tt);
         Field active = Prattle.class.getDeclaredField("active");
@@ -212,9 +242,9 @@ public class ClientRunnableHelperTests {
     
     @Test
     public void testHandleDirectMessageNotInitialized()  throws NoSuchFieldException, IllegalAccessException {
-    		ConcurrentLinkedQueue<ClientRunnable> queue = new ConcurrentLinkedQueue<>();
-    	
-    		ClientRunnable tt = new ClientRunnable(nc);
+        ConcurrentLinkedQueue<ClientRunnable> queue = new ConcurrentLinkedQueue<>();
+
+        ClientRunnable tt = new ClientRunnable(nc);
         tt.setName(MessageConstants.SIMPLE_USER);
         queue.add(tt);
         Field active = Prattle.class.getDeclaredField("active");

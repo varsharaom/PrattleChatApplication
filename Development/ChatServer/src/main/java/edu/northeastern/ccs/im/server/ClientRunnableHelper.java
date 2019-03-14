@@ -2,7 +2,6 @@ package edu.northeastern.ccs.im.server;
 
 import edu.northeastern.ccs.serverim.Message;
 import edu.northeastern.ccs.serverim.MessageType;
-import edu.northeastern.ccs.serverim.User;
 import edu.northeastern.ccs.im.constants.ClientRunnableConstants;
 import edu.northeastern.ccs.im.persistence.IQueryHandler;
 
@@ -14,11 +13,9 @@ import edu.northeastern.ccs.im.persistence.IQueryHandler;
  */
 class ClientRunnableHelper {
 
-    private ClientRunnable clientRunnable;
     private IQueryHandler queryHandler;
-    
-    ClientRunnableHelper(ClientRunnable clientRunnable, IQueryHandler queryHandler) {
-        this.clientRunnable = clientRunnable;
+
+    ClientRunnableHelper(IQueryHandler queryHandler) {
         this.queryHandler = queryHandler;
     }
 
@@ -45,16 +42,7 @@ class ClientRunnableHelper {
             handleRegisterLoginMessages(message);
         }
         else{
-//            if (messageChecks(message)) {
             handleChatMessages(message);
-//            }
-//            else {
-////                TODO - modify it as per needs. In what situation would this block be reached
-//                Message sendMsg;
-//                sendMsg = Message.makeBroadcastMessage(ServerConstants.BOUNCER_ID,
-//                        "Last message was rejected because it specified an incorrect user name.");
-//                clientRunnable.enqueueMessage(sendMsg);
-//            }
         }
     }
     /**
@@ -64,11 +52,11 @@ class ClientRunnableHelper {
         if(msg.isDirectMessage()) {
             Prattle.handleDirectMessages(msg);
         }
-        else if(msg.isGroupMessage()) {
+        else {
             Prattle.handleGroupMessage(msg);
         }
-//		TODO - persist the message. (Caveat: check if group & pvt msgs are to be differently persisted)
-        queryHandler.storeMessage(msg.getSenderId(), msg.getReceiverId(), msg.getMessageType(), msg.getText());
+        queryHandler.storeMessage(msg.getSenderId(), msg.getReceiverId(), msg.getMessageType(),
+                msg.getText());
     }
 
     /**
@@ -78,7 +66,7 @@ class ClientRunnableHelper {
         if(msg.isRegisterMessage()) {
             handleRegisterMessage(msg);
         }
-        else if(msg.isLoginMessage()) {
+        else {
             handleLoginMessage(msg);
         }
     }
@@ -99,6 +87,7 @@ class ClientRunnableHelper {
         else {
             acknowledgementText = ClientRunnableConstants.REGISTER_FAILURE_MSG;
         }
+
         handShakeMessage = Message.makeRegisterAckMessage(MessageType.REGISTER, message.getName(), acknowledgementText);
         Prattle.registerOrLoginUser(handShakeMessage);
     }
@@ -116,6 +105,7 @@ class ClientRunnableHelper {
         else {
             acknowledgementText = ClientRunnableConstants.LOGIN_FAILURE_MSG;
         }
+
         handShakeMessage = Message.makeLoginAckMessage(MessageType.LOGIN, message.getMsgSender(), message.getMsgSender(), acknowledgementText);
         Prattle.registerOrLoginUser(handShakeMessage);
     }
@@ -125,23 +115,11 @@ class ClientRunnableHelper {
         return (msg.isRegisterMessage() || msg.isLoginMessage());
     }
 
-    /**
-     * Check if the message is properly formed. At the moment, this means checking
-     * that the identifier is set properly.
-     *
-     * @param msg Message to be checked
-     * @return True if message is correct; false otherwise
-     */
-    private boolean messageChecks(Message msg) {
-        // Check that the message name matches.
-        return (msg.getName() != null) && (msg.getName()
-                .compareToIgnoreCase(clientRunnable.getName()) == 0);
-    }
 
-    public Message getCustomConstructedMessage(Message msg) {
+    Message getCustomConstructedMessage(Message msg) {
 
         String content = msg.getText();
-        Message message = msg;
+        Message message = null;
 
         if (msg.getText().startsWith(ClientRunnableConstants.CUSTOM_COMMAND_PREFIX)) {
 
@@ -155,14 +133,15 @@ class ClientRunnableHelper {
                     message = constructCustomRegisterMessage(restOfMessageText);
                 }
                 else if (type.equalsIgnoreCase(MessageType.DIRECT.toString())) {
-                    message = constructCustomDirectMessage(restOfMessageText, message.getMsgSender());
+                    message = constructCustomDirectMessage(restOfMessageText, msg.getMsgSender());
                 }
                 else if (type.equalsIgnoreCase(MessageType.LOGIN.toString())) {
                     message = constructCustomLoginMessage(restOfMessageText);
                 }
                 else if (type.equalsIgnoreCase(MessageType.GROUP.toString())) {
-                    message = constructCustomGroupMessage(restOfMessageText, message.getMsgSender());
+                    message = constructCustomGroupMessage(restOfMessageText, msg.getMsgSender());
                 }
+
             }
         }
         return message;
@@ -206,10 +185,11 @@ class ClientRunnableHelper {
     }
 
     private String getType(String s) {
+        String messageTypeAsString = "";
         if(s.length() > 2) {
 //            removing $$ at the beginning and # at the end
-            return s.substring(2, s.length()-1);
+            messageTypeAsString = s.substring(2, s.length()-1);
         }
-        return "";
+        return messageTypeAsString;
     }
 }
