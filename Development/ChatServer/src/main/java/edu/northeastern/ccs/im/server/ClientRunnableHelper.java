@@ -181,13 +181,13 @@ class ClientRunnableHelper {
                     message = constructCustomRegisterMessage(restOfMessageText);
                 }
                 else if (type.equalsIgnoreCase(MessageType.DIRECT.toString())) {
-                    message = constructCustomDirectMessage(restOfMessageText, msg.getMsgSender());
+                    message = constructCustomDirectMessage(restOfMessageText);
                 }
                 else if (type.equalsIgnoreCase(MessageType.LOGIN.toString())) {
                     message = constructCustomLoginMessage(restOfMessageText);
                 }
                 else if (type.equalsIgnoreCase(MessageType.GROUP.toString())){
-                    message = constructCustomGroupMessage(restOfMessageText, msg.getMsgSender());
+                    message = constructCustomGroupMessage(restOfMessageText);
                 }
 
                 else {
@@ -235,11 +235,12 @@ class ClientRunnableHelper {
      * Construct a direct message based on the parsed input message.
      *
      */
-    private Message constructCustomDirectMessage(String restOfMessageText, String sender) {
-        String[] arr = restOfMessageText.split(" ", 2);
+    private Message constructCustomDirectMessage(String restOfMessageText) {
+        String[] arr = restOfMessageText.split(" ", 3);
 
-        String receiver = arr[0];
-        String actualContent = arr[1];
+        String sender = arr[0];
+        String receiver = arr[1];
+        String actualContent = arr[2];
 
         return Message.makeDirectMessage(sender, receiver, actualContent);
     }
@@ -248,11 +249,12 @@ class ClientRunnableHelper {
      * Construct a group message based on the parsed input message.
      *
      */
-    private Message constructCustomGroupMessage(String restOfMessageText, String sender) {
-        String[] arr = restOfMessageText.split(" ", 2);
+    private Message constructCustomGroupMessage(String restOfMessageText) {
+        String[] arr = restOfMessageText.split(" ", 3);
 
-        String groupName = arr[0];
-        String actualContent = arr[1];
+        String sender = arr[0];
+        String groupName = arr[1];
+        String actualContent = arr[2];
 
         return Message.makeGroupMessage(sender, groupName, actualContent);
     }

@@ -60,12 +60,12 @@ public final class MessageUtil {
     private static String getValidGroupMessageText() {
         return CUSTOM_COMMAND_PREFIX + GROUP_MSG_IDENTIFIER
                 + CUSTOM_COMMAND_SUFFIX
-                + " receiverName Hey this is a group message to multiple senders";
+                + " senderName receiverName Hey this is a group message to multiple senders";
     }
 
     private static String getValidDirectMessageText() {
         return CUSTOM_COMMAND_PREFIX + DIRECT_MSG_IDENTIFIER
-                + CUSTOM_COMMAND_SUFFIX + " " + SIMPLE_USER
+                + CUSTOM_COMMAND_SUFFIX + " senderName receiverName "
                 + " Hey this is a direct message to sender";
     }
 
