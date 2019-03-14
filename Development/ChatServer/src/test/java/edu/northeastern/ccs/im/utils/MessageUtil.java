@@ -38,19 +38,19 @@ public final class MessageUtil {
                 getValidGroupMessageText());
     }
 
-    public static Message getInvalidBroadcastMessage() {
+    public static Message getEmptyBroadcastMessage() {
         return Message.makeBroadcastMessage(SIMPLE_USER,
                 getInvalidMessageText());
     }
 
-    public static Message getEmptyBroadcastMessage() {
+    public static Message getInvalidPrefixBroadcastMessage() {
         return Message.makeBroadcastMessage(SIMPLE_USER,
                 getEmptyMessageText());
     }
 
     private static String getEmptyMessageText() {
-        return CUSTOM_COMMAND_PREFIX + DIRECT_MSG_IDENTIFIER
-                + CUSTOM_COMMAND_SUFFIX + "";
+        return DIRECT_MSG_IDENTIFIER
+                + CUSTOM_COMMAND_SUFFIX + "  ";
     }
 
     private static String getInvalidMessageText() {
