@@ -119,7 +119,7 @@ class ClientRunnableHelper {
     Message getCustomConstructedMessage(Message msg) {
 
         String content = msg.getText();
-        Message message = null;
+        Message message = msg;
 
         if (msg.getText().startsWith(ClientRunnableConstants.CUSTOM_COMMAND_PREFIX)) {
 
