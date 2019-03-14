@@ -33,10 +33,11 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
                 DBConstants.USER_USERNAME, DBConstants.USER_PASS, DBConstants.USER_NICKNAME, DBConstants.USER_LAST_SEEN,
                 userName, pass, nickName, format.format(date));
         long id = doInsertQuery(query);
+        User user = null;
         if (id != -1) {
-            return new User(id, userName, nickName, date.getTime());
+            user = new User(id, userName, nickName, date.getTime());
         }
-        return null;
+        return user;
     }
 
     public int updateUserLastLogin(long userID) {
@@ -131,12 +132,13 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
         String query = String.format("SELECT * FROM %s WHERE %s = '%s';",
                 DBConstants.USER_TABLE, DBConstants.USER_USERNAME, name);
         ResultSet rs = doSelectQuery(query);
+        boolean isNameFound = false;
         try {
-            return rs.next();
+            isNameFound = rs.next();
         } catch (SQLException e) {
             logger.log(Level.INFO, DBConstants.EXCEPTION_MESSAGE);
         }
-        return false;
+        return isNameFound;
     }
 
     @Override
@@ -174,40 +176,41 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
         if (statement != null) {
             try {
                 rs = statement.executeQuery();
-                return rs;
             } catch (SQLException e) {
                 logger.log(Level.INFO, SQL_EXCEPTION_MSG);
             }
         }
-        return null;
+        return rs;
     }
 
     public long doInsertQuery(String query) {
         PreparedStatement statement = null;
+        long key = -1;
         try {
             statement = connection.prepareStatement(query);
             statement.executeUpdate();
             ResultSet generatedKeys = statement.getGeneratedKeys();
             if (generatedKeys.next()) {
-                return generatedKeys.getLong(1);
+                key = generatedKeys.getLong(1);
             } else {
                 throw new SQLException("Creating user failed, no ID obtained.");
             }
         } catch (SQLException e) {
             logger.log(Level.INFO, SQL_EXCEPTION_MSG);
         }
-        return -1;
+        return key;
     }
 
     public int doUpdateQuery(String query) {
         PreparedStatement statement = null;
+        int updateCode = 0;
         try {
             statement = connection.prepareStatement(query);
-            return statement.executeUpdate(query);
+            updateCode = statement.executeUpdate(query);
         } catch (SQLException e) {
             logger.log(Level.INFO, SQL_EXCEPTION_MSG);
         }
-        return 0;
+        return updateCode;
     }
 
 }

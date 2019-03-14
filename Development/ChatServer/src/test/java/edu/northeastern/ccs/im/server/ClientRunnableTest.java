@@ -126,13 +126,15 @@ public class ClientRunnableTest {
 	 */
 	@Test
 	public void testWithMultipleMessages() {
-		Iterator<Message> messageIterator = NetworkConnectionTestUtil.getMessageIteratorWithManyMessages();
+		Iterator<Message> messageIterator = NetworkConnectionTestUtil
+                .getMessageIteratorWithManyMessages();
 		when(networkConnection.iterator()).thenReturn(messageIterator);
 		clientRunnable = new ClientRunnable(networkConnection);
 		clientRunnable.run();
 		ScheduledExecutorService ses = Executors.newScheduledThreadPool(1);
 		Runnable task2 = () -> logger.log(Level.INFO, "Starting demo task");
-		ScheduledFuture<?> scheduledFuture = ses.schedule(task2, ConnectionConstants.SCHEDULER_DELAY, TimeUnit.SECONDS);
+		ScheduledFuture<?> scheduledFuture = ses.schedule(task2,
+                ConnectionConstants.SCHEDULER_DELAY, TimeUnit.SECONDS);
 		clientRunnable.setFuture(scheduledFuture);
 		clientRunnable.run();
 		networkConnection.close();
@@ -149,7 +151,8 @@ public class ClientRunnableTest {
 		clientRunnable.run();
 		ScheduledExecutorService ses = Executors.newScheduledThreadPool(1);
 		Runnable task2 = () -> logger.log(Level.INFO, "In testTerminateClient");
-		ScheduledFuture<?> scheduledFuture = ses.schedule(task2, ConnectionConstants.SCHEDULER_DELAY, TimeUnit.SECONDS);
+		ScheduledFuture<?> scheduledFuture = ses.schedule(task2,
+                ConnectionConstants.SCHEDULER_DELAY, TimeUnit.SECONDS);
 		clientRunnable.setFuture(scheduledFuture);
 		clientRunnable.terminateClient();
 		networkConnection.close();
@@ -160,13 +163,15 @@ public class ClientRunnableTest {
 	*/
 	@Test
 	public void testTerminateMessages() {
-		Iterator<Message> messageIterator = NetworkConnectionTestUtil.getMessageIteratorWithMultipleQuitMessages();
+		Iterator<Message> messageIterator = NetworkConnectionTestUtil
+                .getMessageIteratorWithMultipleQuitMessages();
 		when(networkConnection.iterator()).thenReturn(messageIterator);
 		clientRunnable = new ClientRunnable(networkConnection);
 		clientRunnable.run();
 		ScheduledExecutorService ses = Executors.newScheduledThreadPool(1);
 		Runnable task2 = () -> logger.log(Level.INFO, "In testTerminateMessages");
-		ScheduledFuture<?> scheduledFuture = ses.schedule(task2, ConnectionConstants.SCHEDULER_DELAY, TimeUnit.SECONDS);
+		ScheduledFuture<?> scheduledFuture = ses.schedule(task2,
+                ConnectionConstants.SCHEDULER_DELAY, TimeUnit.SECONDS);
 		clientRunnable.setFuture(scheduledFuture);
 		clientRunnable.run();
 		networkConnection.close();
@@ -177,14 +182,16 @@ public class ClientRunnableTest {
 	 */
 	@Test
 	public void testEmptyMessageQueue() {
-		Iterator<Message> messageIterator = NetworkConnectionTestUtil.getMessageIteratorWithNoMessages();
+		Iterator<Message> messageIterator = NetworkConnectionTestUtil
+                .getMessageIteratorWithNoMessages();
 		when(networkConnection.iterator()).thenReturn(messageIterator);
 		clientRunnable = new ClientRunnable(networkConnection);
 		clientRunnable.run();
 		logger.log(Level.INFO, ""+clientRunnable.getUserId());
 		ScheduledExecutorService ses = Executors.newScheduledThreadPool(1);
 		Runnable task2 = () -> logger.log(Level.INFO, "Starting new task");
-		ScheduledFuture<?> scheduledFuture = ses.schedule(task2, ConnectionConstants.SCHEDULER_DELAY, TimeUnit.SECONDS);
+		ScheduledFuture<?> scheduledFuture = ses.schedule(task2,
+                ConnectionConstants.SCHEDULER_DELAY, TimeUnit.SECONDS);
 		clientRunnable.setFuture(scheduledFuture);
 		clientRunnable.run();
 		networkConnection.close();
@@ -195,14 +202,16 @@ public class ClientRunnableTest {
  	 */
  	@Test
  	public void testSingleMessageQueue() {
- 		Iterator<Message> messageIterator = NetworkConnectionTestUtil.getMessageIteratorWithManyMessages();
+ 		Iterator<Message> messageIterator = NetworkConnectionTestUtil
+                .getMessageIteratorWithManyMessages();
  		when(networkConnection.iterator()).thenReturn(messageIterator);
  		clientRunnable = new ClientRunnable(networkConnection);
  		clientRunnable.run();
  		logger.log(Level.INFO, ""+clientRunnable.getUserId());
  		ScheduledExecutorService ses = Executors.newScheduledThreadPool(1);
  		Runnable task2 = () -> logger.log(Level.INFO, "Starting new task");
- 		ScheduledFuture<?> scheduledFuture = ses.schedule(task2, ConnectionConstants.SCHEDULER_DELAY, TimeUnit.SECONDS);
+ 		ScheduledFuture<?> scheduledFuture = ses.schedule(task2,
+                ConnectionConstants.SCHEDULER_DELAY, TimeUnit.SECONDS);
  		clientRunnable.setFuture(scheduledFuture);
  		while(messageIterator.hasNext()) {
  			messageIterator.next();

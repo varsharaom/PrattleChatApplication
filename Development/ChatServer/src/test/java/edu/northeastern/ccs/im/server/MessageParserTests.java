@@ -4,17 +4,23 @@ package edu.northeastern.ccs.im.server;
 import edu.northeastern.ccs.im.utils.ClientRunnableHelperUtil;
 import edu.northeastern.ccs.im.utils.MessageUtil;
 import edu.northeastern.ccs.serverim.Message;
+import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
 
 public class MessageParserTests {
 
+    private ClientRunnableHelper clientRunnableHelper;
+
+    @Before
+    public void beforeEach() {
+        clientRunnableHelper = new ClientRunnableHelper(null);
+    }
+
     @Test
     public void testParseValidRegisterMessage() {
         Message message = MessageUtil.getValidRegisterBroadcastMessage();
-
-        ClientRunnableHelper clientRunnableHelper = new ClientRunnableHelper(null, null);
         Message constructedMessage = clientRunnableHelper.getCustomConstructedMessage(message);
 
         assertTrue(constructedMessage.isRegisterMessage());
@@ -33,9 +39,7 @@ public class MessageParserTests {
     public void testParseValidLoginMessage() {
         Message message = MessageUtil.getValidLoginBroadcastMessage();
 
-        ClientRunnableHelper clientRunnableHelper = new ClientRunnableHelper(null, null);
         Message constructedMessage = clientRunnableHelper.getCustomConstructedMessage(message);
-
 
         assertTrue(constructedMessage.isLoginMessage());
         assertNotNull("Constructed message content is empty", message.getText());
@@ -53,7 +57,6 @@ public class MessageParserTests {
     public void testParseValidDirectMessage() {
         Message message = MessageUtil.getValidDirectBroadcastMessage();
 
-        ClientRunnableHelper clientRunnableHelper = new ClientRunnableHelper(null, null);
         Message constructedMessage = clientRunnableHelper.getCustomConstructedMessage(message);
 
         assertTrue(constructedMessage.isDirectMessage());
@@ -72,7 +75,6 @@ public class MessageParserTests {
     public void testParseValidGroupMessage() {
         Message message = MessageUtil.getValidGroupBroadcastMessage();
 
-        ClientRunnableHelper clientRunnableHelper = new ClientRunnableHelper(null, null);
         Message constructedMessage = clientRunnableHelper.getCustomConstructedMessage(message);
 
         assertTrue(constructedMessage.isGroupMessage());
@@ -87,4 +89,11 @@ public class MessageParserTests {
         assertEquals(constructedMessage.getMsgSender(), message.getMsgSender());
     }
 
+//    @Test
+//    public void testInvalidMessage() {
+//        Message message = MessageUtil.getInValidBroadcastMessage();
+//        Message constructedMessage = clientRunnableHelper.getCustomConstructedMessage(message);
+//
+//        assertNull(constructedMessage);
+//    }
 }
