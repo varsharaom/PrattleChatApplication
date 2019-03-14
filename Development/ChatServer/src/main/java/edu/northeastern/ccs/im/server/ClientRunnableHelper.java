@@ -19,13 +19,16 @@ class ClientRunnableHelper {
         this.queryHandler = queryHandler;
     }
 
-    /** Checks if the login credentials entered are valid*/
+    /**
+     * Checks if the login credentials entered are valid
+     */
     private boolean isValidLoginCredentials(Message msg) {
-        String password = queryHandler.getPassword(msg.getName());
-        return password.equals(msg.getText());
+        return queryHandler.validateLogin(msg.getName(), msg.getText());
     }
 
-    /** Checks if the registration information are all valid enough to allow a new user creation */
+    /**
+     * Checks if the registration information are all valid enough to allow a new user creation
+     */
     private boolean isValidRegistrationInfo(Message msg) {
         return !queryHandler.checkUserNameExists(msg.getName());
     }
@@ -63,7 +66,7 @@ class ClientRunnableHelper {
         if(msg.isRegisterMessage()) {
             handleRegisterMessage(msg);
         }
-        else if(msg.isLoginMessage()) {
+        else {
             handleLoginMessage(msg);
         }
     }
@@ -116,7 +119,7 @@ class ClientRunnableHelper {
     Message getCustomConstructedMessage(Message msg) {
 
         String content = msg.getText();
-        Message message = msg;
+        Message message = null;
 
         if (msg.getText().startsWith(ClientRunnableConstants.CUSTOM_COMMAND_PREFIX)) {
 
@@ -130,14 +133,15 @@ class ClientRunnableHelper {
                     message = constructCustomRegisterMessage(restOfMessageText);
                 }
                 else if (type.equalsIgnoreCase(MessageType.DIRECT.toString())) {
-                    message = constructCustomDirectMessage(restOfMessageText, message.getMsgSender());
+                    message = constructCustomDirectMessage(restOfMessageText, msg.getMsgSender());
                 }
                 else if (type.equalsIgnoreCase(MessageType.LOGIN.toString())) {
                     message = constructCustomLoginMessage(restOfMessageText);
                 }
                 else if (type.equalsIgnoreCase(MessageType.GROUP.toString())) {
-                    message = constructCustomGroupMessage(restOfMessageText, message.getMsgSender());
+                    message = constructCustomGroupMessage(restOfMessageText, msg.getMsgSender());
                 }
+
             }
         }
         return message;

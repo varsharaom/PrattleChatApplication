@@ -48,7 +48,8 @@ public class ClientRunnableHelperTests {
         Message message = MessageUtil.getValidLoginBroadcastMessage();
         Message loginMessage = clientRunnableHelper.getCustomConstructedMessage(message);
 
-        when(iQueryHandler.getPassword(anyString())).thenReturn(loginMessage.getText());
+        when(iQueryHandler.validateLogin(anyString(), anyString()))
+                .thenReturn(true);
         clientRunnableHelper.handleMessages(loginMessage);
 
     }
@@ -57,7 +58,7 @@ public class ClientRunnableHelperTests {
     public void testHandleInvalidLogin() {
         Message message = MessageUtil.getValidLoginBroadcastMessage();
 //       the text is a compound string sent from client which in turn is used as invalid password
-        when(iQueryHandler.getPassword(anyString())).thenReturn(message.getText());
+        when(iQueryHandler.validateLogin(anyString(),anyString())).thenReturn(false);
         Message loginMessage = clientRunnableHelper.getCustomConstructedMessage(message);
         clientRunnableHelper.handleMessages(loginMessage);
     }
