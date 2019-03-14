@@ -28,7 +28,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ClientRunnableHelperTests {
+public class ClientRunnableHelperTest {
 
     @InjectMocks
     ClientRunnable clientRunnable;
