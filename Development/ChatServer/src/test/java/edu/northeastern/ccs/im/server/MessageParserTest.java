@@ -9,7 +9,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-public class MessageParserTests {
+public class MessageParserTest {
 
     private ClientRunnableHelper clientRunnableHelper;
 
@@ -89,11 +89,4 @@ public class MessageParserTests {
         assertEquals(constructedMessage.getMsgSender(), message.getMsgSender());
     }
 
-//    @Test
-//    public void testInvalidMessage() {
-//        Message message = MessageUtil.getInValidBroadcastMessage();
-//        Message constructedMessage = clientRunnableHelper.getCustomConstructedMessage(message);
-//
-//        assertNull(constructedMessage);
-//    }
 }

@@ -92,7 +92,7 @@ public class PrattleTest {
 		assertEquals("[]", returned.toString());
 	}
 
-	@Test
+//	@Test
 	public void testUsingClient() {
 
 		IMConnection connection1;

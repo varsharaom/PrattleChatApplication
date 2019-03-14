@@ -197,7 +197,7 @@ class ClientRunnableHelper {
 
             }
             else {
-                Message.makeErrorMessage(msg.getMsgSender(),
+                message = Message.makeErrorMessage(msg.getMsgSender(),
                         ClientRunnableConstants.EMPTY_MESSAGE_ERR);
             }
         }
