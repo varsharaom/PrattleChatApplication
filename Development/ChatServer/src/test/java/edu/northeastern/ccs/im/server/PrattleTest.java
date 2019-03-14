@@ -1,6 +1,8 @@
 package edu.northeastern.ccs.im.server;
 
 import edu.northeastern.ccs.im.IMConnection;
+import edu.northeastern.ccs.im.clientextensions.CommandLineMainExtended;
+import edu.northeastern.ccs.im.constants.ClientStringConstants;
 import edu.northeastern.ccs.im.constants.ConnectionConstants;
 import edu.northeastern.ccs.im.constants.MessageConstants;
 import edu.northeastern.ccs.serverim.Message;
@@ -8,7 +10,9 @@ import edu.northeastern.ccs.serverim.NetworkConnection;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.contrib.java.lang.system.TextFromStandardInputStream;
 import org.mockito.Mockito;
 
 import java.io.IOException;
@@ -19,6 +23,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.contrib.java.lang.system.TextFromStandardInputStream.emptyStandardInputStream;
 
 
 public class PrattleTest {
@@ -26,6 +31,9 @@ public class PrattleTest {
 	
     private SocketChannel sc;
     private NetworkConnection nc;
+    
+    @Rule
+	public final TextFromStandardInputStream systemInMock = emptyStandardInputStream();
 
     @Before
     public void setUp() {
@@ -94,9 +102,46 @@ public class PrattleTest {
         IMConnection connection2;
 
         try{
+        	
+        	       	
+
             Thread thread = new Thread(new MainTest());
             thread.start();
 
+        	
+    				String[] arr = { "localhost", Integer.toString(4545) };
+
+    			systemInMock.provideLines(
+    					/*ClientStringConstants.WRONG_LOGIN_MSG1,
+    					ClientStringConstants.WRONG_LOGIN_MSG2,
+    					ClientStringConstants.WRONG_LOGIN_MSG3,
+    					ClientStringConstants.WRONG_RGSTR_MSG1,
+    					ClientStringConstants.WRONG_RGSTR_MSG2,
+    					ClientStringConstants.WRONG_RGSTR_MSG3,
+    					ClientStringConstants.WRONG_RGSTR_MSG4,*/
+    					"$$LGN# project pwd",
+    					"$$GRP# ela hi",
+    					"$$GRP# ela bye",
+    					"$$GRP# ela go",
+    					/*ClientStringConstants.WRONG_GRP_MSG,
+    					ClientStringConstants.WRONG_GRP_MSG2,
+    					ClientStringConstants.WRONG_GRP_MSG3,
+
+    					ClientStringConstants.WRONG_DRCT_MSG3,
+    					ClientStringConstants.WRONG_DRCT_MSG4,
+    					ClientStringConstants.CORRECT_GRP_MSG,
+    					ClientStringConstants.RANDOM_MSG1,
+    					ClientStringConstants.RANDOM_MSG2,
+    					ClientStringConstants.CHANGE_MSG,
+    					ClientStringConstants.WRONG_DRCT_MSG2,
+    					ClientStringConstants.CORRECT_DRCT_MSG1,
+    					ClientStringConstants.RANDOM_MSG2
+    					,*/
+    					ClientStringConstants.BYE_MSG
+
+    					);
+    //clm.main(arr);
+    			CommandLineMainExtended.main(arr);        	
             Prattle.broadcastMessage(Message.makeBroadcastMessage(MessageConstants.SIMPLE_USER,
                     MessageConstants.BROADCAST_TEXT_MESSAGE));
             connection1 = new IMConnection(ConnectionConstants.HOST,
@@ -113,6 +158,7 @@ public class PrattleTest {
             Prattle.broadcastMessage(Message.makeBroadcastMessage(MessageConstants.SIMPLE_USER,
                     MessageConstants.BROADCAST_TEXT_MESSAGE));
             Prattle.stopServer();
+    
         }
         catch (Exception e) {
             Prattle.stopServer();

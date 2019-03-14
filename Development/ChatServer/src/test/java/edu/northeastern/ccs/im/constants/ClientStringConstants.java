@@ -23,7 +23,7 @@ public class ClientStringConstants {
 	 
 	 public static final String HOST_NAME = "localhost";
 	 
-	 public static final String CORRECT_LOGIN_MSG = "$$LGN# myusername password";
+	 public static final String CORRECT_LOGIN_MSG = "$$LGN# abc 123";
 	 
 	 public static final String CORRECT_REG_MSG = "$$RGSTR# myusername password";
 	 
@@ -69,11 +69,6 @@ public class ClientStringConstants {
 	 
 	 public static final String DISCONNECT = "Disconnecting..";
 	 
-	 
-	 
-	 
-
-	 
-	 
+	  
 	 
 }

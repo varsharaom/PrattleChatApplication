@@ -100,12 +100,13 @@ public class CommandLineMainExtended {
 
 		// use broadcast message to login or register or send any messages
 		boolean fail = true;
+		boolean isAuthenticationMessageSent = false;
 		String uname = "";
 		do {
 			// Check if the user has typed in a line of text to broadcast to the IM server.
 			// If there is a line of text to be
 			// broadcast:
-			if (scan.hasNext()) {
+			if (!isAuthenticationMessageSent && scan.hasNext()) {
 				// Read in the text they typed
 				String userinput = scan.nextLine();
 
@@ -119,6 +120,7 @@ public class CommandLineMainExtended {
 							uname = strs[1];
 							// this is a broadcast message
 							connect.sendMessage(userinput);
+							isAuthenticationMessageSent = true;
 							break;
 						default:
 							logger.info(Keywords.ERROR_MSG);
@@ -133,6 +135,7 @@ public class CommandLineMainExtended {
 				if (messageText.equals(Keywords.LOGIN_SUCCESS_MSG) || messageText.equals(Keywords.REGISTER_SUCCESS_MSG)) {
 					fail = false;
 				} else {
+					isAuthenticationMessageSent = false;
 					logger.info(Keywords.LOGIN_MSG);
 				}
 			}
@@ -194,5 +197,6 @@ public class CommandLineMainExtended {
 			}
 			readNewMessages(mess, connect);
 		}
+		System.out.println("Program end");
 	}
 }
