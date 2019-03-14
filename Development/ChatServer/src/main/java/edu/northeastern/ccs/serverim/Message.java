@@ -1,9 +1,4 @@
 package edu.northeastern.ccs.serverim;
-
-
-import edu.northeastern.ccs.im.datahandler.EntityHandler;
-
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -18,7 +13,7 @@ import java.util.Set;
  * 
  * @version 1.3
  */
-public class Message implements IMessage{
+public class Message {
 
 	/** The string sent when a field is null. */
 	private static final String NULL_OUTPUT = "--";
@@ -301,10 +296,5 @@ public class Message implements IMessage{
 			result += " " + NULL_OUTPUT.length() + " " + NULL_OUTPUT;
 		}
 		return result;
-	}
-
-	@Override
-	public Set<User> getReceiver() {
-		return EntityHandler.getAllUsers();
 	}
 }

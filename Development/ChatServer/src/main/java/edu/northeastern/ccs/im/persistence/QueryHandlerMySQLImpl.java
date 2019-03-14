@@ -39,38 +39,38 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
         return null;
     }
 
-    public int updateUserLastLogin(User user) {
+    public int updateUserLastLogin(long userID) {
         Date date = new Date(System.currentTimeMillis());
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String query = String.format("UPDATE %s set %s = '%s' WHERE %s = %d;",
                 DBConstants.USER_TABLE, DBConstants.USER_LAST_SEEN, format.format(date),
-                DBConstants.USER_ID, user.getUserID());
+                DBConstants.USER_ID, userID);
         return doUpdateQuery(query);
     }
 
-    public List<Long> getCircles(User user) {
-        long userId = user.getUserID();
-        String query = String.format("SELECT * from %s WHERE %s = %d OR %s = %d;",
-                DBConstants.CIRCLES_TABLE, DBConstants.CIRCLE_USER_1_ID, user.getUserID(),
-                DBConstants.CIRCLE_USER_2_ID, user.getUserID());
-        List<Long> circle = new ArrayList<>();
-        ResultSet rs = doSelectQuery(query);
-        if (rs != null) {
-            try {
-                while (rs.next()) {
-                    if (rs.getLong(2) != userId) {
-                        circle.add(rs.getLong(2));
-                    }
-                    if (rs.getLong(3) != userId) {
-                        circle.add(rs.getLong(3));
-                    }
-                }
-            } catch (SQLException e) {
-                logger.log(Level.INFO, SQL_EXCEPTION_MSG);
-            }
-        }
-        return circle;
-    }
+//    public List<Long> getCircles(User user) {
+//        long userId = user.getUserID();
+//        String query = String.format("SELECT * from %s WHERE %s = %d OR %s = %d;",
+//                DBConstants.CIRCLES_TABLE, DBConstants.CIRCLE_USER_1_ID, user.getUserID(),
+//                DBConstants.CIRCLE_USER_2_ID, user.getUserID());
+//        List<Long> circle = new ArrayList<>();
+//        ResultSet rs = doSelectQuery(query);
+//        if (rs != null) {
+//            try {
+//                while (rs.next()) {
+//                    if (rs.getLong(2) != userId) {
+//                        circle.add(rs.getLong(2));
+//                    }
+//                    if (rs.getLong(3) != userId) {
+//                        circle.add(rs.getLong(3));
+//                    }
+//                }
+//            } catch (SQLException e) {
+//                logger.log(Level.INFO, SQL_EXCEPTION_MSG);
+//            }
+//        }
+//        return circle;
+//    }
 
     @Override
     public Boolean validateLogin(String username, String password) {
@@ -98,14 +98,26 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
         return doInsertQuery(query);
     }
 
-    public List<Message> getMessagesSinceLastLogin(User user) {
-        String query = String.format("SELECT * from %s WHERE %s > %d AND %s = %s;",
-                DBConstants.MESSAGE_TABLE, DBConstants.MESSAGE_TIME, user.getLastSeen(), DBConstants.MESSAGE_RECEIVER_ID, user.getUserID());
+    public List<Message> getMessagesSinceLastLogin(long userID) {
+        //ToDo : join group id to get all messages where the user is a part of.
+        String query = String.format(
+                "SELECT %s, %s from %s inner join %s on %s.%s = %s.%s WHERE %s >= %s AND %s = %s;",
+                //select columns
+                DBConstants.MESSAGE_BODY, DBConstants.USER_LAST_SEEN,
+                //join tables
+                DBConstants.MESSAGE_TABLE, DBConstants.USER_TABLE,
+                //join column one
+                DBConstants.MESSAGE_TABLE, DBConstants.MESSAGE_RECEIVER_ID,
+                ////join column two
+                DBConstants.USER_TABLE, DBConstants.USER_ID,
+                //Filters
+                DBConstants.MESSAGE_TIME, DBConstants.USER_LAST_SEEN, DBConstants.MESSAGE_RECEIVER_ID, userID);
+        System.out.println(query);
         ResultSet rs = doSelectQuery(query);
         List<Message> messages = new ArrayList<>();
         try {
             while (rs.next()) {
-                Message m = Message.makeBroadcastMessage("placeholder", rs.getString("body"));
+                Message m = Message.makeBroadcastMessage("placeholder", rs.getString(1));
                 messages.add(m);
             }
         } catch (SQLException e) {
@@ -125,6 +137,30 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
             logger.log(Level.INFO, DBConstants.EXCEPTION_MESSAGE);
         }
         return false;
+    }
+
+    @Override
+    public List<User> getAllUsers() {
+        String query = String.format("SELECT %s, %s, %s FROM %s;",
+                DBConstants.USER_ID, DBConstants.USER_USERNAME,
+                DBConstants.USER_NICKNAME, DBConstants.USER_TABLE);
+        ResultSet rs = doSelectQuery(query);
+        List<User> userList = new ArrayList<>();
+
+        Date date = new Date(System.currentTimeMillis());
+        try {
+            while (rs.next()) {
+//                System.out.println(rs.getString(2));
+                User user = new User(rs.getLong(1),
+                        rs.getString(2), rs.getString(3), date.getTime());
+                userList.add(user);
+            }
+        } catch (SQLException e) {
+            logger.log(Level.INFO, SQL_EXCEPTION_MSG);
+        }
+
+
+        return userList;
     }
 
     public ResultSet doSelectQuery(String query) {

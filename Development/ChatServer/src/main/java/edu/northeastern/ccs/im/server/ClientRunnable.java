@@ -5,10 +5,12 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ScheduledFuture;
 
+import edu.northeastern.ccs.im.persistence.QueryFactory;
 import edu.northeastern.ccs.im.persistence.QueryHandlerMySQLImpl;
 import edu.northeastern.ccs.serverim.ChatLogger;
 import edu.northeastern.ccs.serverim.Message;
 import edu.northeastern.ccs.serverim.NetworkConnection;
+import edu.northeastern.ccs.serverim.User;
 
 /**
  * Instances of this class handle all of the incoming communication from a
@@ -33,7 +35,7 @@ public class ClientRunnable implements Runnable {
 	private NetworkConnection connection;
 
 	/** Id for the user for whom we use this ClientRunnable to communicate. */
-	private int userId;
+	private long userId;
 
 	/** Name that the client used when connecting to the server. */
 	private String name;
@@ -82,7 +84,7 @@ public class ClientRunnable implements Runnable {
 		// terminate for inactivity.
 		timer = new ClientTimer();
 
-		clientRunnableHelper = new ClientRunnableHelper(this, new QueryHandlerMySQLImpl());
+		clientRunnableHelper = new ClientRunnableHelper(this, QueryFactory.getQueryHandler());
 	}
 
 	/**
@@ -95,17 +97,24 @@ public class ClientRunnable implements Runnable {
 			if (messageIter.hasNext()) {
 				// If a message exists, try to use it to initialize the connection
 				Message msg = messageIter.next();
-				if (setUserName(msg.getName())) {
+				if (setUserDetails(msg.getName(), msg.getSenderId())) {
 					// Update the time until we terminate this client due to inactivity.
 					timer.updateAfterInitialization();
 					// Set that the client is initialized.
 					initialized = true;
+					loadPendingMessages();
 				} else {
 					initialized = false;
 				}
 			}
 		}
 	}
+
+	private void loadPendingMessages(){
+		QueryFactory.getQueryHandler().getMessagesSinceLastLogin(userId);
+		//enqueueMessage(message);
+	}
+
 
 
 	/**
@@ -126,13 +135,13 @@ public class ClientRunnable implements Runnable {
 	 * @param userName The new value to which we will try to set userName.
 	 * @return True if the username is deemed acceptable; false otherwise
 	 */
-	private boolean setUserName(String userName) {
+	private boolean setUserDetails(String userName, long id) {
 		boolean result = false;
 		// Now make sure this name is legal.
 		if (userName != null) {
 			// Optimistically set this users ID number.
 			setName(userName);
-			userId = hashCode();
+			userId = id;
 			result = true;
 		} else {
 			// Clear this name; we cannot use it. *sigh*
@@ -174,7 +183,7 @@ public class ClientRunnable implements Runnable {
 	 * 
 	 * @return Returns the current value of userName.
 	 */
-	public int getUserId() {
+	public long getUserId() {
 		return userId;
 	}
 
@@ -234,7 +243,7 @@ public class ClientRunnable implements Runnable {
 				else {
 //					parsing and creating a sophisticated message object out of the actual one
 					msg = clientRunnableHelper.getCustomConstructedMessage(msg);
-					this.setUserName(msg.getName());
+					this.setUserDetails(msg.getName(), msg.getSenderId());
 					clientRunnableHelper.handleMessages(msg);
 				}
 			}
@@ -281,6 +290,8 @@ public class ClientRunnable implements Runnable {
 	 */
 	public void terminateClient() {
 		// Once the communication is done, close this connection.
+
+		QueryFactory.getQueryHandler().updateUserLastLogin(userId);
 		connection.close();
 		// Remove the client from our client listing.
 		Prattle.removeClient(this);
