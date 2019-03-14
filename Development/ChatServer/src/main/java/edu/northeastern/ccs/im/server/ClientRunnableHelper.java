@@ -52,7 +52,7 @@ class ClientRunnableHelper {
         if(msg.isDirectMessage()) {
             Prattle.handleDirectMessages(msg);
         }
-        else if(msg.isGroupMessage()) {
+        else {
             Prattle.handleGroupMessage(msg);
         }
         queryHandler.storeMessage(msg.getSenderId(), msg.getReceiverId(), msg.getMessageType(),
@@ -87,9 +87,9 @@ class ClientRunnableHelper {
         else {
             acknowledgementText = ClientRunnableConstants.REGISTER_FAILURE_MSG;
         }
-        handShakeMessage = Message.makeRegisterAckMessage(MessageType.REGISTER, message.getName(),
-                acknowledgementText);
-        Prattle.registerUser(handShakeMessage);
+
+        handShakeMessage = Message.makeRegisterAckMessage(MessageType.REGISTER, message.getName(), acknowledgementText);
+        Prattle.registerOrLoginUser(handShakeMessage);
     }
 
 
@@ -105,9 +105,9 @@ class ClientRunnableHelper {
         else {
             acknowledgementText = ClientRunnableConstants.LOGIN_FAILURE_MSG;
         }
-        handShakeMessage = Message.makeLoginAckMessage(MessageType.LOGIN, message.getMsgSender(),
-                message.getMsgSender(), acknowledgementText);
-        Prattle.loginUser(handShakeMessage);
+
+        handShakeMessage = Message.makeLoginAckMessage(MessageType.LOGIN, message.getMsgSender(), message.getMsgSender(), acknowledgementText);
+        Prattle.registerOrLoginUser(handShakeMessage);
     }
 
     /** Checks if the message is either a login or a registration request */

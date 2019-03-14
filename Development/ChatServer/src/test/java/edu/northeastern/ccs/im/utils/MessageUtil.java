@@ -16,9 +16,19 @@ public final class MessageUtil {
         return Message.makeBroadcastMessage(MessageConstants.SIMPLE_USER,
                 getValidLoginMessageText());
     }
+    
+    public static Message getValidLoginBroadcastMessageWithDifferentUser() {
+        return Message.makeBroadcastMessage(MessageConstants.SECOND_USER,
+                getValidLoginMessageText());
+    }
 
     public static Message getValidDirectBroadcastMessage() {
         return Message.makeBroadcastMessage(MessageConstants.SIMPLE_USER,
+                getValidDirectMessageText());
+    }
+    
+    public static Message getValidDirectBroadcastMessageDifferentUser() {
+        return Message.makeBroadcastMessage(MessageConstants.SECOND_USER,
                 getValidDirectMessageText());
     }
 
@@ -37,22 +47,22 @@ public final class MessageUtil {
     private static String getValidDirectMessageText() {
         return ClientRunnableConstants.CUSTOM_COMMAND_PREFIX
                 + ClientRunnableConstants.DIRECT_MSG_IDENTIFIER
-                + ClientRunnableConstants.CUSTOM_COMMAND_SUFFIX
-                + " receiverName Hey this is a direct message to sender";
+                + ClientRunnableConstants.CUSTOM_COMMAND_SUFFIX + " "
+                + MessageConstants.SIMPLE_USER + " Hey this is a direct message to sender";
     }
 
     private static String getValidRegisterMessageText() {
         return ClientRunnableConstants.CUSTOM_COMMAND_PREFIX
                 + ClientRunnableConstants.REGISTER_MSG_IDENTIFIER
-                + ClientRunnableConstants.CUSTOM_COMMAND_SUFFIX
-                + " username password";
+                + ClientRunnableConstants.CUSTOM_COMMAND_SUFFIX + " "
+                + MessageConstants.SIMPLE_USER + " password";
     }
 
     private static String getValidLoginMessageText() {
         return ClientRunnableConstants.CUSTOM_COMMAND_PREFIX
                 + ClientRunnableConstants.LOGIN_MSG_IDENTIFIER
-                + ClientRunnableConstants.CUSTOM_COMMAND_SUFFIX
-                + " username password";
+                + ClientRunnableConstants.CUSTOM_COMMAND_SUFFIX + " "
+                + MessageConstants.SIMPLE_USER + " password";
     }
 
 
