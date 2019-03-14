@@ -47,17 +47,7 @@ public abstract class Prattle {
 		active = new ConcurrentLinkedQueue<>();
 	}
 
-	public static void registerUser(Message msg) {
-		msg.setMessageType(MessageType.BROADCAST);
-		for (ClientRunnable tt : active) {
-			if ((tt.isInitialized()) && tt.getName().equals(msg.getMsgSender())) {
-				tt.enqueueMessage(msg);
-			}
-		}
-	}
-
-
-	public static void loginUser(Message msg) {
+	public static void registerOrLoginUser(Message msg) {
 		msg.setMessageType(MessageType.BROADCAST);
 		for (ClientRunnable tt : active) {
 			if ((tt.isInitialized()) && tt.getName().equals(msg.getMsgSender())) {
@@ -93,18 +83,15 @@ public abstract class Prattle {
 	}
 
 	public static void handleGroupMessage(Message message) {
-		String groupName = message.getMsgReceiver();
+		/*String groupName = message.getMsgReceiver();
 
-		Set<String> groupMembers = null;
-
-//		TODO - use the above groupId and get all the users in that group.
-//		 For now it is an empty new list
+		Set<String> groupMembers = message.getGroupMembers();
 
 		for (ClientRunnable tt : active) {
 			if (tt.isInitialized() && (groupMembers.contains(tt.getName()))) {
 				tt.enqueueMessage(message);
 			}
-		}
+		}*/
 	}
 
 	/**

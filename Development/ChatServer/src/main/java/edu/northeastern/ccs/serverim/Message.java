@@ -133,7 +133,11 @@ public class Message implements IMessage{
 	public MessageType getMessageType() {
 		return msgType;
 	}
-
+	
+	public Set<String> getGroupMembers() {
+		return groupMembers;
+	}
+	
 	/**
 	 * Create a new message stating the name with which the user would like to
 	 * login.
