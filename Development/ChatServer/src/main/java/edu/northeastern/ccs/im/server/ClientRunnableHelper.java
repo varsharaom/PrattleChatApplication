@@ -97,7 +97,7 @@ class ClientRunnableHelper {
             acknowledgementText = ClientRunnableConstants.REGISTER_FAILURE_MSG;
         }
         handShakeMessage = Message.makeRegisterAckMessage(MessageType.REGISTER, message.getName(), acknowledgementText);
-        Prattle.registerUser(handShakeMessage);
+        Prattle.registerOrLoginUser(handShakeMessage);
     }
 
 
@@ -114,7 +114,7 @@ class ClientRunnableHelper {
             acknowledgementText = ClientRunnableConstants.LOGIN_FAILURE_MSG;
         }
         handShakeMessage = Message.makeLoginAckMessage(MessageType.LOGIN, message.getMsgSender(), message.getMsgSender(), acknowledgementText);
-        Prattle.loginUser(handShakeMessage);
+        Prattle.registerOrLoginUser(handShakeMessage);
     }
 
     /** Checks if the message is either a login or a registration request */
