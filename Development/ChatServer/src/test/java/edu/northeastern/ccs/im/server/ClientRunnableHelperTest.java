@@ -5,7 +5,6 @@ import edu.northeastern.ccs.im.persistence.IQueryHandler;
 import edu.northeastern.ccs.im.utils.MessageUtil;
 import edu.northeastern.ccs.im.utils.NetworkConnectionTestUtil;
 import edu.northeastern.ccs.serverim.Message;
-import edu.northeastern.ccs.serverim.MessageType;
 import edu.northeastern.ccs.serverim.NetworkConnection;
 
 import org.junit.After;
@@ -17,7 +16,6 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
@@ -31,12 +29,6 @@ import java.util.logging.Logger;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ClientRunnableHelperTest {
-
-    @InjectMocks
-    ClientRunnable clientRunnable;
-
-    @Mock
-    NetworkConnection networkConnection;
 
     @InjectMocks
     ClientRunnableHelper clientRunnableHelper;
@@ -129,16 +121,16 @@ public class ClientRunnableHelperTest {
     public void testHandleLoginMessageNotInitialized() throws NoSuchFieldException, IllegalAccessException {
         ConcurrentLinkedQueue<ClientRunnable> queue = new ConcurrentLinkedQueue<>();
 
-        when(networkConnection.iterator()).thenReturn(NetworkConnectionTestUtil.getMessageIterator());
-        clientRunnable.setName(MessageConstants.SIMPLE_USER);
-        queue.add(clientRunnable);
+        ClientRunnable tt = new ClientRunnable(nc);
+        tt.setName(MessageConstants.SIMPLE_USER);
+        queue.add(tt);
         Field active = Prattle.class.getDeclaredField("active");
         active.setAccessible(true);
         active.set(null, queue);
 
         Message message = MessageUtil.getValidLoginBroadcastMessageWithDifferentUser();
         
-        clientRunnable.run();
+        tt.run();
 
         when(iQueryHandler.validateLogin(anyString(), anyString())).thenReturn(true);
         Message loginMessage = clientRunnableHelper.getCustomConstructedMessage(message);
@@ -254,16 +246,16 @@ public class ClientRunnableHelperTest {
     public void testHandleDirectMessageNotInitialized()  throws NoSuchFieldException, IllegalAccessException {
         ConcurrentLinkedQueue<ClientRunnable> queue = new ConcurrentLinkedQueue<>();
 
-        when(networkConnection.iterator()).thenReturn(NetworkConnectionTestUtil.getMessageIterator());
-        clientRunnable.setName(MessageConstants.SIMPLE_USER);
-        queue.add(clientRunnable);
+        ClientRunnable tt = new ClientRunnable(nc);
+        tt.setName(MessageConstants.SIMPLE_USER);
+        queue.add(tt);
         Field active = Prattle.class.getDeclaredField("active");
         active.setAccessible(true);
         active.set(null, queue);
 
         Message message = MessageUtil.getValidDirectBroadcastMessageDifferentUser();
         
-        clientRunnable.run();
+        tt.run();
 
         when(iQueryHandler.validateLogin(anyString(), anyString())).thenReturn(true);
         Message directMessage = clientRunnableHelper.getCustomConstructedMessage(message);
@@ -284,15 +276,7 @@ public class ClientRunnableHelperTest {
     public void testInvalidMessageInput() {
         Message message = MessageUtil.getInvalidBroadcastMessage();
         Message invalidMessage = clientRunnableHelper.getCustomConstructedMessage(message);
-
-        assertTrue(MessageUtil.isErrorMessage(invalidMessage));
-    }
-
-    @Test
-    public void testEmptyMessageContent() {
-        Message message = MessageUtil.getEmptyBroadcastMessage();
-        Message constructedMessage = clientRunnableHelper.getCustomConstructedMessage(message);
-        assertEquals(message, constructedMessage);
+        assertEquals(message, invalidMessage);
     }
     
 }
