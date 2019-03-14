@@ -62,13 +62,13 @@ public class MessageParserTest {
         assertTrue(constructedMessage.isDirectMessage());
         assertNotNull("Constructed message content is empty", message.getText());
 
-        String[] content = message.getText().split(" ", 3);
-        assertEquals(3, content.length);
+        String[] content = message.getText().split(" ", 4);
+        assertEquals(4, content.length);
 
         assertTrue(ClientRunnableHelperUtil.isValidDirectMessageIdentifer(content[0]));
-        assertEquals(constructedMessage.getMsgReceiver(), content[1]);
-        assertEquals(constructedMessage.getText(), content[2]);
-        assertEquals(constructedMessage.getMsgSender(), message.getMsgSender());
+        assertEquals(constructedMessage.getMsgSender(), content[1]);
+        assertEquals(constructedMessage.getMsgReceiver(), content[2]);
+        assertEquals(constructedMessage.getText(), content[3]);
     }
 
     @Test
@@ -80,13 +80,14 @@ public class MessageParserTest {
         assertTrue(constructedMessage.isGroupMessage());
         assertNotNull("Constructed message content is empty", message.getText());
 
-        String[] content = message.getText().split(" ", 3);
-        assertEquals(3, content.length);
+        String[] content = message.getText().split(" ", 4);
+        assertEquals(4, content.length);
 
         assertTrue(ClientRunnableHelperUtil.isValidGroupMessageIdentifer(content[0]));
-        assertEquals(constructedMessage.getMsgReceiver(), content[1]);
-        assertEquals(constructedMessage.getText(), content[2]);
-        assertEquals(constructedMessage.getMsgSender(), message.getMsgSender());
+        assertEquals(constructedMessage.getMsgSender(), content[1]);
+        assertEquals(constructedMessage.getMsgReceiver(), content[2]);
+        assertEquals(constructedMessage.getText(), content[3]);
+
     }
 
 }
