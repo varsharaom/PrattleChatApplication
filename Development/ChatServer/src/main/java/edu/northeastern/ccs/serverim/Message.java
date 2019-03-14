@@ -1,6 +1,7 @@
 package edu.northeastern.ccs.serverim;
 
 
+import edu.northeastern.ccs.im.constants.ClientRunnableConstants;
 import edu.northeastern.ccs.im.datahandler.EntityHandler;
 
 import java.util.Map;
@@ -173,6 +174,15 @@ public class Message implements IMessage{
 		return new Message(MessageType.GROUP, msgSender, groupName, msgText);
 	}
 
+	public static Message makeErrorMessage(String msgSender, String msgText) {
+		return new Message(MessageType.BROADCAST, msgSender, getErrorMessageText(msgText));
+	}
+
+	private static String getErrorMessageText(String plainMessageText) {
+		return ClientRunnableConstants.CUSTOM_COMMAND_PREFIX
+				+ ClientRunnableConstants.ERROR_MSG_IDENTIFIER
+				+ ClientRunnableConstants.CUSTOM_COMMAND_SUFFIX + " " + plainMessageText;
+	}
 	/**
 	 * Given a handle, name and text, return the appropriate message instance or an
 	 * instance from a subclass of message.

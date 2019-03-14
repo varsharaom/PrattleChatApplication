@@ -47,7 +47,7 @@ public abstract class Prattle {
 		active = new ConcurrentLinkedQueue<>();
 	}
 
-	public static void registerOrLoginUser(Message msg) {
+	static void registerOrLoginUser(Message msg) {
 		msg.setMessageType(MessageType.BROADCAST);
 		for (ClientRunnable tt : active) {
 			if ((tt.isInitialized()) && tt.getName().equals(msg.getMsgSender())) {
@@ -62,7 +62,7 @@ public abstract class Prattle {
 	 * 
 	 * @param message Message that the client sent.
 	 */
-	public static void broadcastMessage(Message message) {
+	static void broadcastMessage(Message message) {
 		// Loop through all of our active threads		
 		for (ClientRunnable tt : active) {
 			// Do not send the message to any clients that are not ready to receive it.			
@@ -73,7 +73,7 @@ public abstract class Prattle {
 		}
 	}
 
-	public static void handleDirectMessages(Message message) {
+	static void sendDirectMessage(Message message) {
 		message.setMessageType(MessageType.BROADCAST);
 		for (ClientRunnable tt : active) {
 			if (tt.isInitialized() && (tt.getName().equals(message.getMsgReceiver()))) {
@@ -82,7 +82,16 @@ public abstract class Prattle {
 		}
 	}
 
-	public static void handleGroupMessage(Message message) {
+	static void sendErrorMessage(Message message) {
+		message.setMessageType(MessageType.BROADCAST);
+		for (ClientRunnable tt : active) {
+			if (tt.isInitialized() && (tt.getName().equals(message.getMsgSender()))) {
+				tt.enqueueMessage(message);
+			}
+		}
+	}
+
+	static void sendGroupMessage(Message message) {
 		/*String groupName = message.getMsgReceiver();
 
 		Set<String> groupMembers = message.getGroupMembers();
@@ -100,7 +109,7 @@ public abstract class Prattle {
 	 * @param dead Thread which had been handling all the I/O for a client who has
 	 *             since quit.
 	 */
-	public static void removeClient(ClientRunnable dead) {
+	static void removeClient(ClientRunnable dead) {
 		// Test and see if the thread was in our list of active clients so that we
 		// can remove it.
 		if (!active.remove(dead)) {
@@ -111,7 +120,7 @@ public abstract class Prattle {
 	/**
 	 * Terminates the server.
 	 */
-	public static void stopServer() {
+	static void stopServer() {
 		isReady = false;
 	}
 
