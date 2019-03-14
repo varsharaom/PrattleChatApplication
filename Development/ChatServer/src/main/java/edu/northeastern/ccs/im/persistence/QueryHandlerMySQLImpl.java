@@ -49,30 +49,6 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
         return doUpdateQuery(query);
     }
 
-//    public List<Long> getCircles(User user) {
-//        long userId = user.getUserID();
-//        String query = String.format("SELECT * from %s WHERE %s = %d OR %s = %d;",
-//                DBConstants.CIRCLES_TABLE, DBConstants.CIRCLE_USER_1_ID, user.getUserID(),
-//                DBConstants.CIRCLE_USER_2_ID, user.getUserID());
-//        List<Long> circle = new ArrayList<>();
-//        ResultSet rs = doSelectQuery(query);
-//        if (rs != null) {
-//            try {
-//                while (rs.next()) {
-//                    if (rs.getLong(2) != userId) {
-//                        circle.add(rs.getLong(2));
-//                    }
-//                    if (rs.getLong(3) != userId) {
-//                        circle.add(rs.getLong(3));
-//                    }
-//                }
-//            } catch (SQLException e) {
-//                logger.log(Level.INFO, SQL_EXCEPTION_MSG);
-//            }
-//        }
-//        return circle;
-//    }
-
     @Override
     public Boolean validateLogin(String username, String password) {
         String query = String.format("SELECT * from %s WHERE %s =\"%s\" and %s = \"%s\"",
@@ -151,7 +127,6 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
         Date date = new Date(System.currentTimeMillis());
         try {
             while (rs.next()) {
-//                System.out.println(rs.getString(2));
                 User user = new User(rs.getLong(1),
                         rs.getString(2), rs.getString(3), date.getTime());
                 userList.add(user);
@@ -166,18 +141,14 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
 
     public ResultSet doSelectQuery(String query) {
         PreparedStatement statement = null;
+        ResultSet rs = null;
         try {
             statement = connection.prepareStatement(query);
+            if (statement != null) {
+                rs = statement.executeQuery();
+            }
         } catch (SQLException e) {
             logger.log(Level.INFO, SQL_EXCEPTION_MSG);
-        }
-        ResultSet rs = null;
-        if (statement != null) {
-            try {
-                rs = statement.executeQuery();
-            } catch (SQLException e) {
-                logger.log(Level.INFO, SQL_EXCEPTION_MSG);
-            }
         }
         return rs;
     }
@@ -196,6 +167,14 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
             }
         } catch (SQLException e) {
             logger.log(Level.INFO, SQL_EXCEPTION_MSG);
+        } finally {
+            if (statement != null) {
+                try {
+                    statement.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
         }
         return key;
     }
@@ -208,6 +187,14 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
             updateCode = statement.executeUpdate(query);
         } catch (SQLException e) {
             logger.log(Level.INFO, SQL_EXCEPTION_MSG);
+        } finally {
+            if (statement != null) {
+                try {
+                    statement.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
         }
         return updateCode;
     }
