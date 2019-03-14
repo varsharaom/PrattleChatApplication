@@ -31,7 +31,6 @@ public class QueryHandlerMySQLImplTest {
 
     @Test
     public void testCreateUserSuccess() {
-        handler = new QueryHandlerMySQLImpl();
         User res = handler.createUser(QueryConstants.USERNAME, QueryConstants.PASS, QueryConstants.NICKNAME);
         assertEquals(res.getUserName(), QueryConstants.USERNAME);
 
@@ -42,7 +41,6 @@ public class QueryHandlerMySQLImplTest {
 
     @Test
     public void testUpdateUserLastLoginSuccess() {
-        handler = new QueryHandlerMySQLImpl();
         User res = handler.createUser(QueryConstants.USERNAME, QueryConstants.PASS, QueryConstants.NICKNAME);
         int id = handler.updateUserLastLogin(res.getUserID());
         assertNotNull(id);
@@ -54,7 +52,6 @@ public class QueryHandlerMySQLImplTest {
 
     @Test
     public void testUpdateUserLastLoginFailure() {
-        handler = new QueryHandlerMySQLImpl();
         User res = handler.createUser(QueryConstants.USERNAME, QueryConstants.PASS, QueryConstants.NICKNAME);
         User invalidUser = new User(-1L, res.getUserName(), res.getNickName(), res.getLastSeen());
         int id = handler.updateUserLastLogin(invalidUser.getUserID());
@@ -67,7 +64,6 @@ public class QueryHandlerMySQLImplTest {
 
     @Test
     public void testGetPasswordSuccess() {
-        handler = new QueryHandlerMySQLImpl();
         User res = handler.createUser(QueryConstants.USERNAME, QueryConstants.PASS, QueryConstants.NICKNAME);
         assertTrue(handler.validateLogin(QueryConstants.USERNAME, QueryConstants.PASS));
 
@@ -78,7 +74,6 @@ public class QueryHandlerMySQLImplTest {
 
     @Test
     public void testGetPasswordFailure() {
-        handler = new QueryHandlerMySQLImpl();
         User res = handler.createUser(QueryConstants.USERNAME, QueryConstants.PASS, QueryConstants.NICKNAME);
         assertFalse(handler.validateLogin(QueryConstants.USERNAME, ""));
 
@@ -89,7 +84,6 @@ public class QueryHandlerMySQLImplTest {
 
     @Test
     public void testStoreMessageSuccess() {
-        handler = new QueryHandlerMySQLImpl();
         long res = handler.storeMessage(QueryConstants.SENDER_ID, QueryConstants.RECEIVER_ID, MessageType.DIRECT, QueryConstants.MESSAGE_TEXT);
         assertNotEquals(res, 0);
 
@@ -111,8 +105,6 @@ public class QueryHandlerMySQLImplTest {
 
     @Test
     public void testGetMessagesSinceLastLoginSuccess() {
-        handler = new QueryHandlerMySQLImpl();
-
         User user = handler.createUser(QueryConstants.USERNAME, QueryConstants.PASS, QueryConstants.NICKNAME);
         handler.updateUserLastLogin(user.getUserID());
         long msgId = handler.storeMessage(QueryConstants.SENDER_ID, user.getUserID(), MessageType.DIRECT, QueryConstants.MESSAGE_TEXT);
@@ -129,7 +121,6 @@ public class QueryHandlerMySQLImplTest {
 
     @Test
     public void checkUserNameExistsSuccess() {
-        handler = new QueryHandlerMySQLImpl();
         User user = handler.createUser(QueryConstants.USERNAME, QueryConstants.PASS, QueryConstants.NICKNAME);
         boolean res = handler.checkUserNameExists(user.getUserName());
         assertTrue(res);
@@ -140,7 +131,6 @@ public class QueryHandlerMySQLImplTest {
 
     @Test
     public void checkUserNameExistsFailure() {
-        handler = new QueryHandlerMySQLImpl();
         User user = handler.createUser(QueryConstants.USERNAME, QueryConstants.PASS, QueryConstants.NICKNAME);
         boolean res = handler.checkUserNameExists(QueryConstants.INVALID_USERNAME);
         assertFalse(res);

@@ -113,7 +113,6 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
                 DBConstants.USER_TABLE, DBConstants.USER_ID,
                 //Filters
                 DBConstants.MESSAGE_TIME, DBConstants.USER_LAST_SEEN, DBConstants.MESSAGE_RECEIVER_ID, userID);
-        System.out.println(query);
         ResultSet rs = doSelectQuery(query);
         List<Message> messages = new ArrayList<>();
         try {
