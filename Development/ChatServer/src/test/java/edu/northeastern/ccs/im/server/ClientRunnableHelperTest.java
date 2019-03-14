@@ -5,6 +5,7 @@ import edu.northeastern.ccs.im.persistence.IQueryHandler;
 import edu.northeastern.ccs.im.utils.MessageUtil;
 import edu.northeastern.ccs.im.utils.NetworkConnectionTestUtil;
 import edu.northeastern.ccs.serverim.Message;
+import edu.northeastern.ccs.serverim.MessageType;
 import edu.northeastern.ccs.serverim.NetworkConnection;
 
 import org.junit.After;
@@ -16,6 +17,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
@@ -282,7 +284,15 @@ public class ClientRunnableHelperTest {
     public void testInvalidMessageInput() {
         Message message = MessageUtil.getInvalidBroadcastMessage();
         Message invalidMessage = clientRunnableHelper.getCustomConstructedMessage(message);
-        assertEquals(message, invalidMessage);
+
+        assertTrue(MessageUtil.isErrorMessage(invalidMessage));
+    }
+
+    @Test
+    public void testEmptyMessageContent() {
+        Message message = MessageUtil.getEmptyBroadcastMessage();
+        Message constructedMessage = clientRunnableHelper.getCustomConstructedMessage(message);
+        assertEquals(message, constructedMessage);
     }
     
 }

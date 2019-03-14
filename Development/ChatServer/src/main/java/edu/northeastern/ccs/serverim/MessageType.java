@@ -34,6 +34,8 @@ public enum  MessageType {
 
 	GROUP("GRP"),
 
+	ERROR("ERR"),
+
 	/**
 	 * Message sent by the user to start the logging out process and sent by the
 	 * server once the logout process completes.
