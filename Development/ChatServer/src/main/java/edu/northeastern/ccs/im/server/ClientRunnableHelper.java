@@ -73,7 +73,7 @@ class ClientRunnableHelper {
         else {
             Prattle.sendGroupMessage(msg);
         }
-        queryHandler.storeMessage(msg.getSenderId(), msg.getReceiverId(), msg.getMessageType(),
+        queryHandler.storeMessage(msg.getName(), msg.getMsgReceiver(), msg.getMessageType(),
                 msg.getText());
     }
 

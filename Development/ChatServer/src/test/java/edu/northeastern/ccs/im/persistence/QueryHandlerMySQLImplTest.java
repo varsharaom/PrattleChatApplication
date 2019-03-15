@@ -85,7 +85,7 @@ public class QueryHandlerMySQLImplTest {
 
     @Test
     public void testStoreMessageSuccess() {
-        long res = handler.storeMessage(QueryConstants.SENDER_ID, QueryConstants.RECEIVER_ID, MessageType.DIRECT, QueryConstants.MESSAGE_TEXT);
+        long res = handler.storeMessage(QueryConstants.SENDER_USERNAME, QueryConstants.RECEIVER_USERNAME, MessageType.DIRECT, QueryConstants.MESSAGE_TEXT);
         assertNotEquals(res, 0);
 
         // Tear down
@@ -95,15 +95,15 @@ public class QueryHandlerMySQLImplTest {
 
     @Test
     public void testGetMessagesSinceLastLoginSuccess() {
-        User user = handler.createUser(QueryConstants.USERNAME, QueryConstants.PASS, QueryConstants.NICKNAME);
-        handler.updateUserLastLogin(user.getUserID());
-        long msgId = handler.storeMessage(QueryConstants.SENDER_ID, user.getUserID(), MessageType.DIRECT, QueryConstants.MESSAGE_TEXT);
+        long receiverID = handler.getUserID(QueryConstants.RECEIVER_USERNAME);
+        handler.updateUserLastLogin(receiverID);
+        long msgId = handler.storeMessage(QueryConstants.SENDER_USERNAME, QueryConstants.RECEIVER_USERNAME, MessageType.DIRECT, QueryConstants.MESSAGE_TEXT);
 
-        List<Message> messages = handler.getMessagesSinceLastLogin(user.getUserID());
+        List<Message> messages = handler.getMessagesSinceLastLogin(receiverID);
         assertEquals(QueryConstants.MESSAGE_TEXT, messages.get(0).getText());
 
         // Tear down
-        String query = String.format(QueryConstants.TEARDOWN_DELETE, DBConstants.USER_TABLE, DBConstants.USER_ID, user.getUserID());
+        String query = String.format(QueryConstants.TEARDOWN_DELETE, DBConstants.USER_TABLE, DBConstants.USER_ID, receiverID);
         handler.doUpdateQuery(query);
         query = String.format(QueryConstants.TEARDOWN_DELETE, DBConstants.MESSAGE_TABLE, DBConstants.MESSAGE_ID, msgId);
         handler.doUpdateQuery(query);
