@@ -16,12 +16,20 @@ public interface IQueryHandler {
     public Boolean validateLogin(String username, String password);
 
     //Message Queries
-    public long storeMessage(long senderID, long receiverID, MessageType type, String msgText);
+    public long storeMessage(String senderName, String receiverName, MessageType type, String msgText);
+
+    public Message getMessage(long messageID);
+
+    public void deleteMessage(long messageID);
 
     public List<Message> getMessagesSinceLastLogin(long userID);
 
     public boolean checkUserNameExists(String name);
 
     public List<User> getAllUsers();
+
+    public String getUserName(long userID);
+
+    public long getUserID(String userName);
 
 }

@@ -37,49 +37,59 @@ public enum  MessageType {
 	DELETE("DLT"),
 
 	ERROR("ERR"),
-	
+
 	GET_USERS("GT_USRS"),
 
-	/**
-	 * Message sent by the user to start the logging out process and sent by the
-	 * server once the logout process completes.
-	 */
-	QUIT("BYE");
+    /**
+     * Message sent by the user to start the logging out process and sent by the
+     * server once the logout process completes.
+     */
+    QUIT("BYE");
 
-	/** Store the short name of this message type. */
-	private String abbreviation;
+    /**
+     * Store the short name of this message type.
+     */
+    private String abbreviation;
 
-	/** Integer equivalent for the key. */
-	private int index;
+    /**
+     * Integer equivalent for the key.
+     */
+    private int index;
 
-	private static final Map<Integer, MessageType> lookup = new HashMap<>();
-	
-	static {
-		// Create a reverse lookup hash map
-		for(MessageType t : MessageType.values()) {
-			lookup.put(t.getMessageTypeValue(), t);
-		}
-	}
-	
-	public static MessageType get(int messageType) {
-		return lookup.get(messageType);
-	}
-	
-	public int getMessageTypeValue() {
-		return index;
-	}
+    private static final Map<Integer, MessageType> lookup = new HashMap<>();
+    private static final Map<String, MessageType> strLookup = new HashMap<>();
 
-	MessageType(String abbrev) {
-		abbreviation = abbrev;
-	}
+    static {
+        // Create a reverse lookup hash map
+        for (MessageType t : MessageType.values()) {
+            lookup.put(t.getMessageTypeValue(), t);
+            strLookup.put(t.abbreviation, t);
+        }
+    }
 
-	/**
-	 * Return a representation of this Message as a String.
-	 * 
-	 * @return Three letter abbreviation for this type of message.
-	 */
-	@Override
-	public String toString() {
-		return abbreviation;
-	}
+    public static MessageType get(int messageType) {
+        return lookup.get(messageType);
+    }
+
+    public int getMessageTypeValue() {
+        return index;
+    }
+
+    public static MessageType get(String abbreviation) {
+        return strLookup.get(abbreviation);
+    }
+
+    MessageType(String abbrev) {
+        abbreviation = abbrev;
+    }
+
+    /**
+     * Return a representation of this Message as a String.
+     *
+     * @return Three letter abbreviation for this type of message.
+     */
+    @Override
+    public String toString() {
+        return abbreviation;
+    }
 }

@@ -28,16 +28,6 @@ public class Message {
     private MessageType msgType;
 
     /**
-     * The sender's user id
-     */
-    private long senderId;
-
-    /**
-     * This is either an user's id or a group's id - based on private or group message
-     */
-    private long receiverId;
-
-    /**
      * The first argument used in the message. This will be the sender's identifier.
      */
     private String msgSender;
@@ -58,21 +48,6 @@ public class Message {
     }
 
     /**
-     * The sender's unique user id
-     */
-    public long getSenderId() {
-        return senderId;
-    }
-
-    /**
-     * The receiver's unique user id
-     */
-    public long getReceiverId() {
-        return receiverId;
-    }
-
-
-    /**
      * Create a new message that contains actual IM text. The type of distribution
      * is defined by the handle and we must also set the name of the message sender,
      * message recipient, and the text to send.
@@ -90,19 +65,16 @@ public class Message {
         msgText = text;
     }
 
-    public Message(MessageType handle, String sender, String receiver, String text) {
+    public Message(long id, MessageType handle, String sender, String receiver, String text) {
         this.msgType = handle;
         this.msgSender = sender;
         this.msgReceiver = receiver;
         this.msgText = text;
+        this.id = id;
     }
 
-
-    public Message(MessageType handle, long id, String msgSender, String msgReceiver) {
-        this.msgType = handle;
-        this.id = id;
-        this.msgSender = msgSender;
-        this.msgReceiver = msgReceiver;
+    public Message(MessageType handle, String sender, String receiver, String text) {
+        this(-1L, handle, sender, receiver, text);
     }
 
     /**
@@ -181,7 +153,7 @@ public class Message {
     public static Message makeGroupMessage(String msgSender, String groupName, String msgText) {
         return new Message(MessageType.GROUP, msgSender, groupName, msgText);
     }
-    
+
     public static Message makeGetUsersMessage(String msgSender, String msgReceiver, String msgText) {
         return new Message(MessageType.GET_USERS, msgSender, msgReceiver, msgText);
     }
@@ -191,8 +163,9 @@ public class Message {
     }
 
     public static Message makeDeleteMessage(long messageId, String msgSender, String msgReceiver) {
-        return new Message(MessageType.DELETE, messageId, msgSender, msgReceiver);
+        return new Message(messageId, MessageType.DELETE, msgSender, msgReceiver, "");
     }
+
     private static String getErrorMessageText(String plainMessageText) {
         return ClientRunnableConstants.CUSTOM_COMMAND_PREFIX
                 + ClientRunnableConstants.ERROR_MSG_IDENTIFIER
@@ -288,7 +261,7 @@ public class Message {
     public boolean isGroupMessage() {
         return (msgType == MessageType.GROUP);
     }
-    
+
     public boolean isGetUsersMessage() {
         return (msgType == MessageType.GET_USERS);
     }
