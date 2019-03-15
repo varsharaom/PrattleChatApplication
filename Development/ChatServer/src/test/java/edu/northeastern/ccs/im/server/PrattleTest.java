@@ -1,5 +1,7 @@
 package edu.northeastern.ccs.im.server;
 
+import edu.northeastern.ccs.im.IMConnection;
+import edu.northeastern.ccs.im.constants.ConnectionConstants;
 import edu.northeastern.ccs.im.constants.MessageConstants;
 import edu.northeastern.ccs.serverim.Message;
 import edu.northeastern.ccs.serverim.NetworkConnection;
@@ -125,4 +127,48 @@ public class PrattleTest {
 				Message.makeBroadcastMessage(MessageConstants.SIMPLE_USER, MessageConstants.BROADCAST_TEXT_MESSAGE));
 	}
 
+	@Test
+	public void testPrattleMainException() {
+
+		IMConnection connection1;
+		IMConnection connection2;
+
+		try {
+			Thread thread = new Thread(new MainTest());
+			thread.start();
+
+			Class<Prattle> pr = Prattle.class;
+			Field isReady = pr.getDeclaredField("isReady");
+			isReady.setAccessible(true);
+			isReady.set(pr, false);
+
+			Prattle.broadcastMessage(Message.makeBroadcastMessage(MessageConstants.SIMPLE_USER,
+					MessageConstants.BROADCAST_TEXT_MESSAGE));
+			connection1 = new IMConnection(ConnectionConstants.HOST, ConnectionConstants.PORT,
+					MessageConstants.BROADCAST_TEXT_MESSAGE);
+			connection1.connect();
+
+			connection2 = new IMConnection(ConnectionConstants.HOST, ConnectionConstants.PORT,
+					MessageConstants.BROADCAST_TEXT_MESSAGE);
+			connection2.connect();
+
+			connection1.sendMessage(MessageConstants.BROADCAST_TEXT_MESSAGE);
+			connection2.sendMessage(MessageConstants.BROADCAST_TEXT_MESSAGE);
+
+			Prattle.broadcastMessage(Message.makeBroadcastMessage(MessageConstants.SIMPLE_USER,
+					MessageConstants.BROADCAST_TEXT_MESSAGE));
+		} catch (Exception e) {
+			Prattle.stopServer();
+
+		}
+
+	}
+}
+
+class MainTest implements Runnable {
+
+	@Override
+	public void run() {
+		Prattle.main(new String[0]);
+	}
 }

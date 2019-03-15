@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.net.InetSocketAddress;
 
+import edu.northeastern.ccs.im.IMConnection;
+import edu.northeastern.ccs.im.constants.ConnectionConstants;
 import edu.northeastern.ccs.im.constants.MessageConstants;
 import edu.northeastern.ccs.serverim.Message;
 import edu.northeastern.ccs.serverim.NetworkConnection;
@@ -12,6 +14,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
@@ -25,6 +28,7 @@ import java.util.logging.Logger;
 
 import static edu.northeastern.ccs.im.server.ServerConstants.*;
 import static junit.framework.TestCase.assertTrue;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
 
@@ -127,6 +131,103 @@ public class NetworkConnectionTest {
                 MessageConstants.BROADCAST_TEXT_MESSAGE);
         nc.sendMessage(message);
         nc.close();
+    }
+
+    @Test(expected = AssertionError.class)
+    public void testConstructor() {
+        ServerSocketChannel serverSocketLocal = null;
+        try {
+            serverSocketLocal = ServerSocketChannel.open();
+            serverSocketLocal.configureBlocking(false);
+        } catch (IOException e) {
+            logger.log(Level.INFO, ""+e.getStackTrace());
+        }
+
+        Selector selector = null;
+        IMConnection connection1 = null;
+        NetworkConnection networkConnection = null;
+        try {
+            serverSocketLocal.socket().bind(new InetSocketAddress(ServerConstants.PORT));
+            selector = SelectorProvider.provider().openSelector();
+            serverSocketLocal.register(selector, SelectionKey.OP_ACCEPT);
+
+            connection1 = new IMConnection(ConnectionConstants.HOST,
+                    ConnectionConstants.PORT, MessageConstants.BROADCAST_TEXT_MESSAGE);
+            connection1.connect();
+
+            SocketChannel socket = serverSocketLocal.accept();
+            socket.close();
+            networkConnection = new NetworkConnection(socket);
+        } catch (IOException e) {
+            logger.log(Level.INFO, ""+e.getStackTrace());
+        } finally {
+            try {
+                serverSocketLocal.close();
+                selector.close();
+                connection1.disconnect();
+                networkConnection.close();
+            } catch (IOException e) {
+                logger.log(Level.INFO, ""+e.getStackTrace());
+            }
+        }
+    }
+
+    @Test
+    public void testMessageIteratorHasNext() {
+        ServerSocketChannel serverSocketLocal = null;
+        try {
+            serverSocketLocal = ServerSocketChannel.open();
+            serverSocketLocal.configureBlocking(false);
+        } catch (IOException e) {
+            logger.log(Level.INFO, ""+e.getStackTrace());
+        }
+
+
+        Selector selector = null;
+        IMConnection connection1 = null;
+        NetworkConnection networkConnection = null;
+        SocketChannel socket = null;
+        try {
+            serverSocketLocal.socket().bind(new InetSocketAddress(ServerConstants.PORT));
+            selector = SelectorProvider.provider().openSelector();
+            serverSocketLocal.register(selector, SelectionKey.OP_ACCEPT);
+
+            connection1 = new IMConnection(ConnectionConstants.HOST,
+                    ConnectionConstants.PORT, MessageConstants.BROADCAST_TEXT_MESSAGE);
+            connection1.connect();
+
+            socket = serverSocketLocal.accept();
+            connection1.sendMessage(MessageConstants.BROADCAST_TEXT_MESSAGE);
+            networkConnection = new NetworkConnection(socket);
+            Iterator<Message> itr = networkConnection.iterator();
+            assertTrue(itr.hasNext());
+            StringBuilder builder = new StringBuilder();
+            while ((itr.hasNext())) {
+                builder.append(itr.next());
+            }
+            assertEquals("HLO 20 broadcastTextMessage 0 BCT 20 " +
+                    "broadcastTextMessage 20 broadcastTextMessage", builder.toString());
+            connection1.sendMessage("");
+            itr = networkConnection.iterator();
+            builder = new StringBuilder();
+            while ((itr.hasNext())) {
+                builder.append(itr.next());
+            }
+            assertEquals("BCT 20 broadcastTextMessage 2 --", builder.toString());
+
+        } catch (IOException e) {
+            logger.log(Level.INFO, ""+e.getStackTrace());
+        } finally {
+            try {
+                socket.close();
+                serverSocketLocal.close();
+                selector.close();
+                connection1.disconnect();
+                networkConnection.close();
+            } catch (IOException e) {
+                logger.log(Level.INFO, ""+e.getStackTrace());
+            }
+        }
     }
 
 }
