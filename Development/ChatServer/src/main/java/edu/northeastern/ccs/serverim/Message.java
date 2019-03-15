@@ -16,6 +16,7 @@ import edu.northeastern.ccs.im.constants.ClientRunnableConstants;
  */
 public class Message {
 
+    private long id;
     /**
      * The string sent when a field is null.
      */
@@ -25,16 +26,6 @@ public class Message {
      * The handle of the message.
      */
     private MessageType msgType;
-
-    /**
-     * The sender's user id
-     */
-    private long senderId;
-
-    /**
-     * This is either an user's id or a group's id - based on private or group message
-     */
-    private long receiverId;
 
     /**
      * The first argument used in the message. This will be the sender's identifier.
@@ -48,21 +39,13 @@ public class Message {
      */
     private String msgText;
 
-
-    /**
-     * The sender's unique user id
-     */
-    public long getSenderId() {
-        return senderId;
+    public void setId(long id) {
+        this.id = id;
     }
 
-    /**
-     * The receiver's unique user id
-     */
-    public long getReceiverId() {
-        return receiverId;
+    public long getId() {
+        return this.id;
     }
-
 
     /**
      * Create a new message that contains actual IM text. The type of distribution
@@ -82,13 +65,17 @@ public class Message {
         msgText = text;
     }
 
-    public Message(MessageType handle, String sender, String receiver, String text) {
+    public Message(long id, MessageType handle, String sender, String receiver, String text) {
         this.msgType = handle;
         this.msgSender = sender;
         this.msgReceiver = receiver;
         this.msgText = text;
+        this.id = id;
     }
 
+    public Message(MessageType handle, String sender, String receiver, String text) {
+        this(-1L, handle, sender, receiver, text);
+    }
 
     /**
      * Create a new message that contains a command sent the server that requires a
@@ -167,8 +154,16 @@ public class Message {
         return new Message(MessageType.GROUP, msgSender, groupName, msgText);
     }
 
+    public static Message makeGetUsersMessage(String msgSender, String msgReceiver, String msgText) {
+        return new Message(MessageType.GET_USERS, msgSender, msgReceiver, msgText);
+    }
+
     public static Message makeErrorMessage(String msgSender, String msgText) {
         return new Message(MessageType.BROADCAST, msgSender, getErrorMessageText(msgText));
+    }
+
+    public static Message makeDeleteMessage(long messageId, String msgSender, String msgReceiver) {
+        return new Message(messageId, MessageType.DELETE, msgSender, msgReceiver, "");
     }
 
     private static String getErrorMessageText(String plainMessageText) {
@@ -259,8 +254,16 @@ public class Message {
         return (msgType == MessageType.DIRECT);
     }
 
+    public boolean isDeleteMessage() {
+        return (msgType == MessageType.DELETE);
+    }
+
     public boolean isGroupMessage() {
         return (msgType == MessageType.GROUP);
+    }
+
+    public boolean isGetUsersMessage() {
+        return (msgType == MessageType.GET_USERS);
     }
 
     public void setMessageType(MessageType type) {
@@ -298,4 +301,5 @@ public class Message {
         }
         return result;
     }
+
 }

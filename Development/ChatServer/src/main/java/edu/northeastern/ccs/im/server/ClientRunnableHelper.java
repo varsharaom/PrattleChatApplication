@@ -2,6 +2,10 @@ package edu.northeastern.ccs.im.server;
 
 import edu.northeastern.ccs.serverim.Message;
 import edu.northeastern.ccs.serverim.MessageType;
+import edu.northeastern.ccs.serverim.User;
+
+import java.util.List;
+
 import edu.northeastern.ccs.im.constants.ClientRunnableConstants;
 import edu.northeastern.ccs.im.persistence.IQueryHandler;
 
@@ -45,11 +49,20 @@ class ClientRunnableHelper {
         else if (isDirectOrGroupMessage(message)){
             handleChatMessages(message);
         }
+        else if (message.isDeleteMessage()) {
+            handleDeleteMessages();
+        }
+        else if (isGetUsersMessage(message)) {
+        		handleGetUsersMessage(message);
+        }
         else {
             handleErrorMessages(message);
         }
     }
 
+    private void handleDeleteMessages() {
+        // DO nothing till the query handler integration is complete.
+    }
 
     /**
      * Checks if the action is register or login and performs the respective action.
@@ -73,8 +86,10 @@ class ClientRunnableHelper {
         else {
             Prattle.sendGroupMessage(msg);
         }
-        queryHandler.storeMessage(msg.getSenderId(), msg.getReceiverId(), msg.getMessageType(),
-                msg.getText());
+    }
+
+    private void handleGetUsersMessage(Message msg) {
+    		Prattle.sendDirectMessage(msg);
     }
 
     /**
@@ -138,6 +153,10 @@ class ClientRunnableHelper {
     private void handleDirectMessages(Message message) {
 
         if (isUserPresent(message.getMsgReceiver())) {
+            long messageId = queryHandler.storeMessage(message.getName(), message.getMsgReceiver(),
+                    message.getMessageType(),
+                    message.getText());
+            message.setId(messageId);
             Prattle.sendDirectMessage(message);
         }
 
@@ -158,6 +177,10 @@ class ClientRunnableHelper {
 
     private boolean isDirectOrGroupMessage(Message msg) {
         return (msg.isDirectMessage() || msg.isGroupMessage());
+    }
+
+    private boolean isGetUsersMessage(Message msg) {
+        return (msg.isGetUsersMessage());
     }
 
     /**
@@ -189,7 +212,12 @@ class ClientRunnableHelper {
                 else if (type.equalsIgnoreCase(MessageType.GROUP.toString())){
                     message = constructCustomGroupMessage(restOfMessageText);
                 }
-
+                else if (type.equalsIgnoreCase(MessageType.DELETE.toString())) {
+                    message = constructCustomDeleteMessage(restOfMessageText);
+                }
+                else if (type.equalsIgnoreCase(MessageType.GET_USERS.toString())){
+                    message = constructCustomGetUsersMessage(restOfMessageText);
+                }
                 else {
                     message = Message.makeErrorMessage(msg.getName(),
                             ClientRunnableConstants.UNKNOWN_MESSAGE_TYPE_ERR);
@@ -202,6 +230,16 @@ class ClientRunnableHelper {
             }
         }
         return message;
+    }
+
+    private Message constructCustomDeleteMessage(String restOfMessageText) {
+        String[] arr = restOfMessageText.split(" ", 3);
+
+        String senderName = arr[0];
+        String receiverName = arr[1];
+        long messageId = Long.parseLong(arr[2]);
+
+        return Message.makeDeleteMessage(messageId, senderName, receiverName);
     }
 
     /**
@@ -242,7 +280,7 @@ class ClientRunnableHelper {
         String receiver = arr[1];
         String actualContent = arr[2];
 
-        return Message.makeDirectMessage(sender, receiver, actualContent);
+        return Message.makeDirectMessage(sender, receiver, sender + " : " + actualContent);
     }
 
     /**
@@ -257,6 +295,19 @@ class ClientRunnableHelper {
         String actualContent = arr[2];
 
         return Message.makeGroupMessage(sender, groupName, actualContent);
+    }
+
+    private Message constructCustomGetUsersMessage(String restOfMessageText) {
+        String sender = restOfMessageText;
+        List<User> userList = queryHandler.getAllUsers();
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("List of users:\n");
+        for(User user: userList) {
+        		sb.append(user.getUserName() + "\n");
+        }
+
+        return Message.makeGetUsersMessage(sender, sender, sb.toString());
     }
 
     /**

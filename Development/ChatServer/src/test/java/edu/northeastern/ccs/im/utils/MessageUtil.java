@@ -28,6 +28,11 @@ public final class MessageUtil {
                 getValidDirectMessageText());
     }
     
+    public static Message getValidGetUsersMessage() {
+        return Message.makeBroadcastMessage(SIMPLE_USER,
+        		getValidGetUsersMessageText());
+    }
+    
     public static Message getValidDirectBroadcastMessageDifferentUser() {
         return Message.makeBroadcastMessage(MessageConstants.SECOND_USER,
                 getValidDirectMessageText());
@@ -38,6 +43,11 @@ public final class MessageUtil {
                 getValidGroupMessageText());
     }
 
+    public static Message getValidDeleteBroadcastMessage() {
+        return Message.makeBroadcastMessage(SIMPLE_USER,
+                getValidDeleteMessageText());
+    }
+
     public static Message getEmptyBroadcastMessage() {
         return Message.makeBroadcastMessage(SIMPLE_USER,
                 getInvalidMessageText());
@@ -46,6 +56,23 @@ public final class MessageUtil {
     public static Message getInvalidPrefixBroadcastMessage() {
         return Message.makeBroadcastMessage(SIMPLE_USER,
                 getEmptyMessageText());
+    }
+
+    public static Message getInvalidMessageWithInvalidType() {
+        return Message.makeBroadcastMessage(SIMPLE_USER,
+                getInvalidTypeMessageText());
+    }
+
+    private static String getInvalidTypeMessageText() {
+        return CUSTOM_COMMAND_PREFIX
+                + ""
+                + " sender receiver 142";
+    }
+
+    private static String getValidDeleteMessageText() {
+        return CUSTOM_COMMAND_PREFIX
+                + DELETE_MESSAGE_IDENTIFIER + CUSTOM_COMMAND_SUFFIX
+                + " sender receiver 142";
     }
 
     private static String getEmptyMessageText() {
@@ -67,6 +94,11 @@ public final class MessageUtil {
         return CUSTOM_COMMAND_PREFIX + DIRECT_MSG_IDENTIFIER
                 + CUSTOM_COMMAND_SUFFIX + " senderName receiverName "
                 + " Hey this is a direct message to sender";
+    }
+    
+    private static String getValidGetUsersMessageText() {
+        return CUSTOM_COMMAND_PREFIX + GET_USER_IDENTIFIER
+                + CUSTOM_COMMAND_SUFFIX + " senderName";
     }
 
     private static String getValidRegisterMessageText() {

@@ -35,4 +35,11 @@ public class ClientRunnableHelperUtil {
                         + ClientRunnableConstants.GROUP_MSG_IDENTIFIER +
                         ClientRunnableConstants.CUSTOM_COMMAND_SUFFIX);
     }
+
+    public static boolean isValidDeleteMessageIdentifer(String deleteMessageIdentifier) {
+        return deleteMessageIdentifier.equalsIgnoreCase(
+                ClientRunnableConstants.CUSTOM_COMMAND_PREFIX
+                        + ClientRunnableConstants.DELETE_MESSAGE_IDENTIFIER +
+                        ClientRunnableConstants.CUSTOM_COMMAND_SUFFIX);
+    }
 }
