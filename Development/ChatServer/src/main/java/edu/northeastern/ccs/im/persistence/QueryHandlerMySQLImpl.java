@@ -28,7 +28,7 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
     //-----------------User Queries-------------------
     public User createUser(String userName, String pass, String nickName) {
         Date date = new Date(System.currentTimeMillis());
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat format = new SimpleDateFormat(DBConstants.DATE_FORMAT);
         String query = String.format("INSERT into %s (%s,%s,%s,%s) VALUES('%s','%s','%s','%s');", DBConstants.USER_TABLE,
                 DBConstants.USER_USERNAME, DBConstants.USER_PASS, DBConstants.USER_NICKNAME, DBConstants.USER_LAST_SEEN,
                 userName, pass, nickName, format.format(date));
@@ -42,7 +42,7 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
 
     public int updateUserLastLogin(long userID) {
         Date date = new Date(System.currentTimeMillis());
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat format = new SimpleDateFormat(DBConstants.DATE_FORMAT);
         String query = String.format("UPDATE %s set %s = '%s' WHERE %s = %d;",
                 DBConstants.USER_TABLE, DBConstants.USER_LAST_SEEN, format.format(date),
                 DBConstants.USER_ID, userID);
@@ -66,7 +66,7 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
     //-----------------Message Queries-------------------
     public long storeMessage(long senderID, long receiverID, MessageType type, String msgText) {
         Date date = new Date(System.currentTimeMillis());
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat format = new SimpleDateFormat(DBConstants.DATE_FORMAT);
         String query = String.format("INSERT INTO %s (%s,%s,%s,%s,%s) VALUES(%d,%d,'%s','%s','%s');",
                 DBConstants.MESSAGE_TABLE, DBConstants.MESSAGE_SENDER_ID, DBConstants.MESSAGE_RECEIVER_ID,
                 DBConstants.MESSAGE_TYPE, DBConstants.MESSAGE_BODY, DBConstants.MESSAGE_TIME,
@@ -75,7 +75,7 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
     }
 
     public List<Message> getMessagesSinceLastLogin(long userID) {
-        //ToDo : join group id to get all messages where the user is a part of.
+        //To-Do : join group id to get all messages where the user is a part of.
         String query = String.format(
                 "SELECT %s, %s from %s inner join %s on %s.%s = %s.%s WHERE %s >= %s AND %s = %s;",
                 //select columns
@@ -154,6 +154,15 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
         } catch (SQLException e) {
             logger.log(Level.INFO, SQL_EXCEPTION_MSG);
         }
+        finally {
+            if (statement!=null){
+                try {
+                    statement.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
         return key;
     }
 
@@ -165,6 +174,15 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
             updateCode = statement.executeUpdate(query);
         } catch (SQLException e) {
             logger.log(Level.INFO, SQL_EXCEPTION_MSG);
+        }
+        finally {
+            if (statement!=null){
+                try {
+                    statement.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
         }
         return updateCode;
     }
