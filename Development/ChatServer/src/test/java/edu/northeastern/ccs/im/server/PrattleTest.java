@@ -98,7 +98,7 @@ public class PrattleTest {
 
 		try {
 
-			Thread thread = new Thread(new MainTest());
+			Thread thread =new Thread(() -> Prattle.main(new String[0]));
 			thread.start();
 			Prattle.broadcastMessage(Message.makeBroadcastMessage(MessageConstants.SIMPLE_USER,
 					MessageConstants.BROADCAST_TEXT_MESSAGE));
@@ -142,14 +142,6 @@ public class PrattleTest {
 		Prattle.stopServer();
 	}
 
-	class MainTest implements Runnable {
-
-		@Override
-		public void run() {
-			Prattle.main(new String[0]);
-		}
-	}
-
 	@Test
 	public void testBroadcastMessage() throws IllegalAccessException, NoSuchFieldException {
 
@@ -174,7 +166,7 @@ public class PrattleTest {
 		IMConnection connection2;
 
 		try {
-			Thread thread = new Thread(new MainTest());
+			Thread thread = new Thread(() -> Prattle.main(new String[0]));
 			thread.start();
 
 			Class<Prattle> pr = Prattle.class;
@@ -199,7 +191,8 @@ public class PrattleTest {
 					MessageConstants.BROADCAST_TEXT_MESSAGE));
 		} catch (Exception e) {
 			Prattle.stopServer();
-		}
-	}
 
+		}
+
+	}
 }
