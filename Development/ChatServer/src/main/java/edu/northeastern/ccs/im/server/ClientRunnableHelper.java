@@ -91,7 +91,7 @@ class ClientRunnableHelper {
     private void handleGetUsersMessage(Message msg) {
     		Prattle.sendDirectMessage(msg);
     }
-    
+
     /**
      * Error messages are routed back to the sender.
      */
@@ -153,7 +153,7 @@ class ClientRunnableHelper {
     private void handleDirectMessages(Message message) {
 
         if (isUserPresent(message.getMsgReceiver())) {
-            long messageId = queryHandler.storeMessage(message.getSenderId(), message.getReceiverId(),
+            long messageId = queryHandler.storeMessage(message.getName(), message.getMsgReceiver(),
                     message.getMessageType(),
                     message.getText());
             message.setId(messageId);
@@ -178,11 +178,10 @@ class ClientRunnableHelper {
     private boolean isDirectOrGroupMessage(Message msg) {
         return (msg.isDirectMessage() || msg.isGroupMessage());
     }
-    
+
     private boolean isGetUsersMessage(Message msg) {
         return (msg.isGetUsersMessage());
     }
-
 
     /**
      * Parse the input message text and return a custom constructed message according to the type.
@@ -297,12 +296,10 @@ class ClientRunnableHelper {
 
         return Message.makeGroupMessage(sender, groupName, actualContent);
     }
-    
+
     private Message constructCustomGetUsersMessage(String restOfMessageText) {
-    		String sender = restOfMessageText;
-    	
         List<User> userList = queryHandler.getAllUsers();
-        
+
         StringBuilder sb = new StringBuilder();
         sb.append("List of users:\n");
         for(User user: userList) {
