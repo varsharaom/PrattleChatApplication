@@ -78,20 +78,11 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
         String query = String.format("SELECT * from %s WHERE %s =\"%s\" and %s = \"%s\"",
                 DBConstants.USER_TABLE, DBConstants.USER_USERNAME, username, DBConstants.USER_PASS, password);
         
-        PreparedStatement statement = null;
-        try {
-            statement = connection.prepareStatement(query);
+        try(PreparedStatement statement = connection.prepareStatement(query);
+        		ResultSet rs = statement.executeQuery()) {
+            return rs.next();
         } catch (SQLException e) {
             logger.log(Level.INFO, SQL_EXCEPTION_MSG);
-        }
-        ResultSet rs = null;
-        if (statement != null) {
-            try {
-                rs = statement.executeQuery();
-                	return rs.next();
-            } catch (SQLException e) {
-                logger.log(Level.INFO, SQL_EXCEPTION_MSG);
-            }
         }
         return false;
     }
@@ -123,23 +114,14 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
                 DBConstants.MESSAGE_TIME, DBConstants.USER_LAST_SEEN, DBConstants.MESSAGE_RECEIVER_ID, userID);
         
         List<Message> messages = new ArrayList<>();
-        PreparedStatement statement = null;
-        try {
-            statement = connection.prepareStatement(query);
+        try(PreparedStatement statement = connection.prepareStatement(query);
+        		ResultSet rs = statement.executeQuery()) {
+            while (rs.next()) {
+                Message m = Message.makeBroadcastMessage("placeholder", rs.getString(1));
+                messages.add(m);
+            }
         } catch (SQLException e) {
             logger.log(Level.INFO, SQL_EXCEPTION_MSG);
-        }
-        ResultSet rs = null;
-        if (statement != null) {
-            try {
-                rs = statement.executeQuery();
-                while (rs.next()) {
-                    Message m = Message.makeBroadcastMessage("placeholder", rs.getString(1));
-                    messages.add(m);
-                }
-            } catch (SQLException e) {
-                logger.log(Level.INFO, SQL_EXCEPTION_MSG);
-            }
         }
         return messages;
     }
@@ -149,21 +131,12 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
         String query = String.format("SELECT * FROM %s WHERE %s = '%s';",
                 DBConstants.USER_TABLE, DBConstants.USER_USERNAME, name);
         
-        PreparedStatement statement = null;
         boolean isNameFound = false;
-        try {
-            statement = connection.prepareStatement(query);
+        try(PreparedStatement statement = connection.prepareStatement(query);
+        		ResultSet rs = statement.executeQuery()) {
+            isNameFound = rs.next();
         } catch (SQLException e) {
             logger.log(Level.INFO, SQL_EXCEPTION_MSG);
-        }
-        ResultSet rs = null;
-        if (statement != null) {
-            try {
-                rs = statement.executeQuery();
-                isNameFound = rs.next();
-            } catch (SQLException e) {
-                logger.log(Level.INFO, SQL_EXCEPTION_MSG);
-            }
         }
         return isNameFound;
     }
@@ -174,27 +147,18 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
                 DBConstants.USER_ID, DBConstants.USER_USERNAME,
                 DBConstants.USER_NICKNAME, DBConstants.USER_TABLE);
         
-        PreparedStatement statement = null;
-        try {
-            statement = connection.prepareStatement(query);
+        List<User> userList = new ArrayList<>();
+        try(PreparedStatement statement = connection.prepareStatement(query);
+        		ResultSet rs = statement.executeQuery()) {
+	        Date date = new Date(System.currentTimeMillis());
+	
+            while (rs.next()) {
+                User user = new User(rs.getLong(1),
+                        rs.getString(2), rs.getString(3), date.getTime());
+                userList.add(user);
+            }
         } catch (SQLException e) {
             logger.log(Level.INFO, SQL_EXCEPTION_MSG);
-        }
-        ResultSet rs = null;
-        List<User> userList = new ArrayList<>();
-        Date date = new Date(System.currentTimeMillis());
-
-        if (statement != null) {
-            try {
-                rs = statement.executeQuery();
-                while (rs.next()) {
-                    User user = new User(rs.getLong(1),
-                            rs.getString(2), rs.getString(3), date.getTime());
-                    userList.add(user);
-                }
-            } catch (SQLException e) {
-                logger.log(Level.INFO, SQL_EXCEPTION_MSG);
-            }
         }
         return userList;
     }
