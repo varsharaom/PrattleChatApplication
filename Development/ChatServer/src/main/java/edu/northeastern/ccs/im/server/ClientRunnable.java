@@ -1,6 +1,7 @@
 package edu.northeastern.ccs.im.server;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ScheduledFuture;
@@ -117,7 +118,10 @@ public class ClientRunnable implements Runnable {
     }
 
     private void loadPendingMessages() {
-        QueryFactory.getQueryHandler().getMessagesSinceLastLogin(userId);
+        List<Message> messageList = QueryFactory.getQueryHandler().getMessagesSinceLastLogin(userId);
+        for(Message message : messageList) {
+        		enqueueMessage(message);
+        }
     }
 
 
