@@ -34,6 +34,8 @@ public enum  MessageType {
 
 	GROUP("GRP"),
 
+	DELETE("DLT"),
+
 	ERROR("ERR"),
 
 	/**

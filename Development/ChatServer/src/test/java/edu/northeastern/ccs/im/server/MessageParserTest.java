@@ -79,7 +79,7 @@ public class MessageParserTest {
         Message constructedMessage = clientRunnableHelper.getCustomConstructedMessage(message);
 
         assertTrue(constructedMessage.isGroupMessage());
-        assertNotNull(MessageConstants.MESSAGE_EMPTY_ERROR, message.getText());
+        assertNotNull(message.getText());
 
         String[] content = message.getText().split(" ", 4);
         assertEquals(4, content.length);
@@ -89,6 +89,22 @@ public class MessageParserTest {
         assertEquals(constructedMessage.getMsgReceiver(), content[2]);
         assertEquals(constructedMessage.getText(), content[3]);
 
+    }
+
+    @Test
+    public void testParseValidDeleteMessage() {
+        Message message = MessageUtil.getValidDeleteBroadcastMessage();
+
+        Message constructedMessage = clientRunnableHelper.getCustomConstructedMessage(message);
+        assertTrue(constructedMessage.isDeleteMessage());
+
+        String[] content = message.getText().split(" ", 4);
+        assertEquals(4, content.length);
+
+        assertTrue(ClientRunnableHelperUtil.isValidDeleteMessageIdentifer(content[0]));
+        assertEquals(constructedMessage.getName(), content[1]);
+        assertEquals(constructedMessage.getMsgReceiver(), content[2]);
+        assertEquals(constructedMessage.getId(), Long.parseLong(content[3]));
     }
 
 }

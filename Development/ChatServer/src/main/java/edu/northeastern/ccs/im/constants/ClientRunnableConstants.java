@@ -11,6 +11,7 @@ public final class ClientRunnableConstants {
     public static final String GROUP_MSG_IDENTIFIER = "GRP";
     public static final String LOGIN_MSG_IDENTIFIER = "LGN";
     public static final String REGISTER_MSG_IDENTIFIER = "RGSTR";
+    public static final String DELETE_MESSAGE_IDENTIFIER = "DLT";
     public static final String ERROR_MSG_IDENTIFIER = "ERR";
 
     public static final String REGISTER_SUCCESS_MSG = "You have successfully registered " +
