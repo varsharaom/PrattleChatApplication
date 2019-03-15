@@ -37,6 +37,8 @@ public enum  MessageType {
 	DELETE("DLT"),
 
 	ERROR("ERR"),
+	
+	GET_USERS("GT_USRS"),
 
 	/**
 	 * Message sent by the user to start the logging out process and sent by the
