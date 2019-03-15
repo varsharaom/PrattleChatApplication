@@ -298,6 +298,7 @@ class ClientRunnableHelper {
     }
 
     private Message constructCustomGetUsersMessage(String restOfMessageText) {
+        String sender = restOfMessageText;
         List<User> userList = queryHandler.getAllUsers();
 
         StringBuilder sb = new StringBuilder();
