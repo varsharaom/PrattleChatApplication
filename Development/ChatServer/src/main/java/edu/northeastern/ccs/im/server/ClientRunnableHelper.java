@@ -280,7 +280,7 @@ class ClientRunnableHelper {
         String receiver = arr[1];
         String actualContent = arr[2];
 
-        return Message.makeDirectMessage(sender, receiver, actualContent);
+        return Message.makeDirectMessage(sender, receiver, sender + " : " + actualContent);
     }
 
     /**
@@ -298,19 +298,15 @@ class ClientRunnableHelper {
     }
 
     private Message constructCustomGetUsersMessage(String restOfMessageText) {
-    		String[] arr = restOfMessageText.split(" ", 3);
-
-    		String sender = arr[0];
-        String receiver = arr[1];
-
         List<User> userList = queryHandler.getAllUsers();
 
         StringBuilder sb = new StringBuilder();
+        sb.append("List of users:\n");
         for(User user: userList) {
         		sb.append(user.getUserName() + "\n");
         }
 
-        return Message.makeGetUsersMessage(sender, receiver, sb.toString());
+        return Message.makeGetUsersMessage(sender, sender, sb.toString());
     }
 
     /**
