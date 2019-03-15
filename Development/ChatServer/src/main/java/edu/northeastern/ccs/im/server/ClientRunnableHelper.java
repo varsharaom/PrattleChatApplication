@@ -2,6 +2,10 @@ package edu.northeastern.ccs.im.server;
 
 import edu.northeastern.ccs.serverim.Message;
 import edu.northeastern.ccs.serverim.MessageType;
+import edu.northeastern.ccs.serverim.User;
+
+import java.util.List;
+
 import edu.northeastern.ccs.im.constants.ClientRunnableConstants;
 import edu.northeastern.ccs.im.persistence.IQueryHandler;
 
@@ -45,6 +49,9 @@ class ClientRunnableHelper {
         else if (isDirectOrGroupMessage(message)){
             handleChatMessages(message);
         }
+        else if (isGetUsersMessage(message)) {
+        		handleGetUsersMessage(message);
+        }
         else {
             handleErrorMessages(message);
         }
@@ -77,6 +84,10 @@ class ClientRunnableHelper {
                 msg.getText());
     }
 
+    private void handleGetUsersMessage(Message msg) {
+    		Prattle.sendDirectMessage(msg);
+    }
+    
     /**
      * Error messages are routed back to the sender.
      */
@@ -159,6 +170,10 @@ class ClientRunnableHelper {
     private boolean isDirectOrGroupMessage(Message msg) {
         return (msg.isDirectMessage() || msg.isGroupMessage());
     }
+    
+    private boolean isGetUsersMessage(Message msg) {
+        return (msg.isGetUsersMessage());
+    }
 
     /**
      * Parse the input message text and return a custom constructed message according to the type.
@@ -189,7 +204,9 @@ class ClientRunnableHelper {
                 else if (type.equalsIgnoreCase(MessageType.GROUP.toString())){
                     message = constructCustomGroupMessage(restOfMessageText);
                 }
-
+                else if (type.equalsIgnoreCase(MessageType.GET_USERS.toString())){
+                    message = constructCustomGetUsersMessage(restOfMessageText);
+                }
                 else {
                     message = Message.makeErrorMessage(msg.getName(),
                             ClientRunnableConstants.UNKNOWN_MESSAGE_TYPE_ERR);
@@ -257,6 +274,22 @@ class ClientRunnableHelper {
         String actualContent = arr[2];
 
         return Message.makeGroupMessage(sender, groupName, actualContent);
+    }
+    
+    private Message constructCustomGetUsersMessage(String restOfMessageText) {
+    		String[] arr = restOfMessageText.split(" ", 3);
+
+    		String sender = arr[0];
+        String receiver = arr[1];
+    	
+        List<User> userList = queryHandler.getAllUsers();
+        
+        StringBuilder sb = new StringBuilder();
+        for(User user: userList) {
+        		sb.append(user.getUserName() + "\n");
+        }
+
+        return Message.makeGetUsersMessage(sender, receiver, sb.toString());
     }
 
     /**

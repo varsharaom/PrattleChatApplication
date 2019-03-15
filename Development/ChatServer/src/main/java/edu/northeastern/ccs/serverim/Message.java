@@ -166,6 +166,10 @@ public class Message {
     public static Message makeGroupMessage(String msgSender, String groupName, String msgText) {
         return new Message(MessageType.GROUP, msgSender, groupName, msgText);
     }
+    
+    public static Message makeGetUsersMessage(String msgSender, String msgReceiver, String msgText) {
+        return new Message(MessageType.GET_USERS, msgSender, msgReceiver, msgText);
+    }
 
     public static Message makeErrorMessage(String msgSender, String msgText) {
         return new Message(MessageType.BROADCAST, msgSender, getErrorMessageText(msgText));
@@ -261,6 +265,10 @@ public class Message {
 
     public boolean isGroupMessage() {
         return (msgType == MessageType.GROUP);
+    }
+    
+    public boolean isGetUsersMessage() {
+        return (msgType == MessageType.GET_USERS);
     }
 
     public void setMessageType(MessageType type) {
