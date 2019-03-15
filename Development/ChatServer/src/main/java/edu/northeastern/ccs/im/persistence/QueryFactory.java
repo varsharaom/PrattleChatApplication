@@ -9,4 +9,8 @@ public class QueryFactory {
         }
         return iQueryHandler;
     }
+    
+    private QueryFactory() {
+    	
+    }
 }

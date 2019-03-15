@@ -1,5 +1,6 @@
 package edu.northeastern.ccs.im.server;
 
+import edu.northeastern.ccs.im.constants.ClientRunnableHelperConstants;
 import edu.northeastern.ccs.im.constants.MessageConstants;
 import edu.northeastern.ccs.im.persistence.IQueryHandler;
 import edu.northeastern.ccs.im.utils.MessageUtil;
@@ -77,7 +78,7 @@ public class ClientRunnableHelperTest {
         ClientRunnable tt = new ClientRunnable(nc);
         tt.setName(MessageConstants.SIMPLE_USER);
         queue.add(tt);
-        Field active = Prattle.class.getDeclaredField("active");
+        Field active = Prattle.class.getDeclaredField(ClientRunnableHelperConstants.ACTIVE_FIELD);
         active.setAccessible(true);
         active.set(null, queue);
 
@@ -86,7 +87,7 @@ public class ClientRunnableHelperTest {
         messagesQueue.add(message);
 
         Class ncClass = nc.getClass();
-        Field messages = ncClass.getDeclaredField("messages");
+        Field messages = ncClass.getDeclaredField(ClientRunnableHelperConstants.MESSAGES_FIELD);
         messages.setAccessible(true);
         messages.set(nc, messagesQueue);
 
@@ -104,7 +105,7 @@ public class ClientRunnableHelperTest {
         ClientRunnable tt = new ClientRunnable(nc);
         tt.setName(MessageConstants.SIMPLE_USER);
         queue.add(tt);
-        Field active = Prattle.class.getDeclaredField("active");
+        Field active = Prattle.class.getDeclaredField(ClientRunnableHelperConstants.ACTIVE_FIELD);
         active.setAccessible(true);
         active.set(null, queue);
 
@@ -113,7 +114,7 @@ public class ClientRunnableHelperTest {
         messagesQueue.add(message);
 
         Class ncClass = nc.getClass();
-        Field messages = ncClass.getDeclaredField("messages");
+        Field messages = ncClass.getDeclaredField(ClientRunnableHelperConstants.MESSAGES_FIELD);
         messages.setAccessible(true);
         messages.set(nc, messagesQueue);
 
@@ -131,7 +132,7 @@ public class ClientRunnableHelperTest {
         when(networkConnection.iterator()).thenReturn(NetworkConnectionTestUtil.getMessageIterator());
         clientRunnable.setName(MessageConstants.SIMPLE_USER);
         queue.add(clientRunnable);
-        Field active = Prattle.class.getDeclaredField("active");
+        Field active = Prattle.class.getDeclaredField(ClientRunnableHelperConstants.ACTIVE_FIELD);
         active.setAccessible(true);
         active.set(null, queue);
 
@@ -202,7 +203,7 @@ public class ClientRunnableHelperTest {
         ClientRunnable tt = new ClientRunnable(nc);
         tt.setName(MessageConstants.SIMPLE_USER);
         queue.add(tt);
-        Field active = Prattle.class.getDeclaredField("active");
+        Field active = Prattle.class.getDeclaredField(ClientRunnableHelperConstants.ACTIVE_FIELD);
         active.setAccessible(true);
         active.set(null, queue);
 
