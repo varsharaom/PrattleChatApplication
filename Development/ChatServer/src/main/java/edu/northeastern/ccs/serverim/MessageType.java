@@ -36,7 +36,7 @@ public enum  MessageType {
 
 	ERROR("ERR"),
 	
-	GET_USERS("GET_USERS"),
+	GET_USERS("GT_USRS"),
 
 	/**
 	 * Message sent by the user to start the logging out process and sent by the
