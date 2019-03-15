@@ -83,6 +83,7 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
         String query = String.format("Select %s,%s,%s,%s from %s where %s=%s",
                 DBConstants.MESSAGE_SENDER_ID, DBConstants.MESSAGE_RECEIVER_ID,
                 DBConstants.MESSAGE_TYPE, DBConstants.MESSAGE_BODY,
+                DBConstants.MESSAGE_TABLE,
                 DBConstants.MESSAGE_ID, messageID
         );
         Message message = null;
