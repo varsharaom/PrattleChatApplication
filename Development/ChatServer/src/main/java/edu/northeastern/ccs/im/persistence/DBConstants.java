@@ -10,7 +10,7 @@ public class DBConstants {
     public static final String EXCEPTION_MESSAGE = "SQL Exception";
 
     //JDBC
-    public static final String CONNECTION_STRING = "jdbc:mysql://prattledb.c22lvtrn2mli.us-east-2.rds.amazonaws.com/prattledb";
+    public static final String CONNECTION_STRING = "jdbc:mysql://prattledb.c22lvtrn2mli.us-east-2.rds.amazonaws.com:3306/prattledb";
     public static final String DB_USER = "root";
     public static final String DB_CRED = "prattledb";
 
