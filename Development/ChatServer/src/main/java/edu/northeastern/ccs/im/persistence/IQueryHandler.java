@@ -13,8 +13,6 @@ public interface IQueryHandler {
 
     public int updateUserLastLogin(long userID);
 
-//    public List<Long> getCircles(User user);
-
     public Boolean validateLogin(String username, String password);
 
     //Message Queries

@@ -72,7 +72,7 @@ public class ClientRunnableHelperTest {
     }
 
     @Test
-    public void testHandleLoginMessageQueued()  throws NoSuchFieldException, IllegalAccessException {
+    public void testHandleLoginMessageQueued() throws NoSuchFieldException, IllegalAccessException {
         ConcurrentLinkedQueue<ClientRunnable> queue = new ConcurrentLinkedQueue<>();
 
         ClientRunnable tt = new ClientRunnable(nc);
@@ -99,7 +99,7 @@ public class ClientRunnableHelperTest {
     }
 
     @Test
-    public void testHandleLoginMessageNotQueued()  throws NoSuchFieldException, IllegalAccessException {
+    public void testHandleLoginMessageNotQueued() throws NoSuchFieldException, IllegalAccessException {
         ConcurrentLinkedQueue<ClientRunnable> queue = new ConcurrentLinkedQueue<>();
 
         ClientRunnable tt = new ClientRunnable(nc);
@@ -182,7 +182,7 @@ public class ClientRunnableHelperTest {
     public void testHandleInvalidLogin() {
         Message message = MessageUtil.getValidLoginBroadcastMessage();
 //       the text is a compound string sent from client which in turn is used as invalid password
-        when(iQueryHandler.validateLogin(anyString(),anyString())).thenReturn(false);
+        when(iQueryHandler.validateLogin(anyString(), anyString())).thenReturn(false);
         Message loginMessage = clientRunnableHelper.getCustomConstructedMessage(message);
         clientRunnableHelper.handleMessages(loginMessage);
     }
@@ -197,7 +197,7 @@ public class ClientRunnableHelperTest {
     }
 
     @Test
-    public void testHandleDirectMessageQueued()  throws NoSuchFieldException, IllegalAccessException {
+    public void testHandleDirectMessageQueued() throws NoSuchFieldException, IllegalAccessException {
         ConcurrentLinkedQueue<ClientRunnable> queue = new ConcurrentLinkedQueue<>();
 
         ClientRunnable tt = new ClientRunnable(nc);
@@ -224,7 +224,7 @@ public class ClientRunnableHelperTest {
     }
 
     @Test
-    public void testHandleDirectMessageNotQueued()  throws NoSuchFieldException, IllegalAccessException {
+    public void testHandleDirectMessageNotQueued() throws NoSuchFieldException, IllegalAccessException {
         ConcurrentLinkedQueue<ClientRunnable> queue = new ConcurrentLinkedQueue<>();
 
         ClientRunnable tt = new ClientRunnable(nc);
@@ -251,7 +251,7 @@ public class ClientRunnableHelperTest {
     }
 
     @Test
-    public void testHandleDirectMessageNotInitialized()  throws NoSuchFieldException, IllegalAccessException {
+    public void testHandleDirectMessageNotInitialized() throws NoSuchFieldException, IllegalAccessException {
         ConcurrentLinkedQueue<ClientRunnable> queue = new ConcurrentLinkedQueue<>();
 
         when(networkConnection.iterator()).thenReturn(NetworkConnectionTestUtil.getMessageIterator());
@@ -294,5 +294,4 @@ public class ClientRunnableHelperTest {
         Message constructedMessage = clientRunnableHelper.getCustomConstructedMessage(message);
         assertEquals(message, constructedMessage);
     }
-
 }

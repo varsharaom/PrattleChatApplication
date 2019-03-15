@@ -92,15 +92,7 @@ public abstract class Prattle {
 	}
 
 	static void sendGroupMessage(Message message) {
-		/*String groupName = message.getMsgReceiver();
 
-		Set<String> groupMembers = message.getGroupMembers();
-
-		for (ClientRunnable tt : active) {
-			if (tt.isInitialized() && (groupMembers.contains(tt.getName()))) {
-				tt.enqueueMessage(message);
-			}
-		}*/
 	}
 
 	/**

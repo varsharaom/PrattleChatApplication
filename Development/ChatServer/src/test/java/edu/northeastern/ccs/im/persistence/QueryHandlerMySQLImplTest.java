@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -126,5 +127,22 @@ public class QueryHandlerMySQLImplTest {
         // Tear down
         String query = String.format(QueryConstants.TEARDOWN_DELETE, DBConstants.USER_TABLE, DBConstants.USER_ID, user.getUserID());
         handler.doUpdateQuery(query);
+    }
+
+    @Test
+    public void testGetAllUsers() throws SQLException {
+        String query = String.format("SELECT Count(*) FROM %s;", DBConstants.USER_TABLE);
+        int count = 0;
+        List<User> userList = new ArrayList<>();
+        try (PreparedStatement statement = DBHandler.getConnection().prepareStatement(query);
+             ResultSet rs = statement.executeQuery()) {
+
+            while (rs.next()) {
+                count = rs.getInt(1);
+            }
+        } finally {
+            assertEquals(count, handler.getAllUsers().size());
+        }
+
     }
 }

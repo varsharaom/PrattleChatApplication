@@ -2,8 +2,6 @@ package edu.northeastern.ccs.serverim;
 
 import edu.northeastern.ccs.im.constants.ClientRunnableConstants;
 
-import java.util.Set;
-
 /**
  * Each instance of this class represents a single transmission by our IM
  * clients.
