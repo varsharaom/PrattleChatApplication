@@ -6,7 +6,7 @@ create table users (
 	name VARCHAR(50) NOT NULL,
     password VARCHAR(50),
     nickname VARCHAR(50),
-    last_login DATETIME
+    last_seen DATETIME
 );
 
 create table circles (
@@ -30,9 +30,10 @@ create table message (
 	id INTEGER PRIMARY KEY NOT NULL auto_increment,
     sender_id INTEGER REFERENCES user(id),
     receiver_id INTEGER REFERENCES user(id),
-    type INTEGER,
+    type VARCHAR(10),
     body VARCHAR(500),
-    time_sent DATETIME
+    time_sent DATETIME,
+    isDeleted INTEGER DEFAULT 0
 );
 
 END

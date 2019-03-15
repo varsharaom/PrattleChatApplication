@@ -1,12 +1,15 @@
 package edu.northeastern.ccs.im.server;
 
+import edu.northeastern.ccs.im.constants.ClientRunnableConstants;
 import edu.northeastern.ccs.im.constants.ClientRunnableHelperConstants;
 import edu.northeastern.ccs.im.constants.MessageConstants;
+import edu.northeastern.ccs.im.persistence.DBConstants;
 import edu.northeastern.ccs.im.persistence.IQueryHandler;
 import edu.northeastern.ccs.im.utils.MessageUtil;
 import edu.northeastern.ccs.im.utils.NetworkConnectionTestUtil;
 import edu.northeastern.ccs.serverim.Message;
 import edu.northeastern.ccs.serverim.NetworkConnection;
+import edu.northeastern.ccs.serverim.User;
 
 import org.junit.After;
 import org.junit.Before;
@@ -24,6 +27,8 @@ import static org.mockito.Mockito.when;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.nio.channels.SocketChannel;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
@@ -279,6 +284,17 @@ public class ClientRunnableHelperTest {
         clientRunnableHelper.handleMessages(groupMessage);
 
     }
+    
+    @Test
+    public void testHandleGetUsersMessage() {
+        Message message = MessageUtil.getValidGetUsersMessage();
+
+        List<User> list = new ArrayList();
+        list.add(new User(1L, DBConstants.USER_USERNAME, DBConstants.USER_USERNAME, System.currentTimeMillis()));
+        when(iQueryHandler.getAllUsers()).thenReturn(list);
+        Message getUsersMessage = clientRunnableHelper.getCustomConstructedMessage(message);
+        clientRunnableHelper.handleMessages(getUsersMessage);
+    }
 
     @Test
     public void testEmptyMessageContent() {
@@ -294,4 +310,21 @@ public class ClientRunnableHelperTest {
         Message constructedMessage = clientRunnableHelper.getCustomConstructedMessage(message);
         assertEquals(message, constructedMessage);
     }
+
+    @Test
+    public void testInvalidMessageType() {
+        Message message = MessageUtil.getInvalidMessageWithInvalidType();
+        Message constructedMessage = clientRunnableHelper.getCustomConstructedMessage(message);
+        assertTrue(MessageUtil.isErrorMessage(constructedMessage));
+    }
+
+    @Test
+    public void testHandleDeleteMessage() {
+        Message message = MessageUtil.getValidDeleteBroadcastMessage();
+
+        Message groupMessage = clientRunnableHelper.getCustomConstructedMessage(message);
+        clientRunnableHelper.handleMessages(groupMessage);
+
+    }
+
 }

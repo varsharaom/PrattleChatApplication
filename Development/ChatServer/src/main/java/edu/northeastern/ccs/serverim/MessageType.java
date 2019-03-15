@@ -34,48 +34,62 @@ public enum  MessageType {
 
 	GROUP("GRP"),
 
+	DELETE("DLT"),
+
 	ERROR("ERR"),
 
-	/**
-	 * Message sent by the user to start the logging out process and sent by the
-	 * server once the logout process completes.
-	 */
-	QUIT("BYE");
+	GET_USERS("GT_USRS"),
 
-	/** Store the short name of this message type. */
-	private String abbreviation;
+    /**
+     * Message sent by the user to start the logging out process and sent by the
+     * server once the logout process completes.
+     */
+    QUIT("BYE");
 
-	/** Integer equivalent for the key. */
-	private int index;
+    /**
+     * Store the short name of this message type.
+     */
+    private String abbreviation;
 
-	private static final Map<Integer, MessageType> lookup = new HashMap<>();
-	
-	static {
-		// Create a reverse lookup hash map
-		for(MessageType t : MessageType.values()) {
-			lookup.put(t.getMessageTypeValue(), t);
-		}
-	}
-	
-	public static MessageType get(int messageType) {
-		return lookup.get(messageType);
-	}
-	
-	public int getMessageTypeValue() {
-		return index;
-	}
+    /**
+     * Integer equivalent for the key.
+     */
+    private int index;
 
-	MessageType(String abbrev) {
-		abbreviation = abbrev;
-	}
+    private static final Map<Integer, MessageType> lookup = new HashMap<>();
+    private static final Map<String, MessageType> strLookup = new HashMap<>();
 
-	/**
-	 * Return a representation of this Message as a String.
-	 * 
-	 * @return Three letter abbreviation for this type of message.
-	 */
-	@Override
-	public String toString() {
-		return abbreviation;
-	}
+    static {
+        // Create a reverse lookup hash map
+        for (MessageType t : MessageType.values()) {
+            lookup.put(t.getMessageTypeValue(), t);
+            strLookup.put(t.abbreviation, t);
+        }
+    }
+
+    public static MessageType get(int messageType) {
+        return lookup.get(messageType);
+    }
+
+    public int getMessageTypeValue() {
+        return index;
+    }
+
+    public static MessageType get(String abbreviation) {
+        return strLookup.get(abbreviation);
+    }
+
+    MessageType(String abbrev) {
+        abbreviation = abbrev;
+    }
+
+    /**
+     * Return a representation of this Message as a String.
+     *
+     * @return Three letter abbreviation for this type of message.
+     */
+    @Override
+    public String toString() {
+        return abbreviation;
+    }
 }

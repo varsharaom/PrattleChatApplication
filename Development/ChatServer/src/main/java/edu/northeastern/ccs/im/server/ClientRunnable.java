@@ -104,7 +104,7 @@ public class ClientRunnable implements Runnable {
             if (messageIter.hasNext()) {
                 // If a message exists, try to use it to initialize the connection
                 Message msg = messageIter.next();
-                if (setUserDetails(msg.getName(), msg.getSenderId())) {
+                if (setUserDetails(msg.getName())) {
                     // Update the time until we terminate this client due to inactivity.
                     timer.updateAfterInitialization();
                     // Set that the client is initialized.
@@ -143,13 +143,13 @@ public class ClientRunnable implements Runnable {
      * @param userName The new value to which we will try to set userName.
      * @return True if the username is deemed acceptable; false otherwise
      */
-    private boolean setUserDetails(String userName, long id) {
+    private boolean setUserDetails(String userName) {
         boolean result = false;
         // Now make sure this name is legal.
         if (userName != null) {
             // Optimistically set this users ID number.
             setName(userName);
-            userId = id;
+            userId = hashCode();
             result = true;
         } else {
             // Clear this name; we cannot use it. *sigh*
@@ -250,7 +250,7 @@ public class ClientRunnable implements Runnable {
                 } else {
 //					parsing and creating a sophisticated message object out of the actual one
                     msg = clientRunnableHelper.getCustomConstructedMessage(msg);
-                    this.setUserDetails(msg.getName(), msg.getSenderId());
+                    this.setUserDetails(msg.getName());
                     clientRunnableHelper.handleMessages(msg);
                 }
             }
