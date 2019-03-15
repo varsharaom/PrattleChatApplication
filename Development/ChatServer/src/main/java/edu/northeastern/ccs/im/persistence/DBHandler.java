@@ -29,7 +29,7 @@ public class DBHandler {
         try {
             conn = DriverManager.getConnection(DBConstants.CONNECTION_STRING, DBConstants.DB_USER, DBConstants.DB_CRED);
         } catch (SQLException e) {
-        		logger.log(Level.INFO, CLASS_EXCEPTION_MSG);
+        		logger.log(Level.INFO, ""+e.getMessage());
         }
     }
 }

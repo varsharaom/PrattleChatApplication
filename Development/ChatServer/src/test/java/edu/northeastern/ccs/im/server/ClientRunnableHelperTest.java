@@ -294,4 +294,21 @@ public class ClientRunnableHelperTest {
         Message constructedMessage = clientRunnableHelper.getCustomConstructedMessage(message);
         assertEquals(message, constructedMessage);
     }
+
+    @Test
+    public void testInvalidMessageType() {
+        Message message = MessageUtil.getInvalidMessageWithInvalidType();
+        Message constructedMessage = clientRunnableHelper.getCustomConstructedMessage(message);
+        assertTrue(MessageUtil.isErrorMessage(constructedMessage));
+    }
+
+    @Test
+    public void testHandleDeleteMessage() {
+        Message message = MessageUtil.getValidDeleteBroadcastMessage();
+
+        Message groupMessage = clientRunnableHelper.getCustomConstructedMessage(message);
+        clientRunnableHelper.handleMessages(groupMessage);
+
+    }
+
 }

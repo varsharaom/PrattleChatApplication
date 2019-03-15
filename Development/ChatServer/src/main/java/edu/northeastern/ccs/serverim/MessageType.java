@@ -5,37 +5,40 @@ import java.util.Map;
 
 /**
  * Enumeration for the different types of messages.
- *
+ * 
  * @author Maria Jump
+ *
  */
-public enum MessageType {
-    /**
-     * Message sent by the user attempting to login using a specified username.
-     */
-    HELLO("HLO"),
+public enum  MessageType {
+	/**
+	 * Message sent by the user attempting to login using a specified username.
+	 */
+	HELLO("HLO"),
 
-    /**
-     * Message whose contents is broadcast to all connected users.
-     */
-    BROADCAST("BCT"),
+	/** Message whose contents is broadcast to all connected users. */
+	BROADCAST("BCT"),
 
-    REGISTER("RGSTR"),
+	REGISTER("RGSTR"),
 
-    REGISTER_SUCCESS("RGSTR_SCCSS"),
+	REGISTER_SUCCESS("RGSTR_SCCSS"),
 
-    REGISTER_FAILURE("RGSTR_FLR"),
+	REGISTER_FAILURE("RGSTR_FLR"),
 
-    LOGIN("LGN"),
+	LOGIN("LGN"),
 
-    LOGIN_SUCCESS("LGN_SCCSS"),
+	LOGIN_SUCCESS("LGN_SCCSS"),
 
-    LOGIN_FAILURE("LGN_FLR"),
+	LOGIN_FAILURE("LGN_FLR"),
 
-    DIRECT("DRCT"),
+	DIRECT("DRCT"),
 
-    GROUP("GRP"),
+	GROUP("GRP"),
 
-    ERROR("ERR"),
+	DELETE("DLT"),
+
+	ERROR("ERR"),
+
+	GET_USERS("GT_USRS"),
 
     /**
      * Message sent by the user to start the logging out process and sent by the

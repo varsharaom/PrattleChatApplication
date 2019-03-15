@@ -38,6 +38,11 @@ public final class MessageUtil {
                 getValidGroupMessageText());
     }
 
+    public static Message getValidDeleteBroadcastMessage() {
+        return Message.makeBroadcastMessage(SIMPLE_USER,
+                getValidDeleteMessageText());
+    }
+
     public static Message getEmptyBroadcastMessage() {
         return Message.makeBroadcastMessage(SIMPLE_USER,
                 getInvalidMessageText());
@@ -46,6 +51,23 @@ public final class MessageUtil {
     public static Message getInvalidPrefixBroadcastMessage() {
         return Message.makeBroadcastMessage(SIMPLE_USER,
                 getEmptyMessageText());
+    }
+
+    public static Message getInvalidMessageWithInvalidType() {
+        return Message.makeBroadcastMessage(SIMPLE_USER,
+                getInvalidTypeMessageText());
+    }
+
+    private static String getInvalidTypeMessageText() {
+        return CUSTOM_COMMAND_PREFIX
+                + ""
+                + " sender receiver 142";
+    }
+
+    private static String getValidDeleteMessageText() {
+        return CUSTOM_COMMAND_PREFIX
+                + DELETE_MESSAGE_IDENTIFIER + CUSTOM_COMMAND_SUFFIX
+                + " sender receiver 142";
     }
 
     private static String getEmptyMessageText() {

@@ -53,10 +53,13 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
     public Boolean validateLogin(String username, String password) {
         String query = String.format("SELECT * from %s WHERE %s =\"%s\" and %s = \"%s\"",
                 DBConstants.USER_TABLE, DBConstants.USER_USERNAME, username, DBConstants.USER_PASS, password);
-
-        try (PreparedStatement statement = connection.prepareStatement(query);
-             ResultSet rs = statement.executeQuery()) {
-            return rs.next();
+        try {
+            PreparedStatement statement = connection.prepareStatement(query);
+            ResultSet rs = statement.executeQuery();
+            boolean res = rs.next();
+            rs.close();
+            statement.close();
+            return res;
         } catch (SQLException e) {
             logger.log(Level.INFO, SQL_EXCEPTION_MSG);
         }
@@ -95,6 +98,14 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
         return message;
     }
 
+    public void deleteMessage(long messageID) {
+        String query = String.format("Update %s set %s=%s where %s=%s",
+                DBConstants.MESSAGE_TABLE, DBConstants.IS_DELETED, DBConstants.IS_DELETED_TRUE,
+                DBConstants.MESSAGE_ID, messageID
+        );
+        doUpdateQuery(query);
+    }
+
     public List<Message> getMessagesSinceLastLogin(long userID) {
         //To-Do : join group id to get all messages where the user is a part of.
         String query = String.format(
@@ -110,12 +121,15 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
                 //Filters
                 DBConstants.MESSAGE_TIME, DBConstants.USER_LAST_SEEN, DBConstants.MESSAGE_RECEIVER_ID, userID);
         List<Message> messages = new ArrayList<>();
-        try (PreparedStatement statement = connection.prepareStatement(query);
-             ResultSet rs = statement.executeQuery()) {
+        try {
+            PreparedStatement statement = connection.prepareStatement(query);
+            ResultSet rs = statement.executeQuery();
             while (rs.next()) {
                 Message m = Message.makeBroadcastMessage("placeholder", rs.getString(1));
                 messages.add(m);
             }
+            rs.close();
+            statement.close();
         } catch (SQLException e) {
             logger.log(Level.INFO, SQL_EXCEPTION_MSG);
         }
@@ -128,9 +142,12 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
                 DBConstants.USER_TABLE, DBConstants.USER_USERNAME, name);
 
         boolean isNameFound = false;
-        try (PreparedStatement statement = connection.prepareStatement(query);
-             ResultSet rs = statement.executeQuery()) {
+        try {
+            PreparedStatement statement = connection.prepareStatement(query);
+            ResultSet rs = statement.executeQuery();
             isNameFound = rs.next();
+            rs.close();
+            statement.close();
         } catch (SQLException e) {
             logger.log(Level.INFO, SQL_EXCEPTION_MSG);
         }
@@ -144,15 +161,18 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
                 DBConstants.USER_NICKNAME, DBConstants.USER_TABLE);
 
         List<User> userList = new ArrayList<>();
-        try (PreparedStatement statement = connection.prepareStatement(query);
-             ResultSet rs = statement.executeQuery()) {
-            Date date = new Date(System.currentTimeMillis());
+        try {
+            PreparedStatement statement = connection.prepareStatement(query);
+            ResultSet rs = statement.executeQuery();
 
+            Date date = new Date(System.currentTimeMillis());
             while (rs.next()) {
                 User user = new User(rs.getLong(1),
                         rs.getString(2), rs.getString(3), date.getTime());
                 userList.add(user);
             }
+            rs.close();
+            statement.close();
         } catch (SQLException e) {
             logger.log(Level.INFO, SQL_EXCEPTION_MSG);
         }
@@ -206,16 +226,9 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
             } else {
                 throw new SQLException("Creating user failed, no ID obtained.");
             }
+            statement.close();
         } catch (SQLException e) {
             logger.log(Level.INFO, SQL_EXCEPTION_MSG);
-        } finally {
-            if (statement != null) {
-                try {
-                    statement.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
         }
         return key;
     }
@@ -226,19 +239,11 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
         try {
             statement = connection.prepareStatement(query);
             updateCode = statement.executeUpdate(query);
+            statement.close();
         } catch (SQLException e) {
             logger.log(Level.INFO, SQL_EXCEPTION_MSG);
-        } finally {
-            if (statement != null) {
-                try {
-                    statement.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
         }
         return updateCode;
     }
-
 
 }

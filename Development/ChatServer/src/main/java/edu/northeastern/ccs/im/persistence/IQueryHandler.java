@@ -20,6 +20,8 @@ public interface IQueryHandler {
 
     public Message getMessage(long messageID);
 
+    public void deleteMessage(long messageID);
+
     public List<Message> getMessagesSinceLastLogin(long userID);
 
     public boolean checkUserNameExists(String name);
