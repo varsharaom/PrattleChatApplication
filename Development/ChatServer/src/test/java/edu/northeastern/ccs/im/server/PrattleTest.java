@@ -90,42 +90,6 @@ public class PrattleTest {
 		assertEquals("[]", returned.toString());
 	}
 
-//	@Test
-//	public void testUsingClient() {
-//
-//		IMConnection connection1;
-//		IMConnection connection2;
-//
-//		try {
-//
-//			Thread thread = new Thread(new MainTest());
-//			thread.start();
-//			String[] arr = { "localhost", Integer.toString(4545) };
-//			systemInMock.provideLines("$$LGN# project pwd", "$$GRP# ela hi", "$$GRP# ela bye", "$$GRP# ela go",
-//					ClientStringConstants.BYE_MSG);
-//			CommandLineMainExtended.main(arr);
-//			Prattle.broadcastMessage(Message.makeBroadcastMessage(MessageConstants.SIMPLE_USER,
-//					MessageConstants.BROADCAST_TEXT_MESSAGE));
-//			connection1 = new IMConnection(ConnectionConstants.HOST, ConnectionConstants.PORT,
-//					MessageConstants.BROADCAST_TEXT_MESSAGE);
-//			connection1.connect();
-//
-//			connection2 = new IMConnection(ConnectionConstants.HOST, ConnectionConstants.PORT,
-//					MessageConstants.BROADCAST_TEXT_MESSAGE);
-//			connection2.connect();
-//
-//			connection1.sendMessage(MessageConstants.BROADCAST_TEXT_MESSAGE);
-//			connection2.sendMessage(MessageConstants.BROADCAST_TEXT_MESSAGE);
-//
-//			Prattle.broadcastMessage(Message.makeBroadcastMessage(MessageConstants.SIMPLE_USER,
-//					MessageConstants.BROADCAST_TEXT_MESSAGE));
-//			Prattle.stopServer();
-//
-//		} catch (Exception e) {
-//			Prattle.stopServer();
-//		}
-//	}
-
 	@Test
 	public void testRemoveNonExistantClient() throws IllegalAccessException, NoSuchFieldException {
 		ConcurrentLinkedQueue<ClientRunnable> queue = new ConcurrentLinkedQueue<>();

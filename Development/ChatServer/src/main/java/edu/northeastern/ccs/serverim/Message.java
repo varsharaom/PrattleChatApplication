@@ -86,12 +86,6 @@ public class Message {
         msgText = text;
     }
 
-    private Message(MessageType handle, long senderId, String text) {
-        this.msgType = handle;
-        this.senderId = senderId;
-        this.msgText = text;
-    }
-
     public Message(MessageType handle, String sender, String receiver, String text) {
         this.msgType = handle;
         this.msgSender = sender;
@@ -132,10 +126,6 @@ public class Message {
      */
     public static Message makeBroadcastMessage(String myName, String text) {
         return new Message(MessageType.BROADCAST, myName, text);
-    }
-
-    public String getMsgSender() {
-        return msgSender;
     }
 
     public String getMsgReceiver() {
@@ -210,18 +200,6 @@ public class Message {
         } else if (handle.compareTo(MessageType.BROADCAST.toString()) == 0) {
             result = makeBroadcastMessage(srcName, text);
         }
-        return result;
-    }
-
-    //	TODO - talk to team and see if this block is actually needed
-    protected static Message makeMessage(MessageType handle, long senderId, String msgText) {
-
-        Message result = null;
-//
-//		if (handle == MessageType.LOGIN) {
-//			result = makeLoginAckMessage(handle, senderId, msgText);
-//		}
-//
         return result;
     }
 
