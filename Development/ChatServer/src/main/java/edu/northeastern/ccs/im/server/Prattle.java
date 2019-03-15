@@ -7,17 +7,17 @@ import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.nio.channels.spi.SelectorProvider;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import edu.northeastern.ccs.im.ChatLogger;
-import edu.northeastern.ccs.im.Message;
-import edu.northeastern.ccs.im.NetworkConnection;
+import edu.northeastern.ccs.serverim.ChatLogger;
+import edu.northeastern.ccs.serverim.Message;
+import edu.northeastern.ccs.serverim.MessageType;
+import edu.northeastern.ccs.serverim.NetworkConnection;
 
 /**
  * A network server that communicates with IM clients that connect to it. This
@@ -47,13 +47,22 @@ public abstract class Prattle {
 		active = new ConcurrentLinkedQueue<>();
 	}
 
+	static void registerOrLoginUser(Message msg) {
+		msg.setMessageType(MessageType.BROADCAST);
+		for (ClientRunnable tt : active) {
+			if ((tt.isInitialized()) && tt.getName().equals(msg.getName())) {
+				tt.enqueueMessage(msg);
+			}
+		}
+	}
+
 	/**
 	 * Broadcast a given message to all the other IM clients currently on the
 	 * system. This message _will_ be sent to the client who originally sent it.
 	 * 
 	 * @param message Message that the client sent.
 	 */
-	public static void broadcastMessage(Message message) {
+	static void broadcastMessage(Message message) {
 		// Loop through all of our active threads		
 		for (ClientRunnable tt : active) {
 			// Do not send the message to any clients that are not ready to receive it.			
@@ -64,13 +73,35 @@ public abstract class Prattle {
 		}
 	}
 
+	static void sendDirectMessage(Message message) {
+		message.setMessageType(MessageType.BROADCAST);
+		for (ClientRunnable tt : active) {
+			if (tt.isInitialized() && (tt.getName().equals(message.getMsgReceiver()))) {
+				tt.enqueueMessage(message);
+			}
+		}
+	}
+
+	static void sendErrorMessage(Message message) {
+		message.setMessageType(MessageType.BROADCAST);
+		for (ClientRunnable tt : active) {
+			if (tt.isInitialized() && (tt.getName().equals(message.getName()))) {
+				tt.enqueueMessage(message);
+			}
+		}
+	}
+
+	static void sendGroupMessage(Message message) {
+
+	}
+
 	/**
 	 * Remove the given IM client from the list of active threads.
 	 * 
 	 * @param dead Thread which had been handling all the I/O for a client who has
 	 *             since quit.
 	 */
-	public static void removeClient(ClientRunnable dead) {
+	static void removeClient(ClientRunnable dead) {
 		// Test and see if the thread was in our list of active clients so that we
 		// can remove it.
 		if (!active.remove(dead)) {
@@ -81,7 +112,7 @@ public abstract class Prattle {
 	/**
 	 * Terminates the server.
 	 */
-	public static void stopServer() {
+	static void stopServer() {
 		isReady = false;
 	}
 

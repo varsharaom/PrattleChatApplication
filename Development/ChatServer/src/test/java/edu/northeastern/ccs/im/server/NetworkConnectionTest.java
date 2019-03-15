@@ -4,11 +4,12 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.net.InetSocketAddress;
 
-import edu.northeastern.ccs.im.Message;
-import edu.northeastern.ccs.im.NetworkConnection;
-import edu.northeastern.ccs.im.client.utilities.IMConnection;
+import edu.northeastern.ccs.im.IMConnection;
 import edu.northeastern.ccs.im.constants.ConnectionConstants;
 import edu.northeastern.ccs.im.constants.MessageConstants;
+import edu.northeastern.ccs.serverim.Message;
+import edu.northeastern.ccs.serverim.NetworkConnection;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -47,7 +48,7 @@ public class NetworkConnectionTest {
             serverSocket.socket().bind(new InetSocketAddress(NEW_PORT));
             sc.connect(serverSocket.socket().getLocalSocketAddress());
         } catch (IOException e) {
-            logger.log(Level.INFO, "IOException: " + e.getStackTrace());
+            logger.log(Level.INFO, "" + e.getStackTrace());
         }
     }
 
@@ -112,9 +113,7 @@ public class NetworkConnectionTest {
             while (iterator.hasNext()) {
                 logger.log(Level.INFO, iterator.next().getText());
             }
-        } catch (NoSuchFieldException e) {
-        		logger.log(Level.INFO, "IOException: " + e.getStackTrace());
-        } catch (IllegalAccessException e) {
+        } catch (NoSuchFieldException | IllegalAccessException e) {
         		logger.log(Level.INFO, "IOException: " + e.getStackTrace());
         }
         nc.close();
@@ -141,7 +140,7 @@ public class NetworkConnectionTest {
             serverSocketLocal = ServerSocketChannel.open();
             serverSocketLocal.configureBlocking(false);
         } catch (IOException e) {
-        	logger.log(Level.INFO, ""+e.getStackTrace());
+            logger.log(Level.INFO, ""+e.getStackTrace());
         }
 
         Selector selector = null;
@@ -160,7 +159,7 @@ public class NetworkConnectionTest {
             socket.close();
             networkConnection = new NetworkConnection(socket);
         } catch (IOException e) {
-        		logger.log(Level.INFO, ""+e.getStackTrace());
+            logger.log(Level.INFO, ""+e.getStackTrace());
         } finally {
             try {
                 serverSocketLocal.close();
@@ -168,7 +167,7 @@ public class NetworkConnectionTest {
                 connection1.disconnect();
                 networkConnection.close();
             } catch (IOException e) {
-            		logger.log(Level.INFO, ""+e.getStackTrace());
+                logger.log(Level.INFO, ""+e.getStackTrace());
             }
         }
     }
@@ -180,10 +179,10 @@ public class NetworkConnectionTest {
             serverSocketLocal = ServerSocketChannel.open();
             serverSocketLocal.configureBlocking(false);
         } catch (IOException e) {
-        		logger.log(Level.INFO, ""+e.getStackTrace());
+            logger.log(Level.INFO, ""+e.getStackTrace());
         }
 
-        
+
         Selector selector = null;
         IMConnection connection1 = null;
         NetworkConnection networkConnection = null;
@@ -206,7 +205,7 @@ public class NetworkConnectionTest {
             while ((itr.hasNext())) {
                 builder.append(itr.next());
             }
-            assertEquals("HLO 20 broadcastTextMessage 2 --BCT 20 " +
+            assertEquals("HLO 20 broadcastTextMessage 0 BCT 20 " +
                     "broadcastTextMessage 20 broadcastTextMessage", builder.toString());
             connection1.sendMessage("");
             itr = networkConnection.iterator();
@@ -217,7 +216,7 @@ public class NetworkConnectionTest {
             assertEquals("BCT 20 broadcastTextMessage 2 --", builder.toString());
 
         } catch (IOException e) {
-        		logger.log(Level.INFO, ""+e.getStackTrace());
+            logger.log(Level.INFO, ""+e.getStackTrace());
         } finally {
             try {
                 socket.close();
@@ -226,8 +225,9 @@ public class NetworkConnectionTest {
                 connection1.disconnect();
                 networkConnection.close();
             } catch (IOException e) {
-            		logger.log(Level.INFO, ""+e.getStackTrace());
+                logger.log(Level.INFO, ""+e.getStackTrace());
             }
         }
     }
+
 }
