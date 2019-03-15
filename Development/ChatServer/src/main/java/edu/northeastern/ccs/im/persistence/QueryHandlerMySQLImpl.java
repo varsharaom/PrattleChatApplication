@@ -86,12 +86,15 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
                 DBConstants.MESSAGE_ID, messageID
         );
         Message message = null;
-        try (PreparedStatement statement = connection.prepareStatement(query);
-             ResultSet rs = statement.executeQuery()) {
+        try {
+            PreparedStatement statement = connection.prepareStatement(query);
+            ResultSet rs = statement.executeQuery();
             if (rs.next()) {
                 message = new Message(MessageType.get(rs.getString(3)), getUserName(rs.getLong(1)),
                         getUserName(rs.getLong(2)), rs.getString(4));
             }
+            rs.close();
+            statement.close();
         } catch (SQLException e) {
             logger.log(Level.INFO, SQL_EXCEPTION_MSG);
         }
@@ -186,11 +189,14 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
                 DBConstants.USER_USERNAME, userName
         );
         long id = -1l;
-        try (PreparedStatement statement = connection.prepareStatement(query);
-             ResultSet rs = statement.executeQuery()) {
+        try {
+            PreparedStatement statement = connection.prepareStatement(query);
+            ResultSet rs = statement.executeQuery();
             if (rs.next()) {
                 id = rs.getLong(1);
             }
+            rs.close();
+            statement.close();
         } catch (SQLException e) {
             logger.log(Level.INFO, SQL_EXCEPTION_MSG);
         }
@@ -203,11 +209,14 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
                 DBConstants.USER_ID, userID
         );
         String name = "";
-        try (PreparedStatement statement = connection.prepareStatement(query);
-             ResultSet rs = statement.executeQuery()) {
+        try {
+            PreparedStatement statement = connection.prepareStatement(query);
+            ResultSet rs = statement.executeQuery();
             if (rs.next()) {
                 name = rs.getString(1);
             }
+            rs.close();
+            statement.close();
         } catch (SQLException e) {
             logger.log(Level.INFO, SQL_EXCEPTION_MSG);
         }
