@@ -93,17 +93,6 @@ public class QueryHandlerMySQLImplTest {
     }
 
     @Test
-    public void testGetUsers() throws SQLException {
-        String query = String.format("SELECT count(*) FROM %s;",
-                DBConstants.USER_TABLE);
-        ResultSet rs = handler.doSelectQuery(query);
-
-        while (rs.next()) {
-            assertEquals(rs.getInt(1), handler.getAllUsers().size());
-        }
-    }
-
-    @Test
     public void testGetMessagesSinceLastLoginSuccess() {
         User user = handler.createUser(QueryConstants.USERNAME, QueryConstants.PASS, QueryConstants.NICKNAME);
         handler.updateUserLastLogin(user.getUserID());
