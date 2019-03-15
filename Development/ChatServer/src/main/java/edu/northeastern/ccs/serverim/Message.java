@@ -16,6 +16,7 @@ import edu.northeastern.ccs.im.constants.ClientRunnableConstants;
  */
 public class Message {
 
+    private long id;
     /**
      * The string sent when a field is null.
      */
@@ -48,6 +49,13 @@ public class Message {
      */
     private String msgText;
 
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public long getId() {
+        return this.id;
+    }
 
     /**
      * The sender's unique user id
@@ -89,6 +97,13 @@ public class Message {
         this.msgText = text;
     }
 
+
+    public Message(MessageType handle, long id, String msgSender, String msgReceiver) {
+        this.msgType = handle;
+        this.id = id;
+        this.msgSender = msgSender;
+        this.msgReceiver = msgReceiver;
+    }
 
     /**
      * Create a new message that contains a command sent the server that requires a
@@ -175,6 +190,9 @@ public class Message {
         return new Message(MessageType.BROADCAST, msgSender, getErrorMessageText(msgText));
     }
 
+    public static Message makeDeleteMessage(long messageId, String msgSender, String msgReceiver) {
+        return new Message(MessageType.DELETE, messageId, msgSender, msgReceiver);
+    }
     private static String getErrorMessageText(String plainMessageText) {
         return ClientRunnableConstants.CUSTOM_COMMAND_PREFIX
                 + ClientRunnableConstants.ERROR_MSG_IDENTIFIER
@@ -263,6 +281,10 @@ public class Message {
         return (msgType == MessageType.DIRECT);
     }
 
+    public boolean isDeleteMessage() {
+        return (msgType == MessageType.DELETE);
+    }
+
     public boolean isGroupMessage() {
         return (msgType == MessageType.GROUP);
     }
@@ -306,4 +328,5 @@ public class Message {
         }
         return result;
     }
+
 }

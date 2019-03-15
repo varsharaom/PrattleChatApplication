@@ -49,6 +49,9 @@ class ClientRunnableHelper {
         else if (isDirectOrGroupMessage(message)){
             handleChatMessages(message);
         }
+        else if (message.isDeleteMessage()) {
+            handleDeleteMessages(message);
+        }
         else if (isGetUsersMessage(message)) {
         		handleGetUsersMessage(message);
         }
@@ -57,6 +60,9 @@ class ClientRunnableHelper {
         }
     }
 
+    private void handleDeleteMessages(Message message) {
+
+    }
 
     /**
      * Checks if the action is register or login and performs the respective action.
@@ -80,8 +86,6 @@ class ClientRunnableHelper {
         else {
             Prattle.sendGroupMessage(msg);
         }
-        queryHandler.storeMessage(msg.getSenderId(), msg.getReceiverId(), msg.getMessageType(),
-                msg.getText());
     }
 
     private void handleGetUsersMessage(Message msg) {
@@ -149,6 +153,10 @@ class ClientRunnableHelper {
     private void handleDirectMessages(Message message) {
 
         if (isUserPresent(message.getMsgReceiver())) {
+            long messageId = queryHandler.storeMessage(message.getSenderId(), message.getReceiverId(),
+                    message.getMessageType(),
+                    message.getText());
+            message.setId(messageId);
             Prattle.sendDirectMessage(message);
         }
 
@@ -174,6 +182,7 @@ class ClientRunnableHelper {
     private boolean isGetUsersMessage(Message msg) {
         return (msg.isGetUsersMessage());
     }
+
 
     /**
      * Parse the input message text and return a custom constructed message according to the type.
@@ -204,6 +213,9 @@ class ClientRunnableHelper {
                 else if (type.equalsIgnoreCase(MessageType.GROUP.toString())){
                     message = constructCustomGroupMessage(restOfMessageText);
                 }
+                else if (type.equalsIgnoreCase(MessageType.DELETE.toString())) {
+                    message = constructCustomDeleteMessage(restOfMessageText);
+                }
                 else if (type.equalsIgnoreCase(MessageType.GET_USERS.toString())){
                     message = constructCustomGetUsersMessage(restOfMessageText);
                 }
@@ -219,6 +231,16 @@ class ClientRunnableHelper {
             }
         }
         return message;
+    }
+
+    private Message constructCustomDeleteMessage(String restOfMessageText) {
+        String[] arr = restOfMessageText.split(" ", 3);
+
+        String senderName = arr[0];
+        String receiverName = arr[1];
+        long messageId = Long.parseLong(arr[2]);
+
+        return Message.makeDeleteMessage(messageId, senderName, receiverName);
     }
 
     /**
