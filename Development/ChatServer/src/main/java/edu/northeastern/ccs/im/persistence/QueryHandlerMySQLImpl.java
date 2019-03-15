@@ -167,15 +167,6 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
         } catch (SQLException e) {
             logger.log(Level.INFO, SQL_EXCEPTION_MSG);
         }
-        finally {
-            if (statement!=null){
-                try {
-                    statement.close();
-                } catch (SQLException e) {
-                		logger.log(Level.INFO, SQL_EXCEPTION_MSG);
-                }
-            }
-        }
         return key;
     }
 
@@ -188,15 +179,6 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
             statement.close();
         } catch (SQLException e) {
             logger.log(Level.INFO, SQL_EXCEPTION_MSG);
-        }
-        finally {
-            if (statement!=null){
-                try {
-                    statement.close();
-                } catch (SQLException e) {
-                		logger.log(Level.INFO, SQL_EXCEPTION_MSG);
-                }
-            }
         }
         return updateCode;
     }
