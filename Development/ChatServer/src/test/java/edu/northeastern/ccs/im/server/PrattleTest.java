@@ -134,7 +134,7 @@ public class PrattleTest {
 		IMConnection connection2;
 
 		try {
-			Thread thread = new Thread(new MainTest());
+			Thread thread = new Thread(() -> Prattle.main(new String[0]));
 			thread.start();
 
 			Class<Prattle> pr = Prattle.class;
@@ -162,13 +162,5 @@ public class PrattleTest {
 
 		}
 
-	}
-}
-
-class MainTest implements Runnable {
-
-	@Override
-	public void run() {
-		Prattle.main(new String[0]);
 	}
 }

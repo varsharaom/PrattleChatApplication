@@ -18,10 +18,10 @@ import java.util.logging.Logger;
 public class QueryHandlerMySQLImpl implements IQueryHandler {
 
     final Logger logger = Logger.getGlobal();
-    public static final String SQL_EXCEPTION_MSG = "SQL Exception";
+    private static final String SQL_EXCEPTION_MSG = "SQL Exception";
     private Connection connection;
 
-    public QueryHandlerMySQLImpl() {
+    QueryHandlerMySQLImpl() {
         connection = DBHandler.getConnection();
     }
 

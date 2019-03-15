@@ -50,8 +50,6 @@ public class Message {
      */
     private String msgText;
 
-    private Set<String> groupMembers;
-
 
     /**
      * The sender's unique user id

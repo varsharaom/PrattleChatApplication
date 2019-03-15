@@ -22,7 +22,7 @@ import edu.northeastern.ccs.serverim.User;
 
 public class QueryHandlerMySQLImplTest {
 
-    QueryHandlerMySQLImpl handler;
+    private QueryHandlerMySQLImpl handler;
 
     @Before
     public void setUp() {
@@ -32,7 +32,7 @@ public class QueryHandlerMySQLImplTest {
     @Test
     public void testCreateUserSuccess() {
         User res = handler.createUser(QueryConstants.USERNAME, QueryConstants.PASS, QueryConstants.NICKNAME);
-        assertEquals(res.getUserName(), QueryConstants.USERNAME);
+        assertEquals(QueryConstants.USERNAME, res.getUserName());
 
         // Tear down
         String query = String.format(QueryConstants.TEARDOWN_DELETE, DBConstants.USER_TABLE, DBConstants.USER_ID, res.getUserID());

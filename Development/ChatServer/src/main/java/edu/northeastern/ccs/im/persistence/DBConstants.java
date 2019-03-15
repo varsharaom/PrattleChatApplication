@@ -8,7 +8,8 @@ public class DBConstants {
 	
 	// LOG MESSAGES
 	public static final String EXCEPTION_MESSAGE = "SQL Exception";
-	
+
+
 	//JDBC
 	public static final String CONNECTION_STRING = "jdbc:mysql://prattledb.c22lvtrn2mli.us-east-2.rds.amazonaws.com/prattledb";
 	public static final String DB_USER = "root";
@@ -49,4 +50,7 @@ public class DBConstants {
     public static final String MESSAGE_TYPE = "type";
     public static final String MESSAGE_BODY = "body";
     public static final String MESSAGE_TIME = "time_sent";
+
+    // DATE FORMAT
+    private static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
 }
