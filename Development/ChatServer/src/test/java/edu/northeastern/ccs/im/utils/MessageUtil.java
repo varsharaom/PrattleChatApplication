@@ -28,6 +28,11 @@ public final class MessageUtil {
                 getValidDirectMessageText());
     }
     
+    public static Message getValidGetUsersMessage() {
+        return Message.makeBroadcastMessage(SIMPLE_USER,
+        		getValidGetUsersMessageText());
+    }
+    
     public static Message getValidDirectBroadcastMessageDifferentUser() {
         return Message.makeBroadcastMessage(MessageConstants.SECOND_USER,
                 getValidDirectMessageText());
@@ -89,6 +94,11 @@ public final class MessageUtil {
         return CUSTOM_COMMAND_PREFIX + DIRECT_MSG_IDENTIFIER
                 + CUSTOM_COMMAND_SUFFIX + " senderName receiverName "
                 + " Hey this is a direct message to sender";
+    }
+    
+    private static String getValidGetUsersMessageText() {
+        return CUSTOM_COMMAND_PREFIX + GET_USER_IDENTIFIER
+                + CUSTOM_COMMAND_SUFFIX + " senderName";
     }
 
     private static String getValidRegisterMessageText() {
