@@ -50,7 +50,7 @@ class ClientRunnableHelper {
             handleChatMessages(message);
         }
         else if (message.isDeleteMessage()) {
-            handleDeleteMessages(message);
+            handleDeleteMessages();
         }
         else if (isGetUsersMessage(message)) {
         		handleGetUsersMessage(message);
@@ -60,8 +60,8 @@ class ClientRunnableHelper {
         }
     }
 
-    private void handleDeleteMessages(Message message) {
-
+    private void handleDeleteMessages() {
+        // DO nothing till the query handler integration is complete.
     }
 
     /**
