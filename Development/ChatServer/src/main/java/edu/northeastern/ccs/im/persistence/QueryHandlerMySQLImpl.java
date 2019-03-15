@@ -77,13 +77,21 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
     public Boolean validateLogin(String username, String password) {
         String query = String.format("SELECT * from %s WHERE %s =\"%s\" and %s = \"%s\"",
                 DBConstants.USER_TABLE, DBConstants.USER_USERNAME, username, DBConstants.USER_PASS, password);
-        ResultSet rs = doSelectQuery(query);
+        
+        PreparedStatement statement = null;
         try {
-            while (rs.next()) {
-                return true;
-            }
+            statement = connection.prepareStatement(query);
         } catch (SQLException e) {
-            logger.log(Level.INFO, DBConstants.EXCEPTION_MESSAGE);
+            logger.log(Level.INFO, SQL_EXCEPTION_MSG);
+        }
+        ResultSet rs = null;
+        if (statement != null) {
+            try {
+                rs = statement.executeQuery();
+                	return rs.next();
+            } catch (SQLException e) {
+                logger.log(Level.INFO, SQL_EXCEPTION_MSG);
+            }
         }
         return false;
     }
@@ -113,58 +121,8 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
                 DBConstants.USER_TABLE, DBConstants.USER_ID,
                 //Filters
                 DBConstants.MESSAGE_TIME, DBConstants.USER_LAST_SEEN, DBConstants.MESSAGE_RECEIVER_ID, userID);
-        ResultSet rs = doSelectQuery(query);
+        
         List<Message> messages = new ArrayList<>();
-        try {
-            while (rs.next()) {
-                Message m = Message.makeBroadcastMessage("placeholder", rs.getString(1));
-                messages.add(m);
-            }
-        } catch (SQLException e) {
-            logger.log(Level.INFO, DBConstants.EXCEPTION_MESSAGE);
-        }
-        return messages;
-    }
-
-
-    public boolean checkUserNameExists(String name) {
-        String query = String.format("SELECT * FROM %s WHERE %s = '%s';",
-                DBConstants.USER_TABLE, DBConstants.USER_USERNAME, name);
-        ResultSet rs = doSelectQuery(query);
-        boolean isNameFound = false;
-        try {
-            isNameFound = rs.next();
-        } catch (SQLException e) {
-            logger.log(Level.INFO, DBConstants.EXCEPTION_MESSAGE);
-        }
-        return isNameFound;
-    }
-
-    @Override
-    public List<User> getAllUsers() {
-        String query = String.format("SELECT %s, %s, %s FROM %s;",
-                DBConstants.USER_ID, DBConstants.USER_USERNAME,
-                DBConstants.USER_NICKNAME, DBConstants.USER_TABLE);
-        ResultSet rs = doSelectQuery(query);
-        List<User> userList = new ArrayList<>();
-
-        Date date = new Date(System.currentTimeMillis());
-        try {
-            while (rs.next()) {
-//                System.out.println(rs.getString(2));
-                User user = new User(rs.getLong(1),
-                        rs.getString(2), rs.getString(3), date.getTime());
-                userList.add(user);
-            }
-        } catch (SQLException e) {
-            logger.log(Level.INFO, SQL_EXCEPTION_MSG);
-        }
-
-
-        return userList;
-    }
-
-    public ResultSet doSelectQuery(String query) {
         PreparedStatement statement = null;
         try {
             statement = connection.prepareStatement(query);
@@ -175,14 +133,73 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
         if (statement != null) {
             try {
                 rs = statement.executeQuery();
+                while (rs.next()) {
+                    Message m = Message.makeBroadcastMessage("placeholder", rs.getString(1));
+                    messages.add(m);
+                }
             } catch (SQLException e) {
                 logger.log(Level.INFO, SQL_EXCEPTION_MSG);
             }
         }
-        return rs;
+        return messages;
     }
 
-    public long doInsertQuery(String query) {
+
+    public boolean checkUserNameExists(String name) {
+        String query = String.format("SELECT * FROM %s WHERE %s = '%s';",
+                DBConstants.USER_TABLE, DBConstants.USER_USERNAME, name);
+        
+        PreparedStatement statement = null;
+        boolean isNameFound = false;
+        try {
+            statement = connection.prepareStatement(query);
+        } catch (SQLException e) {
+            logger.log(Level.INFO, SQL_EXCEPTION_MSG);
+        }
+        ResultSet rs = null;
+        if (statement != null) {
+            try {
+                rs = statement.executeQuery();
+                isNameFound = rs.next();
+            } catch (SQLException e) {
+                logger.log(Level.INFO, SQL_EXCEPTION_MSG);
+            }
+        }
+        return isNameFound;
+    }
+
+    @Override
+    public List<User> getAllUsers() {
+        String query = String.format("SELECT %s, %s, %s FROM %s;",
+                DBConstants.USER_ID, DBConstants.USER_USERNAME,
+                DBConstants.USER_NICKNAME, DBConstants.USER_TABLE);
+        
+        PreparedStatement statement = null;
+        try {
+            statement = connection.prepareStatement(query);
+        } catch (SQLException e) {
+            logger.log(Level.INFO, SQL_EXCEPTION_MSG);
+        }
+        ResultSet rs = null;
+        List<User> userList = new ArrayList<>();
+        Date date = new Date(System.currentTimeMillis());
+
+        if (statement != null) {
+            try {
+                rs = statement.executeQuery();
+                while (rs.next()) {
+                    User user = new User(rs.getLong(1),
+                            rs.getString(2), rs.getString(3), date.getTime());
+                    userList.add(user);
+                }
+            } catch (SQLException e) {
+                logger.log(Level.INFO, SQL_EXCEPTION_MSG);
+            }
+        }
+        return userList;
+    }
+
+    protected long doInsertQuery(String query) {
         PreparedStatement statement = null;
         long key = -1;
         try {
