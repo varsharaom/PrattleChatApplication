@@ -3,6 +3,10 @@ package edu.northeastern.ccs.im.utils;
 import edu.northeastern.ccs.im.constants.ClientRunnableConstants;
 
 public class ClientRunnableHelperUtil {
+	
+	private ClientRunnableHelperUtil() {
+		
+	}
 
     public static boolean isValidRegisterMessageIdentifer(String registerMessageIdentifier) {
         return registerMessageIdentifier.equalsIgnoreCase(

@@ -92,16 +92,16 @@ class ClientRunnableHelper {
         Message handShakeMessage;
         String acknowledgementText;
 
-        if (!isUserPresent(message.getMsgSender())) {
+        if (!isUserPresent(message.getName())) {
             acknowledgementText = ClientRunnableConstants.REGISTER_SUCCESS_MSG;
             handShakeMessage = Message.makeRegisterAckMessage(MessageType.REGISTER
                     , message.getName(), acknowledgementText);
             // Persist user details
-            queryHandler.createUser(message.getMsgSender(), message.getText(), message.getName());
+            queryHandler.createUser(message.getName(), message.getText(), message.getName());
         }
         else {
             acknowledgementText = ClientRunnableConstants.REGISTER_FAILURE_ERR;
-            handShakeMessage = Message.makeErrorMessage(message.getMsgSender(), acknowledgementText);
+            handShakeMessage = Message.makeErrorMessage(message.getName(), acknowledgementText);
         }
 
         Prattle.registerOrLoginUser(handShakeMessage);
@@ -117,13 +117,13 @@ class ClientRunnableHelper {
         if (isValidLoginCredentials(message)) {
 
             acknowledgementText = ClientRunnableConstants.LOGIN_SUCCESS_MSG;
-            handShakeMessage = Message.makeLoginAckMessage(MessageType.LOGIN, message.getMsgSender(),
-                    message.getMsgSender(), acknowledgementText);
+            handShakeMessage = Message.makeLoginAckMessage(MessageType.LOGIN, message.getName(),
+                    message.getName(), acknowledgementText);
         }
         else {
 
             acknowledgementText = ClientRunnableConstants.LOGIN_FAILURE_ERR;
-            handShakeMessage = Message.makeErrorMessage(message.getMsgSender(),
+            handShakeMessage = Message.makeErrorMessage(message.getName(),
                     acknowledgementText);
         }
 
@@ -143,7 +143,7 @@ class ClientRunnableHelper {
 
         else {
 
-            Message errorMessage = Message.makeErrorMessage(message.getMsgSender(),
+            Message errorMessage = Message.makeErrorMessage(message.getName(),
                     ClientRunnableConstants.INVALID_DIRECT_RECEIVER_MSG);
 
             Prattle.sendErrorMessage(errorMessage);
@@ -191,13 +191,13 @@ class ClientRunnableHelper {
                 }
 
                 else {
-                    message = Message.makeErrorMessage(msg.getMsgSender(),
+                    message = Message.makeErrorMessage(msg.getName(),
                             ClientRunnableConstants.UNKNOWN_MESSAGE_TYPE_ERR);
                 }
 
             }
             else {
-                message = Message.makeErrorMessage(msg.getMsgSender(),
+                message = Message.makeErrorMessage(msg.getName(),
                         ClientRunnableConstants.EMPTY_MESSAGE_ERR);
             }
         }

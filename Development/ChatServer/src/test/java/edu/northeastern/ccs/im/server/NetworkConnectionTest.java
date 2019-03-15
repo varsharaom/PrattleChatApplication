@@ -48,7 +48,7 @@ public class NetworkConnectionTest {
             serverSocket.socket().bind(new InetSocketAddress(NEW_PORT));
             sc.connect(serverSocket.socket().getLocalSocketAddress());
         } catch (IOException e) {
-            logger.log(Level.INFO, "IOException: " + e.getStackTrace());
+            logger.log(Level.INFO, "" + e.getStackTrace());
         }
     }
 
@@ -113,9 +113,7 @@ public class NetworkConnectionTest {
             while (iterator.hasNext()) {
                 logger.log(Level.INFO, iterator.next().getText());
             }
-        } catch (NoSuchFieldException e) {
-        		logger.log(Level.INFO, "IOException: " + e.getStackTrace());
-        } catch (IllegalAccessException e) {
+        } catch (NoSuchFieldException | IllegalAccessException e) {
         		logger.log(Level.INFO, "IOException: " + e.getStackTrace());
         }
         nc.close();
