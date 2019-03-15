@@ -54,7 +54,7 @@ public final class MessageUtil {
     }
 
     private static String getInvalidMessageText() {
-        return CUSTOM_COMMAND_PREFIX + " "  + CUSTOM_COMMAND_SUFFIX;
+        return CUSTOM_COMMAND_PREFIX + CUSTOM_COMMAND_SUFFIX;
     }
 
     private static String getValidGroupMessageText() {

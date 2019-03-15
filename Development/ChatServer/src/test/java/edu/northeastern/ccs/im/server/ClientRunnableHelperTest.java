@@ -31,6 +31,12 @@ import java.util.logging.Logger;
 public class ClientRunnableHelperTest {
 
     @InjectMocks
+    ClientRunnable clientRunnable;
+
+    @Mock
+    NetworkConnection networkConnection;
+
+    @InjectMocks
     ClientRunnableHelper clientRunnableHelper;
 
     @Mock
@@ -121,16 +127,16 @@ public class ClientRunnableHelperTest {
     public void testHandleLoginMessageNotInitialized() throws NoSuchFieldException, IllegalAccessException {
         ConcurrentLinkedQueue<ClientRunnable> queue = new ConcurrentLinkedQueue<>();
 
-        ClientRunnable tt = new ClientRunnable(nc);
-        tt.setName(MessageConstants.SIMPLE_USER);
-        queue.add(tt);
+        when(networkConnection.iterator()).thenReturn(NetworkConnectionTestUtil.getMessageIterator());
+        clientRunnable.setName(MessageConstants.SIMPLE_USER);
+        queue.add(clientRunnable);
         Field active = Prattle.class.getDeclaredField("active");
         active.setAccessible(true);
         active.set(null, queue);
 
         Message message = MessageUtil.getValidLoginBroadcastMessageWithDifferentUser();
-        
-        tt.run();
+
+        clientRunnable.run();
 
         when(iQueryHandler.validateLogin(anyString(), anyString())).thenReturn(true);
         Message loginMessage = clientRunnableHelper.getCustomConstructedMessage(message);
