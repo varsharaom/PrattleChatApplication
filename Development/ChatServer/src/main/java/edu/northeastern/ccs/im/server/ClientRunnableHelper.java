@@ -92,16 +92,16 @@ class ClientRunnableHelper {
         Message handShakeMessage;
         String acknowledgementText;
 
-        if (!isUserPresent(message.getMsgSender())) {
+        if (!isUserPresent(message.getName())) {
             acknowledgementText = ClientRunnableConstants.REGISTER_SUCCESS_MSG;
             handShakeMessage = Message.makeRegisterAckMessage(MessageType.REGISTER
                     , message.getName(), acknowledgementText);
             // Persist user details
-            queryHandler.createUser(message.getMsgSender(), message.getText(), message.getName());
+            queryHandler.createUser(message.getName(), message.getText(), message.getName());
         }
         else {
             acknowledgementText = ClientRunnableConstants.REGISTER_FAILURE_ERR;
-            handShakeMessage = Message.makeErrorMessage(message.getMsgSender(), acknowledgementText);
+            handShakeMessage = Message.makeErrorMessage(message.getName(), acknowledgementText);
         }
 
         Prattle.registerOrLoginUser(handShakeMessage);
@@ -117,13 +117,13 @@ class ClientRunnableHelper {
         if (isValidLoginCredentials(message)) {
 
             acknowledgementText = ClientRunnableConstants.LOGIN_SUCCESS_MSG;
-            handShakeMessage = Message.makeLoginAckMessage(MessageType.LOGIN, message.getMsgSender(),
-                    message.getMsgSender(), acknowledgementText);
+            handShakeMessage = Message.makeLoginAckMessage(MessageType.LOGIN, message.getName(),
+                    message.getName(), acknowledgementText);
         }
         else {
 
             acknowledgementText = ClientRunnableConstants.LOGIN_FAILURE_ERR;
-            handShakeMessage = Message.makeErrorMessage(message.getMsgSender(),
+            handShakeMessage = Message.makeErrorMessage(message.getName(),
                     acknowledgementText);
         }
 
@@ -143,7 +143,7 @@ class ClientRunnableHelper {
 
         else {
 
-            Message errorMessage = Message.makeErrorMessage(message.getMsgSender(),
+            Message errorMessage = Message.makeErrorMessage(message.getName(),
                     ClientRunnableConstants.INVALID_DIRECT_RECEIVER_MSG);
 
             Prattle.sendErrorMessage(errorMessage);
@@ -181,23 +181,23 @@ class ClientRunnableHelper {
                     message = constructCustomRegisterMessage(restOfMessageText);
                 }
                 else if (type.equalsIgnoreCase(MessageType.DIRECT.toString())) {
-                    message = constructCustomDirectMessage(restOfMessageText, msg.getMsgSender());
+                    message = constructCustomDirectMessage(restOfMessageText);
                 }
                 else if (type.equalsIgnoreCase(MessageType.LOGIN.toString())) {
                     message = constructCustomLoginMessage(restOfMessageText);
                 }
                 else if (type.equalsIgnoreCase(MessageType.GROUP.toString())){
-                    message = constructCustomGroupMessage(restOfMessageText, msg.getMsgSender());
+                    message = constructCustomGroupMessage(restOfMessageText);
                 }
 
                 else {
-                    message = Message.makeErrorMessage(msg.getMsgSender(),
+                    message = Message.makeErrorMessage(msg.getName(),
                             ClientRunnableConstants.UNKNOWN_MESSAGE_TYPE_ERR);
                 }
 
             }
             else {
-                Message.makeErrorMessage(msg.getMsgSender(),
+                message = Message.makeErrorMessage(msg.getName(),
                         ClientRunnableConstants.EMPTY_MESSAGE_ERR);
             }
         }
@@ -235,11 +235,12 @@ class ClientRunnableHelper {
      * Construct a direct message based on the parsed input message.
      *
      */
-    private Message constructCustomDirectMessage(String restOfMessageText, String sender) {
-        String[] arr = restOfMessageText.split(" ", 2);
+    private Message constructCustomDirectMessage(String restOfMessageText) {
+        String[] arr = restOfMessageText.split(" ", 3);
 
-        String receiver = arr[0];
-        String actualContent = arr[1];
+        String sender = arr[0];
+        String receiver = arr[1];
+        String actualContent = arr[2];
 
         return Message.makeDirectMessage(sender, receiver, actualContent);
     }
@@ -248,11 +249,12 @@ class ClientRunnableHelper {
      * Construct a group message based on the parsed input message.
      *
      */
-    private Message constructCustomGroupMessage(String restOfMessageText, String sender) {
-        String[] arr = restOfMessageText.split(" ", 2);
+    private Message constructCustomGroupMessage(String restOfMessageText) {
+        String[] arr = restOfMessageText.split(" ", 3);
 
-        String groupName = arr[0];
-        String actualContent = arr[1];
+        String sender = arr[0];
+        String groupName = arr[1];
+        String actualContent = arr[2];
 
         return Message.makeGroupMessage(sender, groupName, actualContent);
     }

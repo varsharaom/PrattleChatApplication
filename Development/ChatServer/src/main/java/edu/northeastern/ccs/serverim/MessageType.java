@@ -65,16 +65,6 @@ public enum  MessageType {
 		return index;
 	}
 
-	/**
-	 * Define the message type and specify its short name.
-	 *
-	 * @param abbrev Short name of this message type, as a String.
-	 */
-	private MessageType(String abbrev, int type) {
-		abbreviation = abbrev;
-		index = type;
-	}
-
 	MessageType(String abbrev) {
 		abbreviation = abbrev;
 	}

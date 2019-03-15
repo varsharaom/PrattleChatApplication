@@ -1,6 +1,7 @@
 package edu.northeastern.ccs.im.server;
 
 
+import edu.northeastern.ccs.im.constants.MessageConstants;
 import edu.northeastern.ccs.im.utils.ClientRunnableHelperUtil;
 import edu.northeastern.ccs.im.utils.MessageUtil;
 import edu.northeastern.ccs.serverim.Message;
@@ -9,7 +10,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-public class MessageParserTests {
+public class MessageParserTest {
 
     private ClientRunnableHelper clientRunnableHelper;
 
@@ -30,7 +31,7 @@ public class MessageParserTests {
         assertEquals(3, content.length);
 
         assertTrue(ClientRunnableHelperUtil.isValidRegisterMessageIdentifer(content[0]));
-        assertEquals(constructedMessage.getMsgSender(), content[1]);
+        assertEquals(constructedMessage.getName(), content[1]);
 
         assertEquals(constructedMessage.getText(), content[2]);
     }
@@ -48,7 +49,7 @@ public class MessageParserTests {
         assertEquals(3, content.length);
 
         assertTrue(ClientRunnableHelperUtil.isValidLoginMessageIdentifer(content[0]));
-        assertEquals(constructedMessage.getMsgSender(), content[1]);
+        assertEquals(constructedMessage.getName(), content[1]);
 
         assertEquals(constructedMessage.getText(), content[2]);
     }
@@ -62,13 +63,13 @@ public class MessageParserTests {
         assertTrue(constructedMessage.isDirectMessage());
         assertNotNull("Constructed message content is empty", message.getText());
 
-        String[] content = message.getText().split(" ", 3);
-        assertEquals(3, content.length);
+        String[] content = message.getText().split(" ", 4);
+        assertEquals(4, content.length);
 
         assertTrue(ClientRunnableHelperUtil.isValidDirectMessageIdentifer(content[0]));
-        assertEquals(constructedMessage.getMsgReceiver(), content[1]);
-        assertEquals(constructedMessage.getText(), content[2]);
-        assertEquals(constructedMessage.getMsgSender(), message.getMsgSender());
+        assertEquals(constructedMessage.getName(), content[1]);
+        assertEquals(constructedMessage.getMsgReceiver(), content[2]);
+        assertEquals(constructedMessage.getText(), content[3]);
     }
 
     @Test
@@ -78,22 +79,16 @@ public class MessageParserTests {
         Message constructedMessage = clientRunnableHelper.getCustomConstructedMessage(message);
 
         assertTrue(constructedMessage.isGroupMessage());
-        assertNotNull("Constructed message content is empty", message.getText());
+        assertNotNull(MessageConstants.MESSAGE_EMPTY_ERROR, message.getText());
 
-        String[] content = message.getText().split(" ", 3);
-        assertEquals(3, content.length);
+        String[] content = message.getText().split(" ", 4);
+        assertEquals(4, content.length);
 
         assertTrue(ClientRunnableHelperUtil.isValidGroupMessageIdentifer(content[0]));
-        assertEquals(constructedMessage.getMsgReceiver(), content[1]);
-        assertEquals(constructedMessage.getText(), content[2]);
-        assertEquals(constructedMessage.getMsgSender(), message.getMsgSender());
+        assertEquals(constructedMessage.getName(), content[1]);
+        assertEquals(constructedMessage.getMsgReceiver(), content[2]);
+        assertEquals(constructedMessage.getText(), content[3]);
+
     }
 
-//    @Test
-//    public void testInvalidMessage() {
-//        Message message = MessageUtil.getInValidBroadcastMessage();
-//        Message constructedMessage = clientRunnableHelper.getCustomConstructedMessage(message);
-//
-//        assertNull(constructedMessage);
-//    }
 }

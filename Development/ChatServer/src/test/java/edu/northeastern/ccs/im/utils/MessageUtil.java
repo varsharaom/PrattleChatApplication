@@ -38,34 +38,34 @@ public final class MessageUtil {
                 getValidGroupMessageText());
     }
 
-    public static Message getInvalidBroadcastMessage() {
+    public static Message getEmptyBroadcastMessage() {
         return Message.makeBroadcastMessage(SIMPLE_USER,
                 getInvalidMessageText());
     }
 
-    public static Message getEmptyBroadcastMessage() {
+    public static Message getInvalidPrefixBroadcastMessage() {
         return Message.makeBroadcastMessage(SIMPLE_USER,
                 getEmptyMessageText());
     }
 
     private static String getEmptyMessageText() {
-        return CUSTOM_COMMAND_PREFIX + DIRECT_MSG_IDENTIFIER
-                + CUSTOM_COMMAND_SUFFIX + "";
+        return DIRECT_MSG_IDENTIFIER
+                + CUSTOM_COMMAND_SUFFIX + "  ";
     }
 
     private static String getInvalidMessageText() {
-        return CUSTOM_COMMAND_PREFIX + CUSTOM_COMMAND_SUFFIX;
+        return CUSTOM_COMMAND_PREFIX + ""  + CUSTOM_COMMAND_SUFFIX;
     }
 
     private static String getValidGroupMessageText() {
         return CUSTOM_COMMAND_PREFIX + GROUP_MSG_IDENTIFIER
                 + CUSTOM_COMMAND_SUFFIX
-                + " receiverName Hey this is a group message to multiple senders";
+                + " senderName receiverName Hey this is a group message to multiple senders";
     }
 
     private static String getValidDirectMessageText() {
         return CUSTOM_COMMAND_PREFIX + DIRECT_MSG_IDENTIFIER
-                + CUSTOM_COMMAND_SUFFIX + " " + SIMPLE_USER
+                + CUSTOM_COMMAND_SUFFIX + " senderName receiverName "
                 + " Hey this is a direct message to sender";
     }
 

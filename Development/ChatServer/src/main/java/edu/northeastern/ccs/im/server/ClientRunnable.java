@@ -118,7 +118,6 @@ public class ClientRunnable implements Runnable {
 
     private void loadPendingMessages() {
         QueryFactory.getQueryHandler().getMessagesSinceLastLogin(userId);
-        //enqueueMessage(message);
     }
 
 

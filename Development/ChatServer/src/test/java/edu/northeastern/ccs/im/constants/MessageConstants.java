@@ -7,7 +7,8 @@ public final class MessageConstants {
 
 	public static final String FIRST_USER = "FIRST_USER";
     public static final String SECOND_USER = "SECOND_USER";
-    public static final String SIMPLE_USER = "logUser";   
+    public static final String SIMPLE_USER = "logUser";
+    public static final String MESSAGE_EMPTY_ERROR = "Constructed message content is empty";
     public static final String BROADCAST_TEXT_MESSAGE = "broadcastTextMessage";
 
     public static final String CUSTOM_REGISTER_MESSAGE = CUSTOM_COMMAND_PREFIX +

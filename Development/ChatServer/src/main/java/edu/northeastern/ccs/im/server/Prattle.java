@@ -50,7 +50,7 @@ public abstract class Prattle {
 	static void registerOrLoginUser(Message msg) {
 		msg.setMessageType(MessageType.BROADCAST);
 		for (ClientRunnable tt : active) {
-			if ((tt.isInitialized()) && tt.getName().equals(msg.getMsgSender())) {
+			if ((tt.isInitialized()) && tt.getName().equals(msg.getName())) {
 				tt.enqueueMessage(msg);
 			}
 		}
@@ -85,7 +85,7 @@ public abstract class Prattle {
 	static void sendErrorMessage(Message message) {
 		message.setMessageType(MessageType.BROADCAST);
 		for (ClientRunnable tt : active) {
-			if (tt.isInitialized() && (tt.getName().equals(message.getMsgSender()))) {
+			if (tt.isInitialized() && (tt.getName().equals(message.getName()))) {
 				tt.enqueueMessage(message);
 			}
 		}
