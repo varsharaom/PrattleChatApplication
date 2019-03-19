@@ -135,7 +135,6 @@ class ClientRunnableHelper {
             acknowledgementText = ClientRunnableConstants.LOGIN_SUCCESS_MSG;
             handShakeMessage = Message.makeLoginAckMessage(MessageType.LOGIN, message.getName(),
                     message.getName(), acknowledgementText);
-            
         }
         else {
 
@@ -148,6 +147,7 @@ class ClientRunnableHelper {
         
         if (userId != -1) {
         		loadPendingMessages(userId);
+        		QueryFactory.getQueryHandler().updateUserLastLogin(userId);
         }
     }
     
