@@ -50,20 +50,22 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
     }
 
     @Override
-    public Boolean validateLogin(String username, String password) {
-        String query = String.format("SELECT * from %s WHERE %s =\"%s\" and %s = \"%s\"",
+    public long validateLogin(String username, String password) {
+        String query = String.format("SELECT * from %s WHERE %s ='%s' and %s = '%s'",
                 DBConstants.USER_TABLE, DBConstants.USER_USERNAME, username, DBConstants.USER_PASS, password);
+        long res = -1;
         try {
             PreparedStatement statement = connection.prepareStatement(query);
             ResultSet rs = statement.executeQuery();
-            boolean res = rs.next();
+            if(rs.next()) {
+            		res = rs.getLong(1);
+            }
             rs.close();
             statement.close();
-            return res;
         } catch (SQLException e) {
             logger.log(Level.INFO, SQL_EXCEPTION_MSG);
         }
-        return false;
+        return res;
     }
 
     //-----------------Message Queries-------------------
@@ -113,9 +115,10 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
     public List<Message> getMessagesSinceLastLogin(long userID) {
         //To-Do : join group id to get all messages where the user is a part of.
         String query = String.format(
-                "SELECT %s, %s from %s inner join %s on %s.%s = %s.%s WHERE %s >= %s AND %s = %s;",
+                "SELECT %s, %s, %s, %s from %s inner join %s on %s.%s = %s.%s WHERE %s >= %s AND %s = %s;",
                 //select columns
                 DBConstants.MESSAGE_BODY, DBConstants.USER_LAST_SEEN,
+                DBConstants.MESSAGE_SENDER_ID, DBConstants.MESSAGE_RECEIVER_ID,
                 //join tables
                 DBConstants.MESSAGE_TABLE, DBConstants.USER_TABLE,
                 //join column one
@@ -129,7 +132,7 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
             PreparedStatement statement = connection.prepareStatement(query);
             ResultSet rs = statement.executeQuery();
             while (rs.next()) {
-                Message m = Message.makeBroadcastMessage("placeholder", rs.getString(1));
+                Message m = Message.makeDirectMessage(getUserName(rs.getLong(3)), getUserName(rs.getLong(4)), rs.getString(1));
                 messages.add(m);
             }
             rs.close();

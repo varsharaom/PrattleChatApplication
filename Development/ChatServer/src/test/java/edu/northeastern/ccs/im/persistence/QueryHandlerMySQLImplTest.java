@@ -66,7 +66,7 @@ public class QueryHandlerMySQLImplTest {
     @Test
     public void testGetPasswordSuccess() {
         User res = handler.createUser(QueryConstants.USERNAME, QueryConstants.PASS, QueryConstants.NICKNAME);
-        assertTrue(handler.validateLogin(QueryConstants.USERNAME, QueryConstants.PASS));
+        assertEquals(handler.validateLogin(QueryConstants.USERNAME, QueryConstants.PASS), res.getUserID().longValue());
 
         // Tear down
         String query = String.format(QueryConstants.TEARDOWN_DELETE, DBConstants.USER_TABLE, DBConstants.USER_ID, res.getUserID());
@@ -76,7 +76,7 @@ public class QueryHandlerMySQLImplTest {
     @Test
     public void testGetPasswordFailure() {
         User res = handler.createUser(QueryConstants.USERNAME, QueryConstants.PASS, QueryConstants.NICKNAME);
-        assertFalse(handler.validateLogin(QueryConstants.USERNAME, ""));
+        assertEquals(handler.validateLogin(QueryConstants.USERNAME, ""), -1L);
 
         // Tear down
         String query = String.format(QueryConstants.TEARDOWN_DELETE, DBConstants.USER_TABLE, DBConstants.USER_ID, res.getUserID());
