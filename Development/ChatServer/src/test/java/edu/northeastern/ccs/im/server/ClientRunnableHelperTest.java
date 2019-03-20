@@ -1,8 +1,6 @@
 package edu.northeastern.ccs.im.server;
 
-import edu.northeastern.ccs.im.constants.ClientRunnableConstants;
 import edu.northeastern.ccs.im.constants.ClientRunnableHelperConstants;
-import edu.northeastern.ccs.im.constants.MessageConstants;
 import edu.northeastern.ccs.im.persistence.DBConstants;
 import edu.northeastern.ccs.im.persistence.IQueryHandler;
 import edu.northeastern.ccs.im.utils.MessageUtil;
@@ -19,6 +17,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import static edu.northeastern.ccs.im.constants.MessageTestConstants.SIMPLE_USER;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.anyString;
@@ -81,7 +80,7 @@ public class ClientRunnableHelperTest {
         ConcurrentLinkedQueue<ClientRunnable> queue = new ConcurrentLinkedQueue<>();
 
         ClientRunnable tt = new ClientRunnable(nc);
-        tt.setName(MessageConstants.SIMPLE_USER);
+        tt.setName(SIMPLE_USER);
         queue.add(tt);
         Field active = Prattle.class.getDeclaredField(ClientRunnableHelperConstants.ACTIVE_FIELD);
         active.setAccessible(true);
@@ -108,7 +107,7 @@ public class ClientRunnableHelperTest {
         ConcurrentLinkedQueue<ClientRunnable> queue = new ConcurrentLinkedQueue<>();
 
         ClientRunnable tt = new ClientRunnable(nc);
-        tt.setName(MessageConstants.SIMPLE_USER);
+        tt.setName(SIMPLE_USER);
         queue.add(tt);
         Field active = Prattle.class.getDeclaredField(ClientRunnableHelperConstants.ACTIVE_FIELD);
         active.setAccessible(true);
@@ -135,7 +134,7 @@ public class ClientRunnableHelperTest {
         ConcurrentLinkedQueue<ClientRunnable> queue = new ConcurrentLinkedQueue<>();
 
         when(networkConnection.iterator()).thenReturn(NetworkConnectionTestUtil.getMessageIterator());
-        clientRunnable.setName(MessageConstants.SIMPLE_USER);
+        clientRunnable.setName(SIMPLE_USER);
         queue.add(clientRunnable);
         Field active = Prattle.class.getDeclaredField(ClientRunnableHelperConstants.ACTIVE_FIELD);
         active.setAccessible(true);
@@ -206,7 +205,7 @@ public class ClientRunnableHelperTest {
         ConcurrentLinkedQueue<ClientRunnable> queue = new ConcurrentLinkedQueue<>();
 
         ClientRunnable tt = new ClientRunnable(nc);
-        tt.setName(MessageConstants.SIMPLE_USER);
+        tt.setName(SIMPLE_USER);
         queue.add(tt);
         Field active = Prattle.class.getDeclaredField(ClientRunnableHelperConstants.ACTIVE_FIELD);
         active.setAccessible(true);
@@ -233,7 +232,7 @@ public class ClientRunnableHelperTest {
         ConcurrentLinkedQueue<ClientRunnable> queue = new ConcurrentLinkedQueue<>();
 
         ClientRunnable tt = new ClientRunnable(nc);
-        tt.setName(MessageConstants.SIMPLE_USER);
+        tt.setName(SIMPLE_USER);
         queue.add(tt);
         Field active = Prattle.class.getDeclaredField("active");
         active.setAccessible(true);
@@ -260,7 +259,7 @@ public class ClientRunnableHelperTest {
         ConcurrentLinkedQueue<ClientRunnable> queue = new ConcurrentLinkedQueue<>();
 
         when(networkConnection.iterator()).thenReturn(NetworkConnectionTestUtil.getMessageIterator());
-        clientRunnable.setName(MessageConstants.SIMPLE_USER);
+        clientRunnable.setName(SIMPLE_USER);
         queue.add(clientRunnable);
         Field active = Prattle.class.getDeclaredField("active");
         active.setAccessible(true);

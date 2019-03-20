@@ -3,7 +3,7 @@ package edu.northeastern.ccs.im.server;
 import edu.northeastern.ccs.serverim.Message;
 import edu.northeastern.ccs.serverim.MessageType;
 
-import edu.northeastern.ccs.im.constants.ClientRunnableConstants;
+import edu.northeastern.ccs.im.constants.MessageConstants;
 import edu.northeastern.ccs.im.persistence.IQueryHandler;
 
 
@@ -105,14 +105,14 @@ class ClientRunnableHelper {
         String acknowledgementText;
 
         if (!isUserPresent(message.getName())) {
-            acknowledgementText = ClientRunnableConstants.REGISTER_SUCCESS_MSG;
+            acknowledgementText = MessageConstants.REGISTER_SUCCESS_MSG;
             handShakeMessage = Message.makeRegisterAckMessage(MessageType.REGISTER
                     , message.getName(), acknowledgementText);
             // Persist user details
             queryHandler.createUser(message.getName(), message.getText(), message.getName());
         }
         else {
-            acknowledgementText = ClientRunnableConstants.REGISTER_FAILURE_ERR;
+            acknowledgementText = MessageConstants.REGISTER_FAILURE_ERR;
             handShakeMessage = Message.makeErrorMessage(message.getName(), acknowledgementText);
         }
 
@@ -128,13 +128,13 @@ class ClientRunnableHelper {
 
         if (isValidLoginCredentials(message)) {
 
-            acknowledgementText = ClientRunnableConstants.LOGIN_SUCCESS_MSG;
+            acknowledgementText = MessageConstants.LOGIN_SUCCESS_MSG;
             handShakeMessage = Message.makeLoginAckMessage(MessageType.LOGIN, message.getName(),
                     message.getName(), acknowledgementText);
         }
         else {
 
-            acknowledgementText = ClientRunnableConstants.LOGIN_FAILURE_ERR;
+            acknowledgementText = MessageConstants.LOGIN_FAILURE_ERR;
             handShakeMessage = Message.makeErrorMessage(message.getName(),
                     acknowledgementText);
         }
@@ -160,7 +160,7 @@ class ClientRunnableHelper {
         else {
 
             Message errorMessage = Message.makeErrorMessage(message.getName(),
-                    ClientRunnableConstants.INVALID_DIRECT_RECEIVER_MSG);
+                    MessageConstants.INVALID_DIRECT_RECEIVER_MSG);
 
             Prattle.sendErrorMessage(errorMessage);
         }
@@ -189,7 +189,7 @@ class ClientRunnableHelper {
         String content = msg.getText();
         Message message = msg;
 
-        if (content.startsWith(ClientRunnableConstants.CUSTOM_COMMAND_PREFIX)) {
+        if (content.startsWith(MessageConstants.CUSTOM_COMMAND_PREFIX)) {
             message = MessageFactory.createMessage(message);
 
         }

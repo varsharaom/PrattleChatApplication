@@ -1,10 +1,10 @@
 package edu.northeastern.ccs.im.utils;
 
-import edu.northeastern.ccs.im.constants.MessageConstants;
 import edu.northeastern.ccs.serverim.Message;
 
-import static edu.northeastern.ccs.im.constants.ClientRunnableConstants.*;
-import static edu.northeastern.ccs.im.constants.MessageConstants.SIMPLE_USER;
+import static edu.northeastern.ccs.im.constants.MessageConstants.*;
+import static edu.northeastern.ccs.im.constants.MessageTestConstants.SECOND_USER;
+import static edu.northeastern.ccs.im.constants.MessageTestConstants.SIMPLE_USER;
 
 public final class MessageUtil {
 
@@ -19,8 +19,7 @@ public final class MessageUtil {
     }
     
     public static Message getValidLoginBroadcastMessageWithDifferentUser() {
-        return Message.makeBroadcastMessage(MessageConstants.SECOND_USER,
-                getValidLoginMessageText());
+        return Message.makeBroadcastMessage(SECOND_USER, getValidLoginMessageText());
     }
 
     public static Message getValidDirectBroadcastMessage() {
@@ -34,8 +33,7 @@ public final class MessageUtil {
     }
     
     public static Message getValidDirectBroadcastMessageDifferentUser() {
-        return Message.makeBroadcastMessage(MessageConstants.SECOND_USER,
-                getValidDirectMessageText());
+        return Message.makeBroadcastMessage(SECOND_USER, getValidDirectMessageText());
     }
 
     public static Message getValidGroupBroadcastMessage() {

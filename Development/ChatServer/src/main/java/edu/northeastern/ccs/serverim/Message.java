@@ -1,6 +1,6 @@
 package edu.northeastern.ccs.serverim;
 
-import edu.northeastern.ccs.im.constants.ClientRunnableConstants;
+import edu.northeastern.ccs.im.constants.MessageConstants;
 
 /**
  * Each instance of this class represents a single transmission by our IM
@@ -167,9 +167,9 @@ public class Message {
     }
 
     private static String getErrorMessageText(String plainMessageText) {
-        return ClientRunnableConstants.CUSTOM_COMMAND_PREFIX
-                + ClientRunnableConstants.ERROR_MSG_IDENTIFIER
-                + ClientRunnableConstants.CUSTOM_COMMAND_SUFFIX + " " + plainMessageText;
+        return MessageConstants.CUSTOM_COMMAND_PREFIX
+                + MessageConstants.ERROR_MSG_IDENTIFIER
+                + MessageConstants.CUSTOM_COMMAND_SUFFIX + " " + plainMessageText;
     }
 
     /**

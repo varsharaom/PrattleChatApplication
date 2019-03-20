@@ -1,10 +1,9 @@
 package edu.northeastern.ccs.im.server;
 
-import edu.northeastern.ccs.im.constants.ClientRunnableConstants;
+import edu.northeastern.ccs.im.constants.MessageConstants;
 import edu.northeastern.ccs.im.persistence.IQueryHandler;
 import edu.northeastern.ccs.im.persistence.QueryFactory;
 import edu.northeastern.ccs.serverim.Message;
-import edu.northeastern.ccs.serverim.MessageType;
 import edu.northeastern.ccs.serverim.User;
 
 import java.util.List;
@@ -20,32 +19,34 @@ public class MessageFactory {
             String type = getType(arr[0]);
             String restOfMessageText = arr[1];
 
-            if (type.equalsIgnoreCase(MessageType.REGISTER.toString())) {
-                message = constructCustomRegisterMessage(restOfMessageText);
-            }
-            else if (type.equalsIgnoreCase(MessageType.DIRECT.toString())) {
-                message = constructCustomDirectMessage(restOfMessageText);
-            }
-            else if (type.equalsIgnoreCase(MessageType.LOGIN.toString())) {
-                message = constructCustomLoginMessage(restOfMessageText);
-            }
-            else if (type.equalsIgnoreCase(MessageType.GROUP.toString())){
-                message = constructCustomGroupMessage(restOfMessageText);
-            }
-            else if (type.equalsIgnoreCase(MessageType.DELETE.toString())) {
-                message = constructCustomDeleteMessage(restOfMessageText);
-            }
-            else if (type.equalsIgnoreCase(MessageType.GET_USERS.toString())){
-                message = constructCustomGetUsersMessage(restOfMessageText);
-            }
-            else {
-                message = Message.makeErrorMessage(clientMessage.getName(),
-                        ClientRunnableConstants.UNKNOWN_MESSAGE_TYPE_ERR);
+            switch(type) {
+                case MessageConstants.REGISTER_MSG_IDENTIFIER:
+                    message = constructCustomRegisterMessage(restOfMessageText);
+                    break;
+                case MessageConstants.DIRECT_MSG_IDENTIFIER:
+                    message = constructCustomDirectMessage(restOfMessageText);
+                    break;
+                case MessageConstants.LOGIN_MSG_IDENTIFIER:
+                    message = constructCustomLoginMessage(restOfMessageText);
+                    break;
+                case MessageConstants.GROUP_MSG_IDENTIFIER:
+                    message = constructCustomGroupMessage(restOfMessageText);
+                    break;
+                case MessageConstants.DELETE_MESSAGE_IDENTIFIER:
+                    message = constructCustomDeleteMessage(restOfMessageText);
+                    break;
+                case MessageConstants.GET_USER_IDENTIFIER:
+                    message = constructCustomGetUsersMessage(restOfMessageText);
+                    break;
+                default:
+                    message = Message.makeErrorMessage(clientMessage.getName(),
+                            MessageConstants.UNKNOWN_MESSAGE_TYPE_ERR);
+                    break;
             }
         }
         else {
             message = Message.makeErrorMessage(clientMessage.getName(),
-                    ClientRunnableConstants.EMPTY_MESSAGE_ERR);
+                    MessageConstants.EMPTY_MESSAGE_ERR);
         }
         return  message;
     }

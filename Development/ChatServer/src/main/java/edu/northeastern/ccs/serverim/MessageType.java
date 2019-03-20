@@ -1,5 +1,7 @@
 package edu.northeastern.ccs.serverim;
 
+import edu.northeastern.ccs.im.constants.MessageConstants;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,27 +20,27 @@ public enum  MessageType {
 	/** Message whose contents is broadcast to all connected users. */
 	BROADCAST("BCT"),
 
-	REGISTER("RGSTR"),
+	REGISTER(MessageConstants.REGISTER_MSG_IDENTIFIER),
 
-	REGISTER_SUCCESS("RGSTR_SCCSS"),
+//	REGISTER_SUCCESS("RGSTR_SCCSS"),
+//
+//	REGISTER_FAILURE("RGSTR_FLR"),
 
-	REGISTER_FAILURE("RGSTR_FLR"),
+	LOGIN(MessageConstants.LOGIN_MSG_IDENTIFIER),
 
-	LOGIN("LGN"),
+//	LOGIN_SUCCESS("LGN_SCCSS"),
+//
+//	LOGIN_FAILURE("LGN_FLR"),
 
-	LOGIN_SUCCESS("LGN_SCCSS"),
+	DIRECT(MessageConstants.DIRECT_MSG_IDENTIFIER),
 
-	LOGIN_FAILURE("LGN_FLR"),
+	GROUP(MessageConstants.GROUP_MSG_IDENTIFIER),
 
-	DIRECT("DRCT"),
+	DELETE(MessageConstants.DELETE_MESSAGE_IDENTIFIER),
 
-	GROUP("GRP"),
+	ERROR(MessageConstants.ERROR_MSG_IDENTIFIER),
 
-	DELETE("DLT"),
-
-	ERROR("ERR"),
-
-	GET_USERS("GT_USRS"),
+	GET_USERS(MessageConstants.GET_USER_IDENTIFIER),
 
     /**
      * Message sent by the user to start the logging out process and sent by the

@@ -6,7 +6,7 @@ import java.net.InetSocketAddress;
 
 import edu.northeastern.ccs.im.IMConnection;
 import edu.northeastern.ccs.im.constants.ConnectionConstants;
-import edu.northeastern.ccs.im.constants.MessageConstants;
+import edu.northeastern.ccs.im.constants.MessageTestConstants;
 import edu.northeastern.ccs.serverim.Message;
 import edu.northeastern.ccs.serverim.NetworkConnection;
 
@@ -26,6 +26,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import static edu.northeastern.ccs.im.constants.MessageTestConstants.BROADCAST_TEXT_MESSAGE;
+import static edu.northeastern.ccs.im.constants.MessageTestConstants.SIMPLE_USER;
 import static edu.northeastern.ccs.im.server.ServerConstants.*;
 import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
@@ -69,8 +71,7 @@ public class NetworkConnectionTest {
     @Test
     public void testSendMessage() {
         NetworkConnection nc = new NetworkConnection(sc);
-        Message message = Message.makeBroadcastMessage(MessageConstants.SIMPLE_USER,
-                MessageConstants.BROADCAST_TEXT_MESSAGE);
+        Message message = Message.makeBroadcastMessage(SIMPLE_USER, BROADCAST_TEXT_MESSAGE);
         nc.sendMessage(message);
         nc.close();
     }
@@ -85,10 +86,8 @@ public class NetworkConnectionTest {
         serverSocket.socket().bind(new InetSocketAddress(NEW_PORT2));
         sc.connect(serverSocket.socket().getLocalSocketAddress());
 
-        Message message1 = Message.makeBroadcastMessage(MessageConstants.SIMPLE_USER,
-                MessageConstants.BROADCAST_TEXT_MESSAGE);
-        Message message2 = Message.makeBroadcastMessage(MessageConstants.SIMPLE_USER,
-                MessageConstants.BROADCAST_TEXT_MESSAGE);
+        Message message1 = Message.makeBroadcastMessage(SIMPLE_USER, BROADCAST_TEXT_MESSAGE);
+        Message message2 = Message.makeBroadcastMessage(SIMPLE_USER, BROADCAST_TEXT_MESSAGE);
         Queue<Message> queue = new ConcurrentLinkedQueue<>();
         queue.add(message1);
         queue.add(message2);
@@ -127,8 +126,7 @@ public class NetworkConnectionTest {
         } catch (IOException e) {
             logger.log(Level.INFO, "" + e.getStackTrace());
         }
-        Message message = Message.makeBroadcastMessage(MessageConstants.SIMPLE_USER,
-                MessageConstants.BROADCAST_TEXT_MESSAGE);
+        Message message = Message.makeBroadcastMessage(SIMPLE_USER, BROADCAST_TEXT_MESSAGE);
         nc.sendMessage(message);
         nc.close();
     }
@@ -151,8 +149,8 @@ public class NetworkConnectionTest {
             selector = SelectorProvider.provider().openSelector();
             serverSocketLocal.register(selector, SelectionKey.OP_ACCEPT);
 
-            connection1 = new IMConnection(ConnectionConstants.HOST,
-                    ConnectionConstants.PORT, MessageConstants.BROADCAST_TEXT_MESSAGE);
+            connection1 = new IMConnection(ConnectionConstants.HOST, ConnectionConstants.PORT,
+                    BROADCAST_TEXT_MESSAGE);
             connection1.connect();
 
             SocketChannel socket = serverSocketLocal.accept();
@@ -192,12 +190,12 @@ public class NetworkConnectionTest {
             selector = SelectorProvider.provider().openSelector();
             serverSocketLocal.register(selector, SelectionKey.OP_ACCEPT);
 
-            connection1 = new IMConnection(ConnectionConstants.HOST,
-                    ConnectionConstants.PORT, MessageConstants.BROADCAST_TEXT_MESSAGE);
+            connection1 = new IMConnection(ConnectionConstants.HOST, ConnectionConstants.PORT,
+                    BROADCAST_TEXT_MESSAGE);
             connection1.connect();
 
             socket = serverSocketLocal.accept();
-            connection1.sendMessage(MessageConstants.BROADCAST_TEXT_MESSAGE);
+            connection1.sendMessage(BROADCAST_TEXT_MESSAGE);
             networkConnection = new NetworkConnection(socket);
             Iterator<Message> itr = networkConnection.iterator();
             assertTrue(itr.hasNext());
