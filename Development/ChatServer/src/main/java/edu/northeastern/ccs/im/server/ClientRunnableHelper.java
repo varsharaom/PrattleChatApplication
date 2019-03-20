@@ -7,6 +7,8 @@ import edu.northeastern.ccs.im.constants.MessageConstants;
 import edu.northeastern.ccs.im.persistence.IQueryHandler;
 import edu.northeastern.ccs.im.persistence.QueryFactory;
 
+import java.util.List;
+
 
 /**
  * Class that handles all the control flow for chat messages. Every instance of this class is
