@@ -129,6 +129,33 @@ public class ClientRunnableHelperTest {
         Message loginMessage = clientRunnableHelper.getCustomConstructedMessage(message);
         clientRunnableHelper.handleMessages(loginMessage);
     }
+    
+    @Test
+    public void testHandleLoginAttemptFailed() throws NoSuchFieldException, IllegalAccessException {
+        ConcurrentLinkedQueue<ClientRunnable> queue = new ConcurrentLinkedQueue<>();
+
+        ClientRunnable tt = new ClientRunnable(nc);
+        tt.setName(MessageConstants.SIMPLE_USER);
+        queue.add(tt);
+        Field active = Prattle.class.getDeclaredField(ClientRunnableHelperConstants.ACTIVE_FIELD);
+        active.setAccessible(true);
+        active.set(null, queue);
+
+        Queue<Message> messagesQueue = new ConcurrentLinkedQueue<>();
+        Message message = MessageUtil.getValidLoginBroadcastMessageWithDifferentUser();
+        messagesQueue.add(message);
+
+        Class ncClass = nc.getClass();
+        Field messages = ncClass.getDeclaredField(ClientRunnableHelperConstants.MESSAGES_FIELD);
+        messages.setAccessible(true);
+        messages.set(nc, messagesQueue);
+
+        tt.run();
+
+        when(iQueryHandler.validateLogin(anyString(), anyString())).thenReturn(-1L);
+        Message loginMessage = clientRunnableHelper.getCustomConstructedMessage(message);
+        clientRunnableHelper.handleMessages(loginMessage);
+    }
 
     @Test
     public void testHandleLoginMessageNotInitialized() throws NoSuchFieldException, IllegalAccessException {
