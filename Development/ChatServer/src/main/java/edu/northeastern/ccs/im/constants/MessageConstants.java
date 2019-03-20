@@ -18,7 +18,7 @@ public final class MessageConstants {
     public static final String REGISTER_SUCCESS_MSG = "You have successfully registered " +
             "as a new user..";
     public static final String LOGIN_SUCCESS_MSG = "You have successfully logged in..";
-
+    public static final String DELETE_SUCCESS_MSG = "Message was successfully deleted..";
 
     public static final String LOGIN_FAILURE_ERR = "Your credentials mismatch...";
     public static final String REGISTER_FAILURE_ERR = "Invalid credentials.." +
@@ -28,6 +28,13 @@ public final class MessageConstants {
     public static final String UNKNOWN_MESSAGE_TYPE_ERR = "Invalid Message type. " +
             "Please enter valid message type.";
     public static final String EMPTY_MESSAGE_ERR = "Message Content is empty...";
+
+    public static final String ERROR_DELETE_INVALID_MSG_ID = "Message ID entered is invalid." +
+            "Please try with a valid message ID";
+    public static final String ERROR_DELETE_SENDER_MISMATCH = "Deletion unsucessful. " +
+            "You can only delete messages sent by you";
+    public static final String ERROR_DELETE_RECEIVER_MISMATCH = "Deletion unsucessful. " +
+            "You can only delete messages sent to the receiver(s) in the active window.";
 
     private MessageConstants() {
 

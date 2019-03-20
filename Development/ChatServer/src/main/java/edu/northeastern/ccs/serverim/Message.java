@@ -149,7 +149,7 @@ public class Message {
         return new Message(handle, sender, receiver, msgText);
     }
 
-    public static Message makeRegisterAckMessage(MessageType handle, String msgSender, String msgText) {
+    public static Message makeAckMessage(MessageType handle, String msgSender, String msgText) {
         return new Message(handle, msgSender, msgText);
     }
 

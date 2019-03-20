@@ -50,7 +50,7 @@ class ClientRunnableHelper {
             handleChatMessages(message);
         }
         else if (message.isDeleteMessage()) {
-            handleDeleteMessages();
+            handleDeleteMessages(message);
         }
         else if (isGetUsersMessage(message)) {
         		handleGetUsersMessage(message);
@@ -60,8 +60,32 @@ class ClientRunnableHelper {
         }
     }
 
-    private void handleDeleteMessages() {
-        // DO nothing till the query handler integration is complete.
+    private void handleDeleteMessages(Message clientMessage) {
+        Message dbMessage = queryHandler.getMessage(clientMessage.getId());
+        Message handshakeMessage;
+
+        if (null == dbMessage) {
+//            ERROR: message not found
+            handshakeMessage = Message.makeErrorMessage(clientMessage.getName(),
+                    MessageConstants.ERROR_DELETE_INVALID_MSG_ID);
+        }
+        else if (!clientMessage.getName().equalsIgnoreCase(dbMessage.getName())) {
+//            ERROR: sender invalid
+            handshakeMessage = Message.makeErrorMessage(clientMessage.getName(),
+                    MessageConstants.ERROR_DELETE_SENDER_MISMATCH);
+        }
+        else if (!clientMessage.getMsgReceiver().equalsIgnoreCase(dbMessage.getMsgReceiver())) {
+//            ERROR: receiver invalid
+            handshakeMessage = Message.makeErrorMessage(clientMessage.getName(),
+                    MessageConstants.ERROR_DELETE_RECEIVER_MISMATCH);
+        }
+        else {
+            queryHandler.deleteMessage(clientMessage.getId());
+//            Deletion successful
+            handshakeMessage = Message.makeAckMessage(MessageType.DELETE,
+                    clientMessage.getName(), MessageConstants.DELETE_SUCCESS_MSG);
+        }
+        Prattle.sendAckMessage(handshakeMessage);
     }
 
     /**
@@ -109,7 +133,7 @@ class ClientRunnableHelper {
 
         if (!isUserPresent(message.getName())) {
             acknowledgementText = MessageConstants.REGISTER_SUCCESS_MSG;
-            handShakeMessage = Message.makeRegisterAckMessage(MessageType.REGISTER
+            handShakeMessage = Message.makeAckMessage(MessageType.REGISTER
                     , message.getName(), acknowledgementText);
             // Persist user details
             queryHandler.createUser(message.getName(), message.getText(), message.getName());
@@ -119,7 +143,7 @@ class ClientRunnableHelper {
             handShakeMessage = Message.makeErrorMessage(message.getName(), acknowledgementText);
         }
 
-        Prattle.registerOrLoginUser(handShakeMessage);
+        Prattle.sendAckMessage(handShakeMessage);
     }
 
     /** On a login request, this verifies user credentials and then acknowledges the user with
@@ -142,7 +166,7 @@ class ClientRunnableHelper {
                     acknowledgementText);
         }
 
-        Prattle.registerOrLoginUser(handShakeMessage);
+        Prattle.sendAckMessage(handShakeMessage);
         
         if (userId != -1) {
         		loadPendingMessages(userId);
