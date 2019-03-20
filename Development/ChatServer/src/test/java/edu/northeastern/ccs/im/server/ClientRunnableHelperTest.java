@@ -134,7 +134,7 @@ public class ClientRunnableHelperTest {
         ConcurrentLinkedQueue<ClientRunnable> queue = new ConcurrentLinkedQueue<>();
 
         ClientRunnable tt = new ClientRunnable(nc);
-        tt.setName(MessageConstants.SIMPLE_USER);
+        tt.setName(SIMPLE_USER);
         queue.add(tt);
         Field active = Prattle.class.getDeclaredField(ClientRunnableHelperConstants.ACTIVE_FIELD);
         active.setAccessible(true);
