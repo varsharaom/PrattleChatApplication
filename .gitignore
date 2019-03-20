@@ -45,3 +45,5 @@ buildNumber.properties
 *.log.*
 *.lck
 .DS_Store
+
+Development/ChatServer/src/main/java/edu/northeastern/ccs/im/clientextensions/

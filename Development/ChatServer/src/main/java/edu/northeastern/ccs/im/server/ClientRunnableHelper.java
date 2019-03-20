@@ -5,6 +5,7 @@ import edu.northeastern.ccs.serverim.MessageType;
 
 import edu.northeastern.ccs.im.constants.MessageConstants;
 import edu.northeastern.ccs.im.persistence.IQueryHandler;
+import edu.northeastern.ccs.im.persistence.QueryFactory;
 
 
 /**
@@ -24,7 +25,7 @@ class ClientRunnableHelper {
     /**
      * Checks if the login credentials entered are valid
      */
-    private boolean isValidLoginCredentials(Message msg) {
+    private long isValidLoginCredentials(Message msg) {
         return queryHandler.validateLogin(msg.getName(), msg.getText());
     }
 
@@ -119,14 +120,14 @@ class ClientRunnableHelper {
         Prattle.registerOrLoginUser(handShakeMessage);
     }
 
-
     /** On a login request, this verifies user credentials and then acknowledges the user with
      * a success / failure message */
     private void handleLoginMessage(Message message) {
         Message handShakeMessage;
         String acknowledgementText;
 
-        if (isValidLoginCredentials(message)) {
+        long userId = isValidLoginCredentials(message);
+        if (userId != -1) {
 
             acknowledgementText = MessageConstants.LOGIN_SUCCESS_MSG;
             handShakeMessage = Message.makeLoginAckMessage(MessageType.LOGIN, message.getName(),
@@ -140,6 +141,23 @@ class ClientRunnableHelper {
         }
 
         Prattle.registerOrLoginUser(handShakeMessage);
+        
+        if (userId != -1) {
+        		loadPendingMessages(userId);
+        		QueryFactory.getQueryHandler().updateUserLastLogin(userId);
+        }
+    }
+    
+    /**
+     * Load pending messages received since user logged off.
+     *
+     * @param userId the user id
+     */
+    private void loadPendingMessages(long userId) {
+        List<Message> messageList = QueryFactory.getQueryHandler().getMessagesSinceLastLogin(userId);
+        for(Message message : messageList) {
+        		Prattle.sendDirectMessage(message);
+        }
     }
 
     /**
@@ -148,7 +166,6 @@ class ClientRunnableHelper {
      * @param message - custom constructed message by the parser
      */
     private void handleDirectMessages(Message message) {
-
         if (isUserPresent(message.getMsgReceiver())) {
             long messageId = queryHandler.storeMessage(message.getName(), message.getMsgReceiver(),
                     message.getMessageType(),
@@ -156,12 +173,9 @@ class ClientRunnableHelper {
             message.setId(messageId);
             Prattle.sendDirectMessage(message);
         }
-
         else {
-
             Message errorMessage = Message.makeErrorMessage(message.getName(),
                     MessageConstants.INVALID_DIRECT_RECEIVER_MSG);
-
             Prattle.sendErrorMessage(errorMessage);
         }
     }

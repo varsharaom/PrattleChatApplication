@@ -13,7 +13,7 @@ public interface IQueryHandler {
 
     public int updateUserLastLogin(long userID);
 
-    public Boolean validateLogin(String username, String password);
+    public long validateLogin(String username, String password);
 
     //Message Queries
     public long storeMessage(String senderName, String receiverName, MessageType type, String msgText);
