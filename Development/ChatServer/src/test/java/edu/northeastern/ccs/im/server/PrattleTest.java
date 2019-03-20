@@ -2,7 +2,6 @@ package edu.northeastern.ccs.im.server;
 
 import edu.northeastern.ccs.im.IMConnection;
 import edu.northeastern.ccs.im.constants.ConnectionConstants;
-import edu.northeastern.ccs.im.constants.MessageConstants;
 import edu.northeastern.ccs.serverim.Message;
 import edu.northeastern.ccs.serverim.NetworkConnection;
 
@@ -20,6 +19,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import static edu.northeastern.ccs.im.constants.MessageTestConstants.BROADCAST_TEXT_MESSAGE;
+import static edu.northeastern.ccs.im.constants.MessageTestConstants.SIMPLE_USER;
 import static org.junit.Assert.assertEquals;
 import static org.junit.contrib.java.lang.system.TextFromStandardInputStream.emptyStandardInputStream;
 
@@ -72,7 +73,7 @@ public class PrattleTest {
 		active.set(null, queue);
 
 		Prattle.broadcastMessage(
-				Message.makeBroadcastMessage(MessageConstants.SIMPLE_USER, MessageConstants.BROADCAST_TEXT_MESSAGE));
+				Message.makeBroadcastMessage(SIMPLE_USER, BROADCAST_TEXT_MESSAGE));
 
 	}
 
@@ -100,21 +101,21 @@ public class PrattleTest {
 
 			Thread thread =new Thread(() -> Prattle.main(new String[0]));
 			thread.start();
-			Prattle.broadcastMessage(Message.makeBroadcastMessage(MessageConstants.SIMPLE_USER,
-					MessageConstants.BROADCAST_TEXT_MESSAGE));
+			Prattle.broadcastMessage(Message.makeBroadcastMessage(SIMPLE_USER,
+					BROADCAST_TEXT_MESSAGE));
 			connection1 = new IMConnection(ConnectionConstants.HOST, ConnectionConstants.PORT,
-					MessageConstants.BROADCAST_TEXT_MESSAGE);
+					BROADCAST_TEXT_MESSAGE);
 			connection1.connect();
 
 			connection2 = new IMConnection(ConnectionConstants.HOST, ConnectionConstants.PORT,
-					MessageConstants.BROADCAST_TEXT_MESSAGE);
+					BROADCAST_TEXT_MESSAGE);
 			connection2.connect();
 
-			connection1.sendMessage(MessageConstants.BROADCAST_TEXT_MESSAGE);
-			connection2.sendMessage(MessageConstants.BROADCAST_TEXT_MESSAGE);
+			connection1.sendMessage(BROADCAST_TEXT_MESSAGE);
+			connection2.sendMessage(BROADCAST_TEXT_MESSAGE);
 
-			Prattle.broadcastMessage(Message.makeBroadcastMessage(MessageConstants.SIMPLE_USER,
-					MessageConstants.BROADCAST_TEXT_MESSAGE));
+			Prattle.broadcastMessage(Message.makeBroadcastMessage(SIMPLE_USER,
+					BROADCAST_TEXT_MESSAGE));
 			Prattle.stopServer();
 
 		} catch (Exception e) {
@@ -156,7 +157,7 @@ public class PrattleTest {
 		active.set(null, queue);
 
 		Prattle.broadcastMessage(
-				Message.makeBroadcastMessage(MessageConstants.SIMPLE_USER, MessageConstants.BROADCAST_TEXT_MESSAGE));
+				Message.makeBroadcastMessage(SIMPLE_USER, BROADCAST_TEXT_MESSAGE));
 	}
 
 	@Test
@@ -174,21 +175,21 @@ public class PrattleTest {
 			isReady.setAccessible(true);
 			isReady.set(pr, false);
 
-			Prattle.broadcastMessage(Message.makeBroadcastMessage(MessageConstants.SIMPLE_USER,
-					MessageConstants.BROADCAST_TEXT_MESSAGE));
+			Prattle.broadcastMessage(Message.makeBroadcastMessage(SIMPLE_USER,
+					BROADCAST_TEXT_MESSAGE));
 			connection1 = new IMConnection(ConnectionConstants.HOST, ConnectionConstants.PORT,
-					MessageConstants.BROADCAST_TEXT_MESSAGE);
+					BROADCAST_TEXT_MESSAGE);
 			connection1.connect();
 
 			connection2 = new IMConnection(ConnectionConstants.HOST, ConnectionConstants.PORT,
-					MessageConstants.BROADCAST_TEXT_MESSAGE);
+					BROADCAST_TEXT_MESSAGE);
 			connection2.connect();
 
-			connection1.sendMessage(MessageConstants.BROADCAST_TEXT_MESSAGE);
-			connection2.sendMessage(MessageConstants.BROADCAST_TEXT_MESSAGE);
+			connection1.sendMessage(BROADCAST_TEXT_MESSAGE);
+			connection2.sendMessage(BROADCAST_TEXT_MESSAGE);
 
-			Prattle.broadcastMessage(Message.makeBroadcastMessage(MessageConstants.SIMPLE_USER,
-					MessageConstants.BROADCAST_TEXT_MESSAGE));
+			Prattle.broadcastMessage(Message.makeBroadcastMessage(SIMPLE_USER,
+					BROADCAST_TEXT_MESSAGE));
 		} catch (Exception e) {
 			Prattle.stopServer();
 

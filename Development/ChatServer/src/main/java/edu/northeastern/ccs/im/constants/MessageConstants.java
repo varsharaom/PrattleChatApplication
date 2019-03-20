@@ -1,6 +1,6 @@
 package edu.northeastern.ccs.im.constants;
 
-public final class ClientRunnableConstants {
+public final class MessageConstants {
 
     /** The delimiter to parse special messages. This should be the same in the client side */
     public static final String DELIMITER = "";
@@ -29,7 +29,7 @@ public final class ClientRunnableConstants {
             "Please enter valid message type.";
     public static final String EMPTY_MESSAGE_ERR = "Message Content is empty...";
 
-    private ClientRunnableConstants() {
+    private MessageConstants() {
 
     }
 }

@@ -1,9 +1,9 @@
 package edu.northeastern.ccs.im.constants;
 
 
-import static edu.northeastern.ccs.im.constants.ClientRunnableConstants.*;
+import static edu.northeastern.ccs.im.constants.MessageConstants.*;
 
-public final class MessageConstants {
+public final class MessageTestConstants {
 
 	public static final String FIRST_USER = "FIRST_USER";
     public static final String SECOND_USER = "SECOND_USER";
@@ -21,7 +21,7 @@ public final class MessageConstants {
 
     public static final String NULL_OUTPUT = "--";
 
-    private MessageConstants() {
+    private MessageTestConstants() {
 
     }
 }
