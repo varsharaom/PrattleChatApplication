@@ -33,6 +33,15 @@ public class DeleteMessageTest {
     }
 
     @Test
+    public void testInvalidMessageId() {
+        Message message = getValidDeleteBroadcastMessage();
+        Message customConstructedMessage = clientRunnableHelper.getCustomConstructedMessage(message);
+
+        when(queryHandler.getMessage(anyLong())).thenReturn(null);
+        clientRunnableHelper.handleMessages(customConstructedMessage);
+    }
+
+    @Test
     public void testSenderInvalid() {
         Message message = getValidDeleteBroadcastMessage();
         Message customConstructedMessage = clientRunnableHelper.getCustomConstructedMessage(message);
