@@ -21,6 +21,7 @@ create table groups (
 );
 
 create table group_info (
+	id INTEGER PRIMARY KEY auto_increment,
 	group_id INTEGER REFERENCES groups(id),
     uid INTEGER REFERENCES users(id),
     role INTEGER

@@ -33,6 +33,8 @@ public class Message {
     private String msgSender;
 
     private String msgReceiver;
+    
+    private int isDeleted;
 
     /**
      * The second argument used in the message.
@@ -45,6 +47,10 @@ public class Message {
 
     public long getId() {
         return this.id;
+    }
+    
+    public long getIsDeleted() {
+        return this.isDeleted;
     }
 
     /**
@@ -65,16 +71,17 @@ public class Message {
         msgText = text;
     }
 
-    public Message(long id, MessageType handle, String sender, String receiver, String text) {
+    public Message(long id, MessageType handle, String sender, String receiver, String text, int isDeleted) {
         this.msgType = handle;
         this.msgSender = sender;
         this.msgReceiver = receiver;
         this.msgText = text;
         this.id = id;
+        this.isDeleted = isDeleted;
     }
 
     public Message(MessageType handle, String sender, String receiver, String text) {
-        this(-1L, handle, sender, receiver, text);
+        this(-1L, handle, sender, receiver, text, 0);
     }
 
     /**
@@ -163,7 +170,7 @@ public class Message {
     }
 
     public static Message makeDeleteMessage(long messageId, String msgSender, String msgReceiver) {
-        return new Message(messageId, MessageType.DELETE, msgSender, msgReceiver, "");
+        return new Message(messageId, MessageType.DELETE, msgSender, msgReceiver, "", 0);
     }
 
     private static String getErrorMessageText(String plainMessageText) {

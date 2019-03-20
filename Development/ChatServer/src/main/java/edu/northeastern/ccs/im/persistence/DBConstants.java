@@ -33,6 +33,7 @@ public class DBConstants {
     public static final String GROUP_NAME = "name";
 
     //GROUP_INFO
+    public static final String GROUP_INFO_ID = "id";
     public static final String GROUP_INFO_GROUP_ID = "group_id";
     public static final String GROUP_INFO_USER_ID = "uid";
     public static final String GROUP_INFO_USER_ROLE = "role";
