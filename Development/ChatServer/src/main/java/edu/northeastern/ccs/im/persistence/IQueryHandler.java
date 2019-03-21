@@ -32,4 +32,6 @@ public interface IQueryHandler {
 
     public long getUserID(String userName);
 
+    public boolean checkGroupNameExists(String groupName);
+
 }

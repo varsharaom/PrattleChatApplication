@@ -32,17 +32,24 @@ class ClientRunnableHelper {
     }
 
     /**
-     * Checks if the registration information are all valid enough to allow a new user creation
+     * Checks if the user with the name is already present.
      */
     private boolean isUserPresent(String userName) {
         return queryHandler.checkUserNameExists(userName);
     }
 
     /**
+     * Checks if the group with the name is already present.
+     */
+    private boolean isGroupPresent (String groupName) {
+        return queryHandler.checkGroupNameExists(groupName);
+    }
+
+    /**
      * This API is exposed to ClientRunnable for sending any kind of message.
      * Specifically, this routes the control based on register / login / private / group messages.
      */
-    void handleMessages(Message message) {
+    protected void handleMessages(Message message) {
         if (isRegisterOrLogin(message)) {
             handleRegisterLoginMessages(message);
         }
@@ -108,7 +115,7 @@ class ClientRunnableHelper {
             handleDirectMessages(msg);
         }
         else {
-            Prattle.sendGroupMessage(msg);
+            handleGroupMessages(msg);
         }
     }
 
@@ -196,7 +203,8 @@ class ClientRunnableHelper {
             long messageId = queryHandler.storeMessage(message.getName(), message.getMsgReceiver(),
                     message.getMessageType(),
                     message.getText());
-            message.setId(messageId);
+
+            message.setText(getPrependedMessageText(message.getText(), messageId));
             Prattle.sendDirectMessage(message);
         }
         else {
@@ -206,16 +214,58 @@ class ClientRunnableHelper {
         }
     }
 
+    private void handleGroupMessages(Message message) {
+        if (isGroupPresent(message.getMsgReceiver())) {
+            long messageId = queryHandler.storeMessage(message.getName(), message.getMsgReceiver(),
+                    message.getMessageType(),
+                    message.getText());
+
+            message.setText(getPrependedMessageText(message.getText(), messageId));
+            Prattle.sendGroupMessage(message);
+        }
+        else {
+            Message errorMessage = Message.makeErrorMessage(message.getName(),
+                    MessageConstants.INVALID_GROUP_RECEIVER_MSG);
+            Prattle.sendErrorMessage(errorMessage);
+        }
+    }
+
+    /**
+     * Prepend the message text with id to parse and display in the client side.
+     * This will be useful for identifying each messages uniquely from the console and client side.
+     * Example:
+     *         - actual message text -> "Hi there"
+     *         - after prepending    -> "<142> Hi there"
+     *         where 142 is the message id
+     *
+     * @param msgText - the message text.
+     * @param messageId - id for the message returned on persistence in the database.
+     */
+    protected String getPrependedMessageText(String msgText, long messageId) {
+        StringBuilder text = new StringBuilder(MessageConstants.MSG_ID_PREFIX);
+        text.append(messageId);
+        text.append(MessageConstants.MSG_ID_SUFFIX);
+        text.append(msgText);
+
+        return text.toString();
+    }
+
 
     /** Checks if the message is either a login or a registration request */
     private boolean isRegisterOrLogin(Message msg) {
         return (msg.isRegisterMessage() || msg.isLoginMessage());
     }
 
+    /**
+     * Returns true if the message is a direct of group message. Otherwise false.
+     */
     private boolean isDirectOrGroupMessage(Message msg) {
         return (msg.isDirectMessage() || msg.isGroupMessage());
     }
 
+    /**
+     * Returns true if the message is a get all Users message. Otherwise false.
+     */
     private boolean isGetUsersMessage(Message msg) {
         return (msg.isGetUsersMessage());
     }

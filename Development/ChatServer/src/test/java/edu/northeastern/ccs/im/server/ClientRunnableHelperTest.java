@@ -1,6 +1,8 @@
 package edu.northeastern.ccs.im.server;
 
 import edu.northeastern.ccs.im.constants.ClientRunnableHelperConstants;
+import edu.northeastern.ccs.im.constants.MessageConstants;
+import edu.northeastern.ccs.im.constants.MessageTestConstants;
 import edu.northeastern.ccs.im.persistence.DBConstants;
 import edu.northeastern.ccs.im.persistence.IQueryHandler;
 import edu.northeastern.ccs.im.utils.MessageUtil;
@@ -17,9 +19,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import static edu.northeastern.ccs.im.constants.MessageConstants.MSG_ID_PREFIX;
+import static edu.northeastern.ccs.im.constants.MessageConstants.MSG_ID_SUFFIX;
+import static edu.northeastern.ccs.im.constants.MessageTestConstants.BROADCAST_TEXT_MESSAGE;
 import static edu.northeastern.ccs.im.constants.MessageTestConstants.SIMPLE_USER;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
@@ -347,4 +351,18 @@ public class ClientRunnableHelperTest {
 
     }
 
+    @Test
+    public void testMessageIdPrepend() {
+        long randomId = (long) (Math.random() * 100000);
+        String messageText = BROADCAST_TEXT_MESSAGE;
+        String msgPrefix = MSG_ID_PREFIX + randomId + MSG_ID_SUFFIX;
+
+        assertFalse(messageText.startsWith(msgPrefix));
+
+        String prependedText =
+                clientRunnableHelper.getPrependedMessageText(messageText, randomId);
+
+        assertTrue(prependedText.startsWith(msgPrefix));
+        assertTrue(prependedText.endsWith(BROADCAST_TEXT_MESSAGE));
+    }
 }

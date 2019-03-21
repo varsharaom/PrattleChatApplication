@@ -231,6 +231,10 @@ public class Message {
         return msgText;
     }
 
+    public void setText(String text) {
+        this.msgText = text;
+    }
+
     /**
      * Determine if this message is broadcasting text to everyone.
      *
