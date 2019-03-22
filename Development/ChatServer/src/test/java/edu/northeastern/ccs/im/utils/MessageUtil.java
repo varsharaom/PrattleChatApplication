@@ -61,6 +61,11 @@ public final class MessageUtil {
                 getInvalidTypeMessageText());
     }
 
+    public static Message getValidDeleteMessage() {
+        return Message.makeBroadcastMessage(SIMPLE_USER,
+                getValidDeleteMessageText());
+    }
+
     private static String getInvalidTypeMessageText() {
         return CUSTOM_COMMAND_PREFIX
                 + ""

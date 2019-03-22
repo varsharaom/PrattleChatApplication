@@ -161,6 +161,23 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
         return isNameFound;
     }
 
+    public boolean checkGroupNameExists(String groupName) {
+        String query = String.format("SELECT * FROM %s WHERE %s = '%s';",
+                DBConstants.GROUP_TABLE, DBConstants.GROUP_NAME, groupName);
+
+        boolean isNameFound = false;
+        try {
+            PreparedStatement statement = connection.prepareStatement(query);
+            ResultSet rs = statement.executeQuery();
+            isNameFound = rs.next();
+            rs.close();
+            statement.close();
+        } catch (SQLException e) {
+            logger.log(Level.INFO, SQL_EXCEPTION_MSG);
+        }
+        return isNameFound;
+    }
+
     @Override
     public List<User> getAllUsers() {
         String query = String.format("SELECT %s, %s, %s FROM %s;",

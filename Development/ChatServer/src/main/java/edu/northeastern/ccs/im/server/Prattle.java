@@ -47,7 +47,7 @@ public abstract class Prattle {
 		active = new ConcurrentLinkedQueue<>();
 	}
 
-	static void registerOrLoginUser(Message msg) {
+	static void sendAckMessage(Message msg) {
 		msg.setMessageType(MessageType.BROADCAST);
 		for (ClientRunnable tt : active) {
 			if ((tt.isInitialized()) && tt.getName().equals(msg.getName())) {
