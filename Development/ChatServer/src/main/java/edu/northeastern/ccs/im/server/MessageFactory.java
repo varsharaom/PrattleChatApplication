@@ -3,15 +3,16 @@ package edu.northeastern.ccs.im.server;
 import edu.northeastern.ccs.im.constants.MessageConstants;
 import edu.northeastern.ccs.im.persistence.IQueryHandler;
 import edu.northeastern.ccs.im.persistence.QueryFactory;
+import edu.northeastern.ccs.serverim.Group;
 import edu.northeastern.ccs.serverim.Message;
 import edu.northeastern.ccs.serverim.User;
 
-import java.util.List;
+import java.util.*;
 
 public class MessageFactory {
 
 
-    public static Message createMessage(Message clientMessage) {
+    public static Message createMessage(Message clientMessage, IQueryHandler queryHandler) {
 
         Message message;
         String[] arr = clientMessage.getText().split(" ", 2);
@@ -35,9 +36,10 @@ public class MessageFactory {
                 case MessageConstants.DELETE_MESSAGE_IDENTIFIER:
                     message = constructCustomDeleteMessage(restOfMessageText);
                     break;
-                case MessageConstants.GET_USER_IDENTIFIER:
-                    message = constructCustomGetUsersMessage(restOfMessageText);
+                case MessageConstants.GET_INFO_IDENTIFIER:
+                    message = constructCustomGetInfoMessage(restOfMessageText, queryHandler);
                     break;
+
                 default:
                     message = Message.makeErrorMessage(clientMessage.getName(),
                             MessageConstants.UNKNOWN_MESSAGE_TYPE_ERR);
@@ -116,18 +118,58 @@ public class MessageFactory {
         return Message.makeGroupMessage(sender, groupName, actualContent);
     }
 
-    private static Message constructCustomGetUsersMessage(String restOfMessageText) {
-        String sender = restOfMessageText;
-        IQueryHandler queryHandler = QueryFactory.getQueryHandler();
-        List<User> userList = queryHandler.getAllUsers();
+    private static Message constructCustomGetInfoMessage(String restOfMessageText, IQueryHandler queryHandler) {
+        String[] content = restOfMessageText.split(" ", 2 );
+        String commandType  = content[0];
+        String sender = content[1];
+
+        String result = getInfo(sender, commandType, queryHandler);
+
+        return Message.makeGetInfoMessage(sender, sender, result);
+    }
+
+    private static String getInfo(String senderName, String commandType, IQueryHandler queryHandler) {
+
+        String info = null;
+        if(commandType.equalsIgnoreCase(MessageConstants.GET_USERS_IDENTIFIER)) {
+            List<User> users = queryHandler.getAllUsers();
+            info =  handleGetUsers(MessageConstants.GET_USERS_CONSOLE_INFO, users);
+        }
+        else if (commandType.equalsIgnoreCase(MessageConstants.GET_GROUPS_IDENTIFIER)) {
+            List<Group> groups = queryHandler.getAllGroups();
+            info = handleGetGroups(MessageConstants.GET_GROUPS_CONSOLE_INFO, groups);
+        }
+        else if (commandType.equalsIgnoreCase(MessageConstants.GET_MY_USERS_IDENTIFIER)) {
+            List<User> users = queryHandler.getMyUsers(senderName);
+            info = handleGetUsers(MessageConstants.GET_MY_USERS_CONSOLE_INFO, users);
+        }
+        else if (commandType.equalsIgnoreCase(MessageConstants.GET_MY_GROUPS_IDENTIFIER)) {
+            List<Group> groups = queryHandler.getMyGroups(senderName);
+            info = handleGetGroups(MessageConstants.GET_MY_GROUPS_CONSOLE_INFO, groups);
+        }
+        else{
+//            TODO - an error message saying type of info is wrong
+        }
+        return info;
+    }
+
+    private static String handleGetUsers(String consoleInfo, List<User> users) {
 
         StringBuilder sb = new StringBuilder();
-        sb.append("List of users:\n");
-        for(User user: userList) {
-            sb.append(user.getUserName() + "\n");
+        sb.append(consoleInfo + "\n");
+        for(User user: users) {
+            sb.append(user.getUserID() + " - " + user.getUserName() + "\n");
         }
+        return sb.toString();
+    }
 
-        return Message.makeGetUsersMessage(sender, sender, sb.toString());
+    private static String handleGetGroups(String consoleInfo, List<Group> groups) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(consoleInfo + "\n");
+        for(Group group: groups) {
+            sb.append(group.getId() + " - " + group.getName() + "\n");
+        }
+        return sb.toString();
     }
 
     /**

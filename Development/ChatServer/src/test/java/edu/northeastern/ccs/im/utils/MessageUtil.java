@@ -31,7 +31,22 @@ public final class MessageUtil {
         return Message.makeBroadcastMessage(SIMPLE_USER,
         		getValidGetUsersMessageText());
     }
-    
+
+    public static Message getValidGetMyUsersMessage() {
+        return Message.makeBroadcastMessage(SIMPLE_USER,
+                getValidGetMyUsersMessageText());
+    }
+
+    public static Message getValidGetGroupsMessage() {
+        return Message.makeBroadcastMessage(SIMPLE_USER,
+                getValidGetGroupsMessageText());
+    }
+
+    public static Message getValidGetMyGroupsMessage() {
+        return Message.makeBroadcastMessage(SIMPLE_USER,
+                getValidGetMyGroupsMessageText());
+    }
+
     public static Message getValidDirectBroadcastMessageDifferentUser() {
         return Message.makeBroadcastMessage(SECOND_USER, getValidDirectMessageText());
     }
@@ -100,8 +115,27 @@ public final class MessageUtil {
     }
     
     private static String getValidGetUsersMessageText() {
-        return CUSTOM_COMMAND_PREFIX + GET_USER_IDENTIFIER
-                + CUSTOM_COMMAND_SUFFIX + " senderName";
+        return CUSTOM_COMMAND_PREFIX + GET_INFO_IDENTIFIER
+                + CUSTOM_COMMAND_SUFFIX + " " + GET_USERS_IDENTIFIER
+                + " senderName";
+    }
+
+    private static String getValidGetGroupsMessageText() {
+        return CUSTOM_COMMAND_PREFIX + GET_INFO_IDENTIFIER
+                + CUSTOM_COMMAND_SUFFIX + " " + GET_GROUPS_IDENTIFIER
+                + " senderName";
+    }
+
+    private static String getValidGetMyGroupsMessageText() {
+        return CUSTOM_COMMAND_PREFIX + GET_INFO_IDENTIFIER
+                + CUSTOM_COMMAND_SUFFIX + " " + GET_MY_GROUPS_IDENTIFIER
+                + " senderName";
+    }
+
+    private static String getValidGetMyUsersMessageText() {
+        return CUSTOM_COMMAND_PREFIX + GET_INFO_IDENTIFIER
+                + CUSTOM_COMMAND_SUFFIX + " " + GET_MY_USERS_IDENTIFIER
+                + " senderName";
     }
 
     private static String getValidRegisterMessageText() {

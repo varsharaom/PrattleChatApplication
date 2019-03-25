@@ -1,5 +1,6 @@
 package edu.northeastern.ccs.im.persistence;
 
+import edu.northeastern.ccs.serverim.Group;
 import edu.northeastern.ccs.serverim.Message;
 import edu.northeastern.ccs.serverim.MessageType;
 import edu.northeastern.ccs.serverim.User;
@@ -28,10 +29,16 @@ public interface IQueryHandler {
 
     public List<User> getAllUsers();
 
+    public List<User> getMyUsers(String senderName);
+
     public String getUserName(long userID);
 
     public long getUserID(String userName);
 
     public boolean checkGroupNameExists(String groupName);
+
+    public List<Group> getAllGroups();
+
+    public  List<Group> getMyGroups(String senderName);
 
 }
