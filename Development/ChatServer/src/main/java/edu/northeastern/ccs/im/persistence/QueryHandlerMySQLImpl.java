@@ -1,5 +1,6 @@
 package edu.northeastern.ccs.im.persistence;
 
+import edu.northeastern.ccs.serverim.Group;
 import edu.northeastern.ccs.serverim.Message;
 import edu.northeastern.ccs.serverim.MessageType;
 import edu.northeastern.ccs.serverim.User;
@@ -179,6 +180,16 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
     }
 
     @Override
+    public List<Group> getAllGroups() {
+        return null;
+    }
+
+    @Override
+    public List<Group> getMyGroups(String senderName) {
+        return null;
+    }
+
+    @Override
     public List<User> getAllUsers() {
         String query = String.format("SELECT %s, %s, %s FROM %s;",
                 DBConstants.USER_ID, DBConstants.USER_USERNAME,
@@ -201,6 +212,11 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
             logger.log(Level.INFO, SQL_EXCEPTION_MSG);
         }
         return userList;
+    }
+
+    @Override
+    public List<User> getMyUsers(String senderName) {
+        return null;
     }
 
 

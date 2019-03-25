@@ -59,8 +59,8 @@ class ClientRunnableHelper {
         else if (message.isDeleteMessage()) {
             handleDeleteMessages(message);
         }
-        else if (isGetUsersMessage(message)) {
-        		handleGetUsersMessage(message);
+        else if (isGetInfoMessage(message)) {
+        		handleGetInfoMessages(message);
         }
         else {
             handleErrorMessages(message);
@@ -119,8 +119,8 @@ class ClientRunnableHelper {
         }
     }
 
-    private void handleGetUsersMessage(Message msg) {
-    		Prattle.sendDirectMessage(msg);
+    private void handleGetInfoMessages(Message msg) {
+        Prattle.sendDirectMessage(msg);
     }
 
     /**
@@ -167,7 +167,6 @@ class ClientRunnableHelper {
                     message.getName(), acknowledgementText);
         }
         else {
-
             acknowledgementText = MessageConstants.LOGIN_FAILURE_ERR;
             handShakeMessage = Message.makeErrorMessage(message.getName(),
                     acknowledgementText);
@@ -266,8 +265,8 @@ class ClientRunnableHelper {
     /**
      * Returns true if the message is a get all Users message. Otherwise false.
      */
-    private boolean isGetUsersMessage(Message msg) {
-        return (msg.isGetUsersMessage());
+    static boolean isGetInfoMessage(Message msg) {
+        return msg.isGetInfoMessage();
     }
 
     /**
@@ -280,7 +279,7 @@ class ClientRunnableHelper {
         Message message = msg;
 
         if (content.startsWith(MessageConstants.CUSTOM_COMMAND_PREFIX)) {
-            message = MessageFactory.createMessage(message);
+            message = MessageFactory.createMessage(message, queryHandler);
 
         }
 //        TODO - should we change the incoming message as is? Or send a 5XX Error message

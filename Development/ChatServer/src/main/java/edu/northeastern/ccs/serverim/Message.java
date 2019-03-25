@@ -161,8 +161,8 @@ public class Message {
         return new Message(MessageType.GROUP, msgSender, groupName, msgText);
     }
 
-    public static Message makeGetUsersMessage(String msgSender, String msgReceiver, String msgText) {
-        return new Message(MessageType.GET_USERS, msgSender, msgReceiver, msgText);
+    public static Message makeGetInfoMessage(String msgSender, String msgReceiver, String msgText) {
+        return new Message(MessageType.GET_INFO, msgSender, msgReceiver, msgText);
     }
 
     public static Message makeErrorMessage(String msgSender, String msgText) {
@@ -273,8 +273,8 @@ public class Message {
         return (msgType == MessageType.GROUP);
     }
 
-    public boolean isGetUsersMessage() {
-        return (msgType == MessageType.GET_USERS);
+    public boolean isGetInfoMessage() {
+        return (msgType == MessageType.GET_INFO);
     }
 
     public void setMessageType(MessageType type) {

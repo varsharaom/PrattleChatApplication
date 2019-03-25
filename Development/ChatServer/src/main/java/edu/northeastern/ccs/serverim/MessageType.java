@@ -40,7 +40,7 @@ public enum  MessageType {
 
 	ERROR(MessageConstants.ERROR_MSG_IDENTIFIER),
 
-	GET_USERS(MessageConstants.GET_USER_IDENTIFIER),
+	GET_INFO(MessageConstants.GET_INFO_IDENTIFIER),
 
     /**
      * Message sent by the user to start the logging out process and sent by the
