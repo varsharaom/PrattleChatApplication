@@ -13,7 +13,11 @@ public final class MessageConstants {
     public static final String LOGIN_MSG_IDENTIFIER = "LGN";
     public static final String REGISTER_MSG_IDENTIFIER = "RGSTR";
     public static final String DELETE_MESSAGE_IDENTIFIER = "DLT";
-    public static final String GET_USER_IDENTIFIER = "GT_USRS";
+    public static final String GET_USERS_IDENTIFIER = "GT_USRS";
+    public static final String GET_GROUPS_IDENTIFIER = "GT_GRPS";
+    public static final String GET_MY_USERS_IDENTIFIER = "GT_MY_USRS";
+    public static final String GET_MY_GROUPS_IDENTIFIER = "GT_MY_GRPS";
+    public static final String GET_INFO_IDENTIFIER = "GT_INFO";
     public static final String ERROR_MSG_IDENTIFIER = "ERR";
 
     public static final String MSG_ID_PREFIX = "<";
@@ -24,6 +28,11 @@ public final class MessageConstants {
             "as a new user..";
     public static final String LOGIN_SUCCESS_MSG = "You have successfully logged in..";
     public static final String DELETE_SUCCESS_MSG = "Message was successfully deleted..";
+
+    public static final String GET_USERS_CONSOLE_INFO = "List of all Users :";
+    public static final String GET_MY_USERS_CONSOLE_INFO = "List of all my connections :";
+    public static final String GET_GROUPS_CONSOLE_INFO = "List of all Groups :";
+    public static final String GET_MY_GROUPS_CONSOLE_INFO = "List of my groups : ";
 
 //    ERROR MESSAGES
     public static final String LOGIN_FAILURE_ERR = "Your credentials mismatch...";

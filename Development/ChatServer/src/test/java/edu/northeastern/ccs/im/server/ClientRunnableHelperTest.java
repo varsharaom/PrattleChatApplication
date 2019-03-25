@@ -314,8 +314,10 @@ public class ClientRunnableHelperTest {
         Message message = MessageUtil.getValidGetUsersMessage();
 
         List<User> list = new ArrayList();
-        list.add(new User(1L, DBConstants.USER_USERNAME, DBConstants.USER_USERNAME, System.currentTimeMillis()));
+        list.add(new User(1L, DBConstants.USER_USERNAME, DBConstants.USER_USERNAME,
+                System.currentTimeMillis()));
         when(iQueryHandler.getAllUsers()).thenReturn(list);
+
         Message getUsersMessage = clientRunnableHelper.getCustomConstructedMessage(message);
         clientRunnableHelper.handleMessages(getUsersMessage);
     }
