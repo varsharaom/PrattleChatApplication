@@ -18,6 +18,7 @@ public final class MessageConstants {
     public static final String GET_MY_USERS_IDENTIFIER = "GT_MY_USRS";
     public static final String GET_MY_GROUPS_IDENTIFIER = "GT_MY_GRPS";
     public static final String GET_INFO_IDENTIFIER = "GT_INFO";
+    public static final String FORWARD_MSG_IDENTIFIER = "FWD";
     public static final String ERROR_MSG_IDENTIFIER = "ERR";
 
     public static final String MSG_ID_PREFIX = "<";

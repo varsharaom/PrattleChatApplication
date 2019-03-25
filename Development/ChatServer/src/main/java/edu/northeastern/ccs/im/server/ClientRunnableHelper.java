@@ -53,7 +53,7 @@ class ClientRunnableHelper {
         if (isRegisterOrLogin(message)) {
             handleRegisterLoginMessages(message);
         }
-        else if (isDirectOrGroupMessage(message)){
+        else if (isChatMessage(message)){
             handleChatMessages(message);
         }
         else if (message.isDeleteMessage()) {
@@ -114,8 +114,11 @@ class ClientRunnableHelper {
         if(msg.isDirectMessage()) {
             handleDirectMessages(msg);
         }
-        else {
+        else if (msg.isGroupMessage()) {
             handleGroupMessages(msg);
+        }
+        else {
+            handleForwardMessages(msg);
         }
     }
 
@@ -229,6 +232,28 @@ class ClientRunnableHelper {
         }
     }
 
+    private void handleForwardMessages(Message message) {
+        if (isUserPresent(message.getMsgReceiver())) {
+            long messageId = queryHandler.storeMessage(message.getName(), message.getMsgReceiver(),
+                    message.getMessageType(),
+                    getForwardMessageText(message));
+
+            message.setText(getPrependedMessageText(message.getText(), messageId));
+            Prattle.sendDirectMessage(message);
+        }
+        else {
+            Message errorMessage = Message.makeErrorMessage(message.getName(),
+                    MessageConstants.INVALID_DIRECT_RECEIVER_MSG);
+            Prattle.sendErrorMessage(errorMessage);
+        }
+    }
+
+    private String getForwardMessageText(Message message) {
+        StringBuilder sb = new StringBuilder(message.getText());
+        sb.append(" <<< FORWARDED MESSAGE >>> ");
+        return sb.toString();
+    }
+
     /**
      * Prepend the message text with id to parse and display in the client side.
      * This will be useful for identifying each messages uniquely from the console and client side.
@@ -258,7 +283,7 @@ class ClientRunnableHelper {
     /**
      * Returns true if the message is a direct of group message. Otherwise false.
      */
-    private boolean isDirectOrGroupMessage(Message msg) {
+    private boolean isChatMessage(Message msg) {
         return (msg.isDirectMessage() || msg.isGroupMessage());
     }
 

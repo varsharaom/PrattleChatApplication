@@ -36,7 +36,7 @@ public enum  MessageType {
 
 	GROUP(MessageConstants.GROUP_MSG_IDENTIFIER),
 
-	DELETE(MessageConstants.DELETE_MESSAGE_IDENTIFIER),
+    DELETE(MessageConstants.DELETE_MESSAGE_IDENTIFIER),
 
 	ERROR(MessageConstants.ERROR_MSG_IDENTIFIER),
 

@@ -2,7 +2,6 @@ package edu.northeastern.ccs.im.server;
 
 import edu.northeastern.ccs.im.constants.MessageConstants;
 import edu.northeastern.ccs.im.persistence.IQueryHandler;
-import edu.northeastern.ccs.im.persistence.QueryFactory;
 import edu.northeastern.ccs.serverim.Group;
 import edu.northeastern.ccs.serverim.Message;
 import edu.northeastern.ccs.serverim.User;
@@ -38,6 +37,9 @@ public class MessageFactory {
                     break;
                 case MessageConstants.GET_INFO_IDENTIFIER:
                     message = constructCustomGetInfoMessage(restOfMessageText, queryHandler);
+                    break;
+                case MessageConstants.FORWARD_MSG_IDENTIFIER:
+                    message = constructCustomForwardMessage(restOfMessageText, queryHandler);
                     break;
 
                 default:
@@ -126,6 +128,21 @@ public class MessageFactory {
         String result = getInfo(sender, commandType, queryHandler);
 
         return Message.makeGetInfoMessage(sender, sender, result);
+    }
+
+    private static Message constructCustomForwardMessage (String restOfMessagetext, IQueryHandler queryHandler) {
+        String[] content = restOfMessagetext.split(" ");
+        String sender = content[0];
+        String receiver = content[1];
+        long messageId = Long.parseLong(content[content.length-1]);
+
+        Message actualMessage = queryHandler.getMessage(messageId);
+        String messageOriginator = actualMessage.getName();
+
+        String text = actualMessage.getText() + " <<< FORWARDED MESSAGE FROM  " + messageOriginator
+                + " >>>";
+
+        return Message.makeDirectMessage(sender, receiver, text);
     }
 
     private static String getInfo(String senderName, String commandType, IQueryHandler queryHandler) {

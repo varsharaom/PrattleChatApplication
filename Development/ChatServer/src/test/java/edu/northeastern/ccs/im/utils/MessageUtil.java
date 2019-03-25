@@ -81,6 +81,16 @@ public final class MessageUtil {
                 getValidDeleteMessageText());
     }
 
+    public static Message getValidForwardMessage() {
+        return Message.makeBroadcastMessage(SIMPLE_USER,
+                getValidForwardMessageText());
+    }
+
+    private static String getValidForwardMessageText() {
+        return CUSTOM_COMMAND_PREFIX + FORWARD_MSG_IDENTIFIER + CUSTOM_COMMAND_SUFFIX
+                + " sender receiver 123";
+    }
+
     private static String getInvalidTypeMessageText() {
         return CUSTOM_COMMAND_PREFIX
                 + ""
