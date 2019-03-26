@@ -6,7 +6,8 @@ create table users (
 	name VARCHAR(50) NOT NULL,
     password VARCHAR(50),
     nickname VARCHAR(50),
-    last_seen DATETIME
+    last_seen DATETIME,
+    invisible INTEGER DEFAULT 0
 );
 
 create table circles (

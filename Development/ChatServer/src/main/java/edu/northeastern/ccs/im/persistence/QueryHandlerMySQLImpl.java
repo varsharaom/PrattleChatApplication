@@ -275,6 +275,74 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
         return name;
     }
     
+    public List<Message> getMessagesSentByUser(long id, MessageType type) {
+    		String query = String.format("SELECT * FROM %s WHERE %s = %d AND %s = '%s';",
+                DBConstants.MESSAGE_TABLE, DBConstants.MESSAGE_SENDER_ID, id, DBConstants.MESSAGE_TYPE, type);
+
+        List<Message> messageList = new ArrayList<>();
+        try {
+            PreparedStatement statement = connection.prepareStatement(query);
+            ResultSet rs = statement.executeQuery();
+
+            while (rs.next()) {
+                Message msg = new Message(rs.getLong(1), MessageType.get(rs.getString(4)), getUserName(rs.getInt(2)), 
+                		getUserName(rs.getInt(3)), rs.getString(5), rs.getInt(7));
+                messageList.add(msg);
+            }
+            rs.close();
+            statement.close();
+        } catch (SQLException e) {
+            logger.log(Level.INFO, SQL_EXCEPTION_MSG);
+        }
+        return messageList;
+    }
+    
+    public List<Message> getMessagesSentToUser(long id, MessageType type) {
+    		String query = String.format("SELECT * FROM %s WHERE %s = %d AND %s = '%s';",
+    				DBConstants.MESSAGE_TABLE, DBConstants.MESSAGE_RECEIVER_ID, id, DBConstants.MESSAGE_TYPE, type);
+
+        List<Message> messageList = new ArrayList<>();
+        try {
+            PreparedStatement statement = connection.prepareStatement(query);
+            ResultSet rs = statement.executeQuery();
+
+            while (rs.next()) {
+                Message msg = new Message(rs.getLong(1), MessageType.get(rs.getString(4)), getUserName(rs.getInt(2)), 
+                		getUserName(rs.getInt(3)), rs.getString(5), rs.getInt(7));
+                messageList.add(msg);
+            }
+            rs.close();
+            statement.close();
+        } catch (SQLException e) {
+            logger.log(Level.INFO, SQL_EXCEPTION_MSG);
+        }
+        return messageList;
+    }
+    
+    public List<Message> getMessagesFromUserChat(long senderId, long receiverId) {
+		String query = String.format("SELECT * FROM %s WHERE %s = %d AND %s = %d AND %s = '%s';",
+				DBConstants.MESSAGE_TABLE, DBConstants.MESSAGE_RECEIVER_ID, receiverId,
+										  DBConstants.MESSAGE_SENDER_ID, senderId,
+										  DBConstants.MESSAGE_TYPE, MessageType.DIRECT);
+
+	    List<Message> messageList = new ArrayList<>();
+	    try {
+	        PreparedStatement statement = connection.prepareStatement(query);
+	        ResultSet rs = statement.executeQuery();
+	
+	        while (rs.next()) {
+	            Message msg = new Message(rs.getLong(1), MessageType.get(rs.getString(4)), getUserName(rs.getInt(2)), 
+	            		getUserName(rs.getInt(3)), rs.getString(5), rs.getInt(7));
+	            messageList.add(msg);
+	        }
+	        rs.close();
+	        statement.close();
+	    } catch (SQLException e) {
+	        logger.log(Level.INFO, SQL_EXCEPTION_MSG);
+	    }
+	    return messageList;
+	}
+    
     //-----------------Group Queries----------------------------------
     
     public List<String> getGroupMembers(String name) {
