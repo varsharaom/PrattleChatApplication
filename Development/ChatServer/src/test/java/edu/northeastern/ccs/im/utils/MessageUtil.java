@@ -94,6 +94,33 @@ public final class MessageUtil {
         return Message.makeBroadcastMessage(SIMPLE_USER, getValidGroupDeleteMessageText());
     }
 
+    public static Message getValidAddModeratorMessage() {
+        return Message.makeBroadcastMessage(SIMPLE_USER, getValidAddModeratorMessageText());
+    }
+
+    public static Message getValidRemoveMemberMessage() {
+        return Message.makeBroadcastMessage(SIMPLE_USER, getValidRemoveMemberMessageText());
+    }
+
+    public static Message getValidAddMemberMessage() {
+        return Message.makeBroadcastMessage(SIMPLE_USER, getValidAddMemberMessageText());
+    }
+
+    private static String getValidAddMemberMessageText() {
+        return CUSTOM_COMMAND_PREFIX + ACTION_MSG_IDENTIFIER + CUSTOM_COMMAND_SUFFIX
+                + " " + GROUP_ADD_MEMBER_IDENTIFIER + " newMember groupName senderName";
+    }
+
+    private static String getValidRemoveMemberMessageText() {
+        return CUSTOM_COMMAND_PREFIX + ACTION_MSG_IDENTIFIER + CUSTOM_COMMAND_SUFFIX
+                + " " + GROUP_REMOVE_MEMBER_IDENTIFIER + " groupMember groupName senderName";
+    }
+
+    private static String getValidAddModeratorMessageText() {
+        return CUSTOM_COMMAND_PREFIX + ACTION_MSG_IDENTIFIER + CUSTOM_COMMAND_SUFFIX
+                + " " + GROUP_ADD_MODERATOR + " toBeModerator groupName senderName";
+    }
+
     private static String getValidGroupDeleteMessageText() {
         return CUSTOM_COMMAND_PREFIX + ACTION_MSG_IDENTIFIER + CUSTOM_COMMAND_SUFFIX
                 + " " + GROUP_DELETE_IDENTIFIER + " groupName senderName";

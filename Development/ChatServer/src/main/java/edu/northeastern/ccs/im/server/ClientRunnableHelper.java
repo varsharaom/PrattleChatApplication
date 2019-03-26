@@ -137,12 +137,87 @@ class ClientRunnableHelper {
         String[] contents = message.getText().split(" ");
         String actualAction = contents[0];
         if (actualAction.equals(MessageConstants.GROUP_CREATE_IDENTIFIER)) {
-//            TODO - check if group exists. then if sender is moderator. Only then perform action
             handleCreateGroup(message.getName(), contents);
         }
         else if (actualAction.equals(MessageConstants.GROUP_DELETE_IDENTIFIER)) {
             handleDeleteGroup(message.getName(), contents);
         }
+        else if (actualAction.equals(MessageConstants.GROUP_ADD_MODERATOR)) {
+            handleCreateModerator(message.getName(), contents);
+        }
+        else if (actualAction.equals(MessageConstants.GROUP_REMOVE_MEMBER_IDENTIFIER)) {
+            handleRemoveMember(message.getName(), contents);
+        }
+        else if (actualAction.equals(MessageConstants.GROUP_ADD_MEMBER_IDENTIFIER)) {
+            handleAddMember(message.getName(), contents);
+        }
+
+    }
+
+    private void handleAddMember(String sender, String[] contents) {
+        String member = contents[1];
+        String groupName = contents[2];
+        String ackMessage;
+
+        if (queryHandler.isModerator(groupName, sender)) {
+            if (queryHandler.checkUserNameExists(member)) {
+                queryHandler.removeMember(groupName, member);
+                ackMessage = MessageConstants.ADD_MMBR_SUCCESS_MSG;
+            }
+            else {
+                ackMessage = MessageConstants.ADD_MMBR_INVALID_ERR;
+            }
+        }
+        else {
+            ackMessage = MessageConstants.INVALID_MODERATOR_ERR;
+        }
+
+        Message message = Message.makeAckMessage(MessageType.ACTION, sender, ackMessage);
+        Prattle.sendAckMessage(message);
+    }
+
+    private void handleRemoveMember(String sender, String[] contents) {
+        String member = contents[1];
+        String groupName = contents[2];
+        String ackMessage;
+
+        if (queryHandler.isModerator(groupName, sender)) {
+            if (queryHandler.isGroupMember(groupName, sender)) {
+                queryHandler.removeMember(groupName, member);
+                ackMessage = MessageConstants.RMV_MMBR_SUCCESS_MSG;
+            }
+            else {
+                ackMessage = MessageConstants.RMV_MMBR_INVALID_ERR;
+            }
+        }
+        else {
+            ackMessage = MessageConstants.INVALID_MODERATOR_ERR;
+        }
+
+        Message message = Message.makeAckMessage(MessageType.ACTION, sender, ackMessage);
+        Prattle.sendAckMessage(message);
+    }
+
+    private void handleCreateModerator(String sender, String[] contents) {
+        String toBeModerator = contents[1];
+        String groupName = contents[2];
+        String ackMessage;
+
+        if (queryHandler.isModerator(groupName, sender)) {
+            if (queryHandler.isGroupMember(groupName, sender)) {
+                queryHandler.makeModerator(groupName, toBeModerator);
+                ackMessage = MessageConstants.ADD_MDRTR_SUCCESS_MSG;
+            }
+            else {
+                ackMessage = MessageConstants.ADD_MDRTR_INVALID_ERR;
+            }
+        }
+        else {
+            ackMessage = MessageConstants.INVALID_MODERATOR_ERR;
+        }
+
+        Message message = Message.makeAckMessage(MessageType.ACTION, sender, ackMessage);
+        Prattle.sendAckMessage(message);
     }
 
     private void handleDeleteGroup (String sender, String[] contents) {
@@ -155,7 +230,8 @@ class ClientRunnableHelper {
         else {
             ackMessage = MessageConstants.INVALID_MODERATOR_ERR;
         }
-        Message.makeAckMessage(MessageType.ACTION, sender, ackMessage);
+        Message message = Message.makeAckMessage(MessageType.ACTION, sender, ackMessage);
+        Prattle.sendAckMessage(message);
     }
 
     private void handleCreateGroup (String sender, String[] contents) {
@@ -303,7 +379,7 @@ class ClientRunnableHelper {
      * @param msgText - the message text.
      * @param messageId - id for the message returned on persistence in the database.
      */
-    protected String getPrependedMessageText(String msgText, long messageId) {
+    String getPrependedMessageText(String msgText, long messageId) {
         StringBuilder text = new StringBuilder(MessageConstants.MSG_ID_PREFIX);
         text.append(messageId);
         text.append(MessageConstants.MSG_ID_SUFFIX);

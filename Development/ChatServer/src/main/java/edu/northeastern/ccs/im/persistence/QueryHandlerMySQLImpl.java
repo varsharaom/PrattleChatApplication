@@ -205,6 +205,21 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
     }
 
     @Override
+    public boolean isGroupMember(String groupName, String sender) {
+        return false;
+    }
+
+    @Override
+    public void makeModerator(String groupName, String toBeModerator) {
+        return;
+    }
+
+    @Override
+    public void removeMember(String groupName, String member) {
+        return;
+    }
+
+    @Override
     public List<User> getAllUsers() {
         String query = String.format("SELECT %s, %s, %s FROM %s;",
                 DBConstants.USER_ID, DBConstants.USER_USERNAME,

@@ -194,4 +194,38 @@ public class MessageParserTest {
         assertTrue(constructedMessage.isActionMessage());
         assertEquals(MessageConstants.GROUP_DELETE_IDENTIFIER, contents[0]);
     }
+
+    @Test
+    public void testAddModeratorMessage() {
+        Message message = MessageUtil.getValidAddModeratorMessage();
+
+        Message constructedMessage = clientRunnableHelper.getCustomConstructedMessage(message);
+        String[] contents = constructedMessage.getText().split(" ");
+
+        assertTrue(constructedMessage.isActionMessage());
+        assertEquals(MessageConstants.GROUP_ADD_MODERATOR, contents[0]);
+    }
+
+    @Test
+    public void testRemoveGroupMemberMessage() {
+        Message message = MessageUtil.getValidRemoveMemberMessage();
+
+        Message constructedMessage = clientRunnableHelper.getCustomConstructedMessage(message);
+        String[] contents = constructedMessage.getText().split(" ");
+
+        assertTrue(constructedMessage.isActionMessage());
+        assertEquals(MessageConstants.GROUP_REMOVE_MEMBER_IDENTIFIER, contents[0]);
+    }
+
+    @Test
+    public void testAddGroupMemberMessage() {
+        Message message = MessageUtil.getValidAddMemberMessage();
+
+        Message constructedMessage = clientRunnableHelper.getCustomConstructedMessage(message);
+        String[] contents = constructedMessage.getText().split(" ");
+
+        assertTrue(constructedMessage.isActionMessage());
+        assertEquals(MessageConstants.GROUP_ADD_MEMBER_IDENTIFIER, contents[0]);
+    }
+
 }

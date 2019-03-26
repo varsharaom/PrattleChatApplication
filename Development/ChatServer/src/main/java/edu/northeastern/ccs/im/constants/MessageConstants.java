@@ -23,6 +23,9 @@ public final class MessageConstants {
     public static final String GET_MY_USERS_IDENTIFIER = "GT_MY_USRS";
     public static final String GET_MY_GROUPS_IDENTIFIER = "GT_MY_GRPS";
     public static final String GET_INFO_IDENTIFIER = "GT_INFO";
+    public static final String GROUP_ADD_MODERATOR = "ADD_MDRTR";
+    public static final String GROUP_REMOVE_MEMBER_IDENTIFIER = "GRP_RMV_MMBR";
+    public static final String GROUP_ADD_MEMBER_IDENTIFIER = "GRP_ADD_MMBR";
 
     public static final String ERROR_MSG_IDENTIFIER = "ERR";
 
@@ -41,6 +44,9 @@ public final class MessageConstants {
     public static final String GET_GROUPS_CONSOLE_INFO = "List of all Groups :";
     public static final String GET_MY_GROUPS_CONSOLE_INFO = "List of my groups : ";
     public static final String GROUP_DELETE_SUCCESS_MSG = "Group successfully deleted...";
+    public static final String ADD_MDRTR_SUCCESS_MSG = "Moderator successfully added...";
+    public static final String RMV_MMBR_SUCCESS_MSG = "Member successfully removed...";
+    public static final String ADD_MMBR_SUCCESS_MSG = "Member successfully added...";
 
 //    ERROR MESSAGES
     public static final String LOGIN_FAILURE_ERR = "Your credentials mismatch...";
@@ -53,6 +59,12 @@ public final class MessageConstants {
     public static final String UNKNOWN_MESSAGE_TYPE_ERR = "Invalid Message type. " +
             "Please enter valid message type.";
     public static final String EMPTY_MESSAGE_ERR = "Message Content is empty...";
+    public static final String ADD_MDRTR_INVALID_ERR = "Operation unsuccessful." +
+            "Only group members can be made as moderator...";
+    public static final String RMV_MMBR_INVALID_ERR = "Operation unsuccessful. " +
+            "Only group members can be removed.";
+    public static final String ADD_MMBR_INVALID_ERR = "Operation unsuccessful. " +
+            "Only valid members can be added to the group.";
 
     public static final String ERROR_DELETE_INVALID_MSG_ID = "Message ID entered is invalid." +
             "Please try with a valid message ID";
@@ -60,8 +72,8 @@ public final class MessageConstants {
             "You can only delete messages sent by you";
     public static final String ERROR_DELETE_RECEIVER_MISMATCH = "Deletion unsucessful. " +
             "You can only delete messages sent to the receiver(s) in the active window.";
-    public static final String INVALID_MODERATOR_ERR = "Group deltetion unsuccessful. " +
-            "Only moderators can delelet group.";
+    public static final String INVALID_MODERATOR_ERR = "Operation unsuccessful. " +
+            "Only moderators are permitted to perform this action.";
 
 
     private MessageConstants() {
