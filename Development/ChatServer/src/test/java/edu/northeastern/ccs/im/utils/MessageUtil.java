@@ -86,6 +86,24 @@ public final class MessageUtil {
                 getValidForwardMessageText());
     }
 
+    public static Message getValidGroupCreateMessage() {
+        return Message.makeBroadcastMessage(SIMPLE_USER, getValidGroupCreateMessageText());
+    }
+
+    public static Message getValidGroupDeleteMessage() {
+        return Message.makeBroadcastMessage(SIMPLE_USER, getValidGroupDeleteMessageText());
+    }
+
+    private static String getValidGroupDeleteMessageText() {
+        return CUSTOM_COMMAND_PREFIX + ACTION_MSG_IDENTIFIER + CUSTOM_COMMAND_SUFFIX
+                + " " + GROUP_DELETE_IDENTIFIER + " groupName senderName";
+    }
+
+    private static String getValidGroupCreateMessageText() {
+        return CUSTOM_COMMAND_PREFIX + ACTION_MSG_IDENTIFIER + CUSTOM_COMMAND_SUFFIX
+                + " " + GROUP_CREATE_IDENTIFIER + " newGroupName creatorName";
+    }
+
     private static String getValidForwardMessageText() {
         return CUSTOM_COMMAND_PREFIX + FORWARD_MSG_IDENTIFIER + CUSTOM_COMMAND_SUFFIX
                 + " sender receiver 123";

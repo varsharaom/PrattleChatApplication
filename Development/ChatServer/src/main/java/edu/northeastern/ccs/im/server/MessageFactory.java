@@ -41,7 +41,9 @@ public class MessageFactory {
                 case MessageConstants.FORWARD_MSG_IDENTIFIER:
                     message = constructCustomForwardMessage(restOfMessageText, queryHandler);
                     break;
-
+                case MessageConstants.ACTION_MSG_IDENTIFIER:
+                    message = constructActionMessage(type, restOfMessageText);
+                    break;
                 default:
                     message = Message.makeErrorMessage(clientMessage.getName(),
                             MessageConstants.UNKNOWN_MESSAGE_TYPE_ERR);
@@ -53,6 +55,16 @@ public class MessageFactory {
                     MessageConstants.EMPTY_MESSAGE_ERR);
         }
         return  message;
+    }
+
+    private static Message constructActionMessage(String type, String restOfMessageText) {
+
+        String[] contents = restOfMessageText.split(" ");
+        String sender = contents[contents.length-1];
+
+        String actionContent = restOfMessageText.substring(0,
+                restOfMessageText.length()-(sender.length()+1));
+        return Message.makeActionMessage(sender, actionContent);
     }
 
     private static Message constructCustomDeleteMessage(String restOfMessageText) {

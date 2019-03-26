@@ -62,9 +62,16 @@ class ClientRunnableHelper {
         else if (isGetInfoMessage(message)) {
         		handleGetInfoMessages(message);
         }
+        else if (isActionMessage(message)) {
+            handleActionMessages(message);
+        }
         else {
             handleErrorMessages(message);
         }
+    }
+
+    private boolean isActionMessage(Message message) {
+        return message.isActionMessage();
     }
 
     private void handleDeleteMessages(Message clientMessage) {
@@ -122,14 +129,45 @@ class ClientRunnableHelper {
         }
     }
 
-    private void handleGetInfoMessages(Message msg) {
+    private void handleGetInfoMessages (Message msg) {
         Prattle.sendDirectMessage(msg);
     }
+
+    private void handleActionMessages(Message message) {
+        String[] contents = message.getText().split(" ");
+        String actualAction = contents[0];
+        if (actualAction.equals(MessageConstants.GROUP_CREATE_IDENTIFIER)) {
+//            TODO - check if group exists. then if sender is moderator. Only then perform action
+            handleCreateGroup(message.getName(), contents);
+        }
+        else if (actualAction.equals(MessageConstants.GROUP_DELETE_IDENTIFIER)) {
+            handleDeleteGroup(message.getName(), contents);
+        }
+    }
+
+    private void handleDeleteGroup (String sender, String[] contents) {
+        String groupName = contents[1];
+        String ackMessage;
+        if (queryHandler.isModerator(sender, groupName)) {
+            queryHandler.deleteGroup(sender, groupName);
+            ackMessage = MessageConstants.GROUP_DELETE_SUCCESS_MSG;
+        }
+        else {
+            ackMessage = MessageConstants.INVALID_MODERATOR_ERR;
+        }
+        Message.makeAckMessage(MessageType.ACTION, sender, ackMessage);
+    }
+
+    private void handleCreateGroup (String sender, String[] contents) {
+        String groupName = contents[1];
+        queryHandler.createGroup(sender, groupName);
+    }
+
 
     /**
      * Error messages are routed back to the sender.
      */
-    private void handleErrorMessages(Message msg) {
+    private void handleErrorMessages (Message msg) {
         Prattle.sendErrorMessage(msg);
     }
 
@@ -158,7 +196,7 @@ class ClientRunnableHelper {
 
     /** On a login request, this verifies user credentials and then acknowledges the user with
      * a success / failure message */
-    private void handleLoginMessage(Message message) {
+    private void handleLoginMessage (Message message) {
         Message handShakeMessage;
         String acknowledgementText;
 

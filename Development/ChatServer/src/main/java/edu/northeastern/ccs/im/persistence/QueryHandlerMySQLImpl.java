@@ -181,12 +181,27 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
 
     @Override
     public List<Group> getAllGroups() {
-        return null;
+        return new ArrayList<>();
     }
 
     @Override
     public List<Group> getMyGroups(String senderName) {
-        return null;
+        return new ArrayList<>();
+    }
+
+    @Override
+    public void createGroup(String sender, String groupName) {
+        return;
+    }
+
+    @Override
+    public void deleteGroup(String sender, String groupName) {
+        return;
+    }
+
+    @Override
+    public boolean isModerator(String sender, String groupName) {
+        return false;
     }
 
     @Override

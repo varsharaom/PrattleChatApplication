@@ -8,18 +8,24 @@ public final class MessageConstants {
 //    ALL MESSAGE CODES
     public static final String CUSTOM_COMMAND_PREFIX = "$$";
     public static final String CUSTOM_COMMAND_SUFFIX = "#";
+
+    public static final String ACTION_MSG_IDENTIFIER = "ACTN";
     public static final String DIRECT_MSG_IDENTIFIER = "DRCT";
     public static final String GROUP_MSG_IDENTIFIER = "GRP";
+    public static final String GROUP_CREATE_IDENTIFIER = "GRP_CRT";
+    public static final String GROUP_DELETE_IDENTIFIER = "GRP_DLT";
     public static final String LOGIN_MSG_IDENTIFIER = "LGN";
     public static final String REGISTER_MSG_IDENTIFIER = "RGSTR";
     public static final String DELETE_MESSAGE_IDENTIFIER = "DLT";
+    public static final String FORWARD_MSG_IDENTIFIER = "FWD";
     public static final String GET_USERS_IDENTIFIER = "GT_USRS";
     public static final String GET_GROUPS_IDENTIFIER = "GT_GRPS";
     public static final String GET_MY_USERS_IDENTIFIER = "GT_MY_USRS";
     public static final String GET_MY_GROUPS_IDENTIFIER = "GT_MY_GRPS";
     public static final String GET_INFO_IDENTIFIER = "GT_INFO";
-    public static final String FORWARD_MSG_IDENTIFIER = "FWD";
+
     public static final String ERROR_MSG_IDENTIFIER = "ERR";
+
 
     public static final String MSG_ID_PREFIX = "<";
     public static final String MSG_ID_SUFFIX = "> ";
@@ -34,6 +40,7 @@ public final class MessageConstants {
     public static final String GET_MY_USERS_CONSOLE_INFO = "List of all my connections :";
     public static final String GET_GROUPS_CONSOLE_INFO = "List of all Groups :";
     public static final String GET_MY_GROUPS_CONSOLE_INFO = "List of my groups : ";
+    public static final String GROUP_DELETE_SUCCESS_MSG = "Group successfully deleted...";
 
 //    ERROR MESSAGES
     public static final String LOGIN_FAILURE_ERR = "Your credentials mismatch...";
@@ -53,6 +60,8 @@ public final class MessageConstants {
             "You can only delete messages sent by you";
     public static final String ERROR_DELETE_RECEIVER_MISMATCH = "Deletion unsucessful. " +
             "You can only delete messages sent to the receiver(s) in the active window.";
+    public static final String INVALID_MODERATOR_ERR = "Group deltetion unsuccessful. " +
+            "Only moderators can delelet group.";
 
 
     private MessageConstants() {
