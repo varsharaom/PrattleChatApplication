@@ -173,6 +173,11 @@ public class Message {
         return new Message(messageId, MessageType.DELETE, msgSender, msgReceiver, "", 0);
     }
 
+    public static Message makeActionMessage(String sender, String actualAction) {
+        return new Message(MessageType.ACTION, sender, actualAction);
+    }
+
+
     private static String getErrorMessageText(String plainMessageText) {
         return MessageConstants.CUSTOM_COMMAND_PREFIX
                 + MessageConstants.ERROR_MSG_IDENTIFIER
@@ -275,6 +280,10 @@ public class Message {
 
     public boolean isGetInfoMessage() {
         return (msgType == MessageType.GET_INFO);
+    }
+
+    public boolean isActionMessage() {
+        return (msgType == MessageType.ACTION);
     }
 
     public void setMessageType(MessageType type) {

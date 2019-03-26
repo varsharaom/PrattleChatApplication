@@ -42,6 +42,7 @@ public enum  MessageType {
 
 	GET_INFO(MessageConstants.GET_INFO_IDENTIFIER),
 
+    ACTION(MessageConstants.ACTION_MSG_IDENTIFIER),
     /**
      * Message sent by the user to start the logging out process and sent by the
      * server once the logout process completes.

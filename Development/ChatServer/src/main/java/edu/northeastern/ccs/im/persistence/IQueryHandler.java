@@ -41,4 +41,15 @@ public interface IQueryHandler {
 
     public  List<Group> getMyGroups(String senderName);
 
+    void createGroup(String sender, String groupName);
+
+    void deleteGroup(String sender, String groupName);
+
+    boolean isModerator(String sender, String groupName);
+
+    boolean isGroupMember(String groupName, String sender);
+
+    void makeModerator(String groupName, String toBeModerator);
+
+    void removeMember(String groupName, String member);
 }

@@ -25,6 +25,7 @@ import static edu.northeastern.ccs.im.constants.MessageTestConstants.BROADCAST_T
 import static edu.northeastern.ccs.im.constants.MessageTestConstants.SIMPLE_USER;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
@@ -366,5 +367,28 @@ public class ClientRunnableHelperTest {
 
         assertTrue(prependedText.startsWith(msgPrefix));
         assertTrue(prependedText.endsWith(BROADCAST_TEXT_MESSAGE));
+    }
+
+    @Test
+    public void testCreateGroup() {
+        Message message = MessageUtil.getValidGroupCreateMessage();
+        Message groupCreateMessage = clientRunnableHelper.getCustomConstructedMessage(message);
+        clientRunnableHelper.handleMessages(groupCreateMessage);
+    }
+
+    @Test
+    public void testDeleteGroupByModerator() {
+        Message message = MessageUtil.getValidGroupDeleteMessage();
+        Message groupDeleteMessage = clientRunnableHelper.getCustomConstructedMessage(message);
+        when(iQueryHandler.isModerator(anyString(), anyString())).thenReturn(true);
+        clientRunnableHelper.handleMessages(groupDeleteMessage);
+    }
+
+    @Test
+    public void testDeleteGroupByNonModerator() {
+        Message message = MessageUtil.getValidGroupDeleteMessage();
+        Message groupDeleteMessage = clientRunnableHelper.getCustomConstructedMessage(message);
+        when(iQueryHandler.isModerator(anyString(), anyString())).thenReturn(false);
+        clientRunnableHelper.handleMessages(groupDeleteMessage);
     }
 }

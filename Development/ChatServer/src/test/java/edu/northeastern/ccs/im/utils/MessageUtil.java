@@ -86,6 +86,51 @@ public final class MessageUtil {
                 getValidForwardMessageText());
     }
 
+    public static Message getValidGroupCreateMessage() {
+        return Message.makeBroadcastMessage(SIMPLE_USER, getValidGroupCreateMessageText());
+    }
+
+    public static Message getValidGroupDeleteMessage() {
+        return Message.makeBroadcastMessage(SIMPLE_USER, getValidGroupDeleteMessageText());
+    }
+
+    public static Message getValidAddModeratorMessage() {
+        return Message.makeBroadcastMessage(SIMPLE_USER, getValidAddModeratorMessageText());
+    }
+
+    public static Message getValidRemoveMemberMessage() {
+        return Message.makeBroadcastMessage(SIMPLE_USER, getValidRemoveMemberMessageText());
+    }
+
+    public static Message getValidAddMemberMessage() {
+        return Message.makeBroadcastMessage(SIMPLE_USER, getValidAddMemberMessageText());
+    }
+
+    private static String getValidAddMemberMessageText() {
+        return CUSTOM_COMMAND_PREFIX + ACTION_MSG_IDENTIFIER + CUSTOM_COMMAND_SUFFIX
+                + " " + GROUP_ADD_MEMBER_IDENTIFIER + " newMember groupName senderName";
+    }
+
+    private static String getValidRemoveMemberMessageText() {
+        return CUSTOM_COMMAND_PREFIX + ACTION_MSG_IDENTIFIER + CUSTOM_COMMAND_SUFFIX
+                + " " + GROUP_REMOVE_MEMBER_IDENTIFIER + " groupMember groupName senderName";
+    }
+
+    private static String getValidAddModeratorMessageText() {
+        return CUSTOM_COMMAND_PREFIX + ACTION_MSG_IDENTIFIER + CUSTOM_COMMAND_SUFFIX
+                + " " + GROUP_ADD_MODERATOR + " toBeModerator groupName senderName";
+    }
+
+    private static String getValidGroupDeleteMessageText() {
+        return CUSTOM_COMMAND_PREFIX + ACTION_MSG_IDENTIFIER + CUSTOM_COMMAND_SUFFIX
+                + " " + GROUP_DELETE_IDENTIFIER + " groupName senderName";
+    }
+
+    private static String getValidGroupCreateMessageText() {
+        return CUSTOM_COMMAND_PREFIX + ACTION_MSG_IDENTIFIER + CUSTOM_COMMAND_SUFFIX
+                + " " + GROUP_CREATE_IDENTIFIER + " newGroupName creatorName";
+    }
+
     private static String getValidForwardMessageText() {
         return CUSTOM_COMMAND_PREFIX + FORWARD_MSG_IDENTIFIER + CUSTOM_COMMAND_SUFFIX
                 + " sender receiver 123";

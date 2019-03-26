@@ -7,7 +7,6 @@ import edu.northeastern.ccs.im.utils.ClientRunnableHelperUtil;
 import edu.northeastern.ccs.im.utils.MessageUtil;
 import edu.northeastern.ccs.im.utils.QueryHandlerUtil;
 import edu.northeastern.ccs.serverim.Message;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -172,6 +171,61 @@ public class MessageParserTest {
 
         assertTrue(constuctedMessage.isDirectMessage());
         assertTrue("Constrcuted message does not have forwarded message info.", matcher.find());
+    }
+
+    @Test
+    public void testGroupCreateMessage() {
+        Message message = MessageUtil.getValidGroupCreateMessage();
+
+        Message constructedMessage = clientRunnableHelper.getCustomConstructedMessage(message);
+        String[] contents = constructedMessage.getText().split(" ");
+
+        assertTrue(constructedMessage.isActionMessage());
+        assertEquals(MessageConstants.GROUP_CREATE_IDENTIFIER, contents[0]);
+    }
+
+    @Test
+    public void testGroupDeleteMessage() {
+        Message message = MessageUtil.getValidGroupDeleteMessage();
+
+        Message constructedMessage = clientRunnableHelper.getCustomConstructedMessage(message);
+        String[] contents = constructedMessage.getText().split(" ");
+
+        assertTrue(constructedMessage.isActionMessage());
+        assertEquals(MessageConstants.GROUP_DELETE_IDENTIFIER, contents[0]);
+    }
+
+    @Test
+    public void testAddModeratorMessage() {
+        Message message = MessageUtil.getValidAddModeratorMessage();
+
+        Message constructedMessage = clientRunnableHelper.getCustomConstructedMessage(message);
+        String[] contents = constructedMessage.getText().split(" ");
+
+        assertTrue(constructedMessage.isActionMessage());
+        assertEquals(MessageConstants.GROUP_ADD_MODERATOR, contents[0]);
+    }
+
+    @Test
+    public void testRemoveGroupMemberMessage() {
+        Message message = MessageUtil.getValidRemoveMemberMessage();
+
+        Message constructedMessage = clientRunnableHelper.getCustomConstructedMessage(message);
+        String[] contents = constructedMessage.getText().split(" ");
+
+        assertTrue(constructedMessage.isActionMessage());
+        assertEquals(MessageConstants.GROUP_REMOVE_MEMBER_IDENTIFIER, contents[0]);
+    }
+
+    @Test
+    public void testAddGroupMemberMessage() {
+        Message message = MessageUtil.getValidAddMemberMessage();
+
+        Message constructedMessage = clientRunnableHelper.getCustomConstructedMessage(message);
+        String[] contents = constructedMessage.getText().split(" ");
+
+        assertTrue(constructedMessage.isActionMessage());
+        assertEquals(MessageConstants.GROUP_ADD_MEMBER_IDENTIFIER, contents[0]);
     }
 
 }
