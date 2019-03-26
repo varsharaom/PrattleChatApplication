@@ -10,9 +10,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -123,12 +121,39 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
 
     @Override
     public List<Group> getAllGroups() {
-        return null;
+        String query = String.format("Select %s, %s from %s;",
+                //Select columns
+                DBConstants.GROUP_ID, DBConstants.GROUP_NAME,
+                //table
+                DBConstants.GROUP_TABLE);
+
+        return getGroupsHelper(query);
     }
 
     @Override
     public List<Group> getMyGroups(String senderName) {
-        return null;
+        String query = String.format("Select %s.%s, %s.%s from %s "
+                        + "inner join %s on %s.%s = %s.%s "
+                        + "inner join %s on %s.%s = %s.%s "
+                        + "where %s.%s = '%s';",
+                //Select columns
+                DBConstants.GROUP_TABLE, DBConstants.GROUP_ID,
+                DBConstants.GROUP_TABLE, DBConstants.GROUP_NAME,
+                //table
+                DBConstants.GROUP_TABLE,
+                //join one
+                DBConstants.GROUP_INFO_TABLE,
+                DBConstants.GROUP_TABLE, DBConstants.GROUP_ID,
+                DBConstants.GROUP_INFO_TABLE, DBConstants.GROUP_INFO_GROUP_ID,
+                //join two
+                DBConstants.USER_TABLE,
+                DBConstants.GROUP_INFO_TABLE, DBConstants.GROUP_INFO_USER_ID,
+                DBConstants.USER_TABLE, DBConstants.USER_ID,
+                //where clause
+                DBConstants.USER_TABLE, DBConstants.USER_USERNAME, senderName
+        );
+
+        return getGroupsHelper(query);
     }
 
     @Override
@@ -158,7 +183,35 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
 
     @Override
     public List<User> getMyUsers(String senderName) {
-        return null;
+        long senderID = getUserID(senderName);
+        String query = String.format("Select %s, %s from %s where %s = %s or %s = %s",
+                DBConstants.CIRCLE_USER_1_ID, DBConstants.CIRCLE_USER_2_ID,
+                DBConstants.CIRCLES_TABLE,
+                DBConstants.CIRCLE_USER_1_ID, senderID,
+                DBConstants.CIRCLE_USER_2_ID, senderID);
+        Set<Long> circleIDs = new HashSet<>();
+        try {
+            PreparedStatement statement = connection.prepareStatement(query);
+            ResultSet rs = statement.executeQuery();
+            while (rs.next()) {
+                long idToAdd = rs.getLong(1) == senderID ?
+                        rs.getLong(2) : rs.getLong(1);
+                circleIDs.add(idToAdd);
+            }
+            rs.close();
+            statement.close();
+        } catch (SQLException e) {
+            logger.log(Level.INFO, SQL_EXCEPTION_MSG);
+        }
+        List<User> userList = getAllUsers();
+        List<User> circleList = new ArrayList<>();
+        for (User user : userList) {
+            if (circleIDs.contains(user.getUserID())) {
+                circleList.add(user);
+            }
+        }
+        return circleList;
+
     }
 
 
@@ -205,6 +258,7 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
     }
 
     public long createGroup(String name) {
+        //to-do : take creator as a param and update them as default moderator.
         String query = String.format("INSERT INTO %s (%s)\n" +
                         "VALUES ('%s');",
                 DBConstants.GROUP_TABLE, DBConstants.GROUP_NAME, name);
@@ -213,6 +267,8 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
     }
 
     public long deleteGroup(String name) {
+        //to-do : drop all users from the group-info and then delete this table (or)
+        //set cascade on delete in DB.
         String query = String.format("DELETE FROM %s\n" +
                         "WHERE %s = '%s' and %s > 0;",
                 DBConstants.GROUP_TABLE, DBConstants.GROUP_NAME, name, DBConstants.GROUP_ID);
@@ -437,6 +493,23 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
             logger.log(Level.INFO, SQL_EXCEPTION_MSG);
         }
         return messages;
+    }
+
+    private List<Group> getGroupsHelper(String query) {
+        List<Group> groups = new ArrayList<>();
+        try {
+            PreparedStatement statement = connection.prepareStatement(query);
+            ResultSet rs = statement.executeQuery();
+            while (rs.next()) {
+                Group grp = new Group(rs.getLong(1), rs.getString(2));
+                groups.add(grp);
+            }
+            rs.close();
+            statement.close();
+        } catch (SQLException e) {
+            logger.log(Level.INFO, SQL_EXCEPTION_MSG);
+        }
+        return groups;
     }
 
 }

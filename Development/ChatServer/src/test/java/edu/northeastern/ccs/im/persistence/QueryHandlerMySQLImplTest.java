@@ -300,4 +300,49 @@ public class QueryHandlerMySQLImplTest {
         handler.deleteGroup(QueryConstants.GROUP_NAME);
     }
 
+    @Test
+    public void testCheckGroupNameExistance(){
+        try {
+            handler.createGroup(QueryConstants.GROUP_NAME);
+            assertTrue(handler.checkGroupNameExists(QueryConstants.GROUP_NAME));
+        } finally {
+            //teardown
+            handler.deleteGroup(QueryConstants.GROUP_NAME);
+        }
+    }
+
+    @Test
+    public void testGetGroups() {
+        try {
+            int size = handler.getAllGroups().size();
+            handler.createGroup(QueryConstants.GROUP_NAME);
+            assertEquals(handler.getAllGroups().size(), size + 1);
+        } finally {
+            //teardown
+            handler.deleteGroup(QueryConstants.GROUP_NAME);
+        }
+
+    }
+
+    @Test
+    public void testGetGroupsForSpecificUser() {
+        User user = null;
+        try {
+            int size = handler.getAllGroups().size();
+            user = handler.createUser(QueryConstants.USERNAME, QueryConstants.PASS, QueryConstants.NICKNAME);
+            handler.createGroup(QueryConstants.GROUP_NAME);
+            handler.addGroupMember(user.getUserName(), QueryConstants.GROUP_NAME, 1);
+            assertEquals(handler.getMyGroups(user.getUserName()).size(), size + 1);
+        } finally {
+            //teardown
+            handler.removeGroupMember(QueryConstants.USERNAME, QueryConstants.GROUP_NAME);
+            handler.deleteGroup(QueryConstants.GROUP_NAME);
+            if (user != null) {
+                String query = String.format(QueryConstants.TEARDOWN_DELETE, DBConstants.USER_TABLE, DBConstants.USER_ID, user.getUserID());
+                handler.doUpdateQuery(query);
+            }
+        }
+
+    }
+
 }
