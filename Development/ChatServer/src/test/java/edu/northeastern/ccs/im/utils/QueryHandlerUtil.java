@@ -1,6 +1,7 @@
 package edu.northeastern.ccs.im.utils;
 
 import edu.northeastern.ccs.serverim.Group;
+import edu.northeastern.ccs.serverim.Message;
 import edu.northeastern.ccs.serverim.User;
 
 import java.util.ArrayList;
@@ -22,5 +23,10 @@ public class QueryHandlerUtil {
         Group group2 = new Group(2L, "group2");
 
         return Arrays.asList(group1, group2);
+    }
+
+    public static Message getValidMessage() {
+        Message message = Message.makeBroadcastMessage("originalSender", "forward message");
+        return message;
     }
 }

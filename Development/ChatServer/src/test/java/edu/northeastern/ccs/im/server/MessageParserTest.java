@@ -14,7 +14,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import static org.junit.Assert.*;
+import static org.mockito.Matchers.anyLong;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -23,16 +27,8 @@ public class MessageParserTest {
     @InjectMocks
     private ClientRunnableHelper clientRunnableHelper;
 
-    @InjectMocks
-    private MessageFactory messageFactory;
-
     @Mock
     private IQueryHandler queryHandler;
-
-//    @Before
-//    public void beforeEach() {
-//        clientRunnableHelper = new ClientRunnableHelper(null);
-//    }
 
     @Test
     public void testParseValidRegisterMessage() {
@@ -162,4 +158,20 @@ public class MessageParserTest {
         assertTrue(constructedMessage.isGetInfoMessage());
         assertTrue(constructedMessage.getText().startsWith(MessageConstants.GET_MY_GROUPS_CONSOLE_INFO));
     }
+
+    @Test
+    public void testValidForwardMessage() {
+        Message message = MessageUtil.getValidForwardMessage();
+
+        when(queryHandler.getMessage(anyLong())).thenReturn(QueryHandlerUtil.getValidMessage());
+        Message constuctedMessage = clientRunnableHelper.getCustomConstructedMessage(message);
+
+        String expectedPattern = ".*<<< FORWARDED MESSAGE FROM * ";
+        Pattern pattern = Pattern.compile(expectedPattern);
+        Matcher matcher = pattern.matcher(constuctedMessage.getText());
+
+        assertTrue(constuctedMessage.isDirectMessage());
+        assertTrue("Constrcuted message does not have forwarded message info.", matcher.find());
+    }
+
 }
