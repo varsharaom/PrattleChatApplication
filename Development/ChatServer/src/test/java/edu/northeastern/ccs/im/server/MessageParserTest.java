@@ -1,6 +1,7 @@
 package edu.northeastern.ccs.im.server;
 
 
+import com.sun.org.apache.bcel.internal.generic.MULTIANEWARRAY;
 import edu.northeastern.ccs.im.constants.MessageConstants;
 import edu.northeastern.ccs.im.persistence.IQueryHandler;
 import edu.northeastern.ccs.im.utils.ClientRunnableHelperUtil;
@@ -226,6 +227,17 @@ public class MessageParserTest {
 
         assertTrue(constructedMessage.isActionMessage());
         assertEquals(MessageConstants.GROUP_ADD_MEMBER_IDENTIFIER, contents[0]);
+    }
+
+    @Test
+    public void testLeaveGroupMessage() {
+        Message message = MessageUtil.getValidLeaveGroupMessage();
+
+        Message constructedMessage = clientRunnableHelper.getCustomConstructedMessage(message);
+        String[] contents = constructedMessage.getText().split(" ");
+
+        assertTrue(constructedMessage.isActionMessage());
+        assertEquals(MessageConstants.LEAVE_GROUP_IDENTIFIER, contents[0]);
     }
 
 }
