@@ -6,8 +6,11 @@ import edu.northeastern.ccs.serverim.MessageType;
 import edu.northeastern.ccs.im.constants.MessageConstants;
 import edu.northeastern.ccs.im.persistence.IQueryHandler;
 import edu.northeastern.ccs.im.persistence.QueryFactory;
+import edu.northeastern.ccs.serverim.User;
 
+import javax.xml.ws.soap.MTOM;
 import java.util.List;
+import java.util.Set;
 
 
 /**
@@ -151,7 +154,25 @@ class ClientRunnableHelper {
         else if (actualAction.equals(MessageConstants.GROUP_ADD_MEMBER_IDENTIFIER)) {
             handleAddMember(message.getName(), contents);
         }
+        else if (actualAction.equals(MessageConstants.LEAVE_GROUP_IDENTIFIER)) {
+            handleLeaveGroup(message.getName(), contents);
+        }
 
+    }
+
+    private void handleLeaveGroup(String sender, String[] contents) {
+        String groupName = contents[0];
+        String ackMessage;
+
+        if (queryHandler.isGroupMember(groupName, sender)) {
+            queryHandler.removeMember(groupName, sender);
+            ackMessage = MessageConstants.LEAVE_GROUP_SUCCESS_MSG;
+        }
+        else {
+            ackMessage = MessageConstants.INVALID_GROUP_MEMBER_ERR;
+        }
+        Message message = Message.makeAckMessage(MessageType.ACTION, sender, ackMessage);
+        Prattle.sendAckMessage(message);
     }
 
     private void handleAddMember(String sender, String[] contents) {
@@ -331,13 +352,15 @@ class ClientRunnableHelper {
     }
 
     private void handleGroupMessages(Message message) {
-        if (isGroupPresent(message.getMsgReceiver())) {
+        String groupName = message.getMsgReceiver();
+        if (isGroupPresent(groupName)) {
             long messageId = queryHandler.storeMessage(message.getName(), message.getMsgReceiver(),
                     message.getMessageType(),
                     message.getText());
 
             message.setText(getPrependedMessageText(message.getText(), messageId));
-            Prattle.sendGroupMessage(message);
+            Set<String> groupMemberNames = queryHandler.getAllGroupMembers(groupName);
+            Prattle.sendGroupMessage(message, groupMemberNames);
         }
         else {
             Message errorMessage = Message.makeErrorMessage(message.getName(),

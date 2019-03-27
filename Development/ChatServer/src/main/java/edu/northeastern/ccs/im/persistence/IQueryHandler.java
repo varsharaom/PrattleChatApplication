@@ -6,6 +6,7 @@ import edu.northeastern.ccs.serverim.MessageType;
 import edu.northeastern.ccs.serverim.User;
 
 import java.util.List;
+import java.util.Set;
 
 public interface IQueryHandler {
 
@@ -52,4 +53,6 @@ public interface IQueryHandler {
     void makeModerator(String groupName, String toBeModerator);
 
     void removeMember(String groupName, String member);
+
+    Set<String> getAllGroupMembers(String groupName);
 }

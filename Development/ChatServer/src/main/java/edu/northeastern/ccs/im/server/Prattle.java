@@ -14,10 +14,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import edu.northeastern.ccs.serverim.ChatLogger;
-import edu.northeastern.ccs.serverim.Message;
-import edu.northeastern.ccs.serverim.MessageType;
-import edu.northeastern.ccs.serverim.NetworkConnection;
+import edu.northeastern.ccs.serverim.*;
 
 /**
  * A network server that communicates with IM clients that connect to it. This
@@ -91,7 +88,13 @@ public abstract class Prattle {
 		}
 	}
 
-	static void sendGroupMessage(Message message) {
+	static void sendGroupMessage(Message message, Set<String> groupMemebers) {
+		message.setMessageType(MessageType.BROADCAST);
+		for (ClientRunnable tt : active) {
+			if (tt.isInitialized() && (groupMemebers.contains(message.getName()))) {
+				tt.enqueueMessage(message);
+			}
+		}
 
 	}
 

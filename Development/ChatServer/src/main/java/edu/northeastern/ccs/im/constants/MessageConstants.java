@@ -26,6 +26,7 @@ public final class MessageConstants {
     public static final String GROUP_ADD_MODERATOR = "ADD_MDRTR";
     public static final String GROUP_REMOVE_MEMBER_IDENTIFIER = "GRP_RMV_MMBR";
     public static final String GROUP_ADD_MEMBER_IDENTIFIER = "GRP_ADD_MMBR";
+    public static final String LEAVE_GROUP_IDENTIFIER = "LV_GRP";
 
     public static final String ERROR_MSG_IDENTIFIER = "ERR";
 
@@ -47,6 +48,7 @@ public final class MessageConstants {
     public static final String ADD_MDRTR_SUCCESS_MSG = "Moderator successfully added...";
     public static final String RMV_MMBR_SUCCESS_MSG = "Member successfully removed...";
     public static final String ADD_MMBR_SUCCESS_MSG = "Member successfully added...";
+    public static final String LEAVE_GROUP_SUCCESS_MSG = "Sucessfully left the group...";
 
 //    ERROR MESSAGES
     public static final String LOGIN_FAILURE_ERR = "Your credentials mismatch...";
@@ -65,6 +67,8 @@ public final class MessageConstants {
             "Only group members can be removed.";
     public static final String ADD_MMBR_INVALID_ERR = "Operation unsuccessful. " +
             "Only valid members can be added to the group.";
+    public static final String INVALID_GROUP_MEMBER_ERR = "Operation unsuccessful. " +
+            "Only group members can leave the group...";
 
     public static final String ERROR_DELETE_INVALID_MSG_ID = "Message ID entered is invalid." +
             "Please try with a valid message ID";

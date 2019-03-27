@@ -10,9 +10,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -217,6 +215,11 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
     @Override
     public void removeMember(String groupName, String member) {
         return;
+    }
+
+    @Override
+    public Set<String> getAllGroupMembers(String groupName) {
+        return new HashSet<>();
     }
 
     @Override
