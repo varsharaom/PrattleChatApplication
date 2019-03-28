@@ -57,10 +57,10 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
     }
 
     @Override
-    public void updateUserVisibility(String userName, Boolean makeInVisible){
-        String query = String.format("UPDATE %s set %s=%s WHERE %s=%s",
+    public void updateUserVisibility(String userName, Boolean makeInVisible) {
+        String query = String.format("UPDATE %s set %s=%d WHERE %s='%s'",
                 DBConstants.USER_TABLE, DBConstants.USER_INVISIBLE,
-                makeInVisible ? DBConstants.USER_INVISIBLE_TRUE:DBConstants.USER_INVISIBLE_FALSE,
+                makeInVisible ? DBConstants.USER_INVISIBLE_TRUE : DBConstants.USER_INVISIBLE_FALSE,
                 DBConstants.USER_USERNAME, userName);
         doUpdateQuery(query);
     }
@@ -343,7 +343,6 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
                 DBConstants.GROUP_TABLE, DBConstants.GROUP_NAME, name,
                 DBConstants.GROUP_INFO_GROUP_ID, DBConstants.GROUP_ID,
                 DBConstants.GROUP_INFO_USER_ROLE, 2);
-        System.out.println(query);
         return getPeopleHelper(query);
     }
 
@@ -359,12 +358,11 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
     @Override
     public void deleteGroup(String sender, String groupName) {
         String groupInfoDeleteQuery = String.format(
-                "DELETE FROM %s inner join %s on " +
-                        "%s.%s = %s.%s WHERE %s = \'%s\'",
-                DBConstants.GROUP_INFO_TABLE, DBConstants.GROUP_TABLE,
-                DBConstants.GROUP_INFO_TABLE, DBConstants.GROUP_INFO_GROUP_ID,
+                "DELETE t.* FROM %s as t inner join %s on " +
+                        "t.%s = %s.%s WHERE %s = \'%s\' AND t.%s > 0",
+                DBConstants.GROUP_INFO_TABLE, DBConstants.GROUP_TABLE, DBConstants.GROUP_INFO_GROUP_ID,
                 DBConstants.GROUP_TABLE, DBConstants.GROUP_ID,
-                DBConstants.GROUP_NAME, groupName);
+                DBConstants.GROUP_NAME, groupName, DBConstants.GROUP_INFO_GROUP_ID);
         String groupDeleteQuery = String.format("DELETE FROM %s" +
                         " WHERE %s = '%s' AND %s > 0;",
                 DBConstants.GROUP_TABLE, DBConstants.GROUP_NAME, groupName,

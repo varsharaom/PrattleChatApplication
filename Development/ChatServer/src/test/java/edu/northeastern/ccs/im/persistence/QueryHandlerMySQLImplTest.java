@@ -687,6 +687,7 @@ public class QueryHandlerMySQLImplTest {
             assertEquals(2, handler.getAllGroupMembers(QueryConstants.GROUP_2_NAME).size());
             handler.deleteGroup(user1.getUserName(), QueryConstants.GROUP_2_NAME);
 
+            assertEquals(0, handler.getAllGroupMembers(QueryConstants.GROUP_2_NAME).size());
             assertEquals((long) user1.getUserID(), handler.getUserID(user1.getUserName()));
             assertEquals((long) user2.getUserID(), handler.getUserID(user2.getUserName()));
         } finally {
@@ -695,8 +696,8 @@ public class QueryHandlerMySQLImplTest {
             handler.doUpdateQuery(query);
             query = String.format(QueryConstants.TEARDOWN_DELETE, DBConstants.USER_TABLE, DBConstants.USER_ID, user2.getUserID());
             handler.doUpdateQuery(query);
-            assertEquals(-1, handler.getUserID(user2.getUserName()));
-            assertEquals(-1, handler.getUserID(user1.getUserName()));
+            assertEquals("", handler.getUserName(user1.getUserID()));
+            assertEquals("", handler.getUserName(user2.getUserID()));
         }
     }
 
