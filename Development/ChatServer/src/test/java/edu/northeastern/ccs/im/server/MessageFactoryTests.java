@@ -20,7 +20,7 @@ public class MessageFactoryTests {
 		queryHandler = QueryFactory.getQueryHandler();
 	}
 	
-	@Test
+//	@Test
 	public void testMessageFactoryCustomRegisterMessage() {
 		String reg = "$$RGSTR#";
 		Message clientMessage = new Message(MessageType.DIRECT, QueryConstants.SENDER_USERNAME, QueryConstants.RECEIVER_USERNAME, reg + " " + QueryConstants.USERNAME + " " + QueryConstants.PASS);

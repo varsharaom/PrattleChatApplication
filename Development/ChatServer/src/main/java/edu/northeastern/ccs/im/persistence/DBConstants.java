@@ -58,6 +58,8 @@ public class DBConstants {
     /** The last seen field in User table. */
     public static final String USER_LAST_SEEN = "last_seen";
     public static final String USER_INVISIBLE = "invisible";
+    public static final Integer USER_INVISIBLE_TRUE = 1;
+    public static final Integer USER_INVISIBLE_FALSE = 0;
 
     // GROUP
     /** The id field in groups table. */

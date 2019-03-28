@@ -50,6 +50,17 @@ public interface IQueryHandler {
      * @param msgText the message text
      * @return the message id
      */
+    public void updateUserVisibility(String userName, Boolean makeInVisible);
+
+    /**
+     * Store message.
+     *
+     * @param senderName the sender name
+     * @param receiverName the receiver name
+     * @param type the type
+     * @param msgText the msg text
+     * @return the long
+     */
     //Message Queries
     public long storeMessage(String senderName, String receiverName, MessageType type, String msgText);
 
@@ -154,23 +165,7 @@ public interface IQueryHandler {
      * @return the group moderators
      */
     public List<String> getGroupModerators(String name);
-    
-    /**
-     * Creates the group.
-     *
-     * @param name the group name
-     * @return the long
-     */
-    public long createGroup(String name);
-    
-    /**
-     * Delete group.
-     *
-     * @param name the group name
-     * @return the long
-     */
-    public long deleteGroup(String name);
-    
+        
     /**
      * Add a group member.
      *
@@ -302,6 +297,13 @@ public interface IQueryHandler {
      */
     Set<String> getAllGroupMembers(String groupName);
 
+    /**
+     * Adds the user to circle.
+     *
+     * @param senderName the sender name
+     * @param receiverName the receiver name
+     * @return the long
+     */
     // Circles
     public long addUserToCircle(String senderName, String receiverName);
 }
