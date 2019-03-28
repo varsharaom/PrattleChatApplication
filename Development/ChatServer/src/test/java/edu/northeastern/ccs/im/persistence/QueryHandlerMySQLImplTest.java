@@ -357,23 +357,20 @@ public class QueryHandlerMySQLImplTest {
 
     @Test
     public void testGetGroupsForSpecificUser() {
-        User user = null;
+        User user1 = null;
         try {
-            int size = handler.getAllGroups().size();
-            user = handler.createUser(QueryConstants.USERNAME, QueryConstants.PASS, QueryConstants.NICKNAME);
-            handler.createGroup(QueryConstants.USERNAME, QueryConstants.GROUP_NAME);
-            handler.addGroupMember(user.getUserName(), QueryConstants.GROUP_NAME, 1);
-            assertEquals(handler.getMyGroups(user.getUserName()).size(), size + 1);
+            user1 = handler.createUser(QueryConstants.SENDER_USERNAME, QueryConstants.PASS, QueryConstants.SENDER_USERNAME);
+            long msgGrpID = handler.createGroup(user1.getUserName(), QueryConstants.GROUP_2_NAME);
+            assertEquals(user1.getUserName(), handler.getGroupModerators(QueryConstants.GROUP_2_NAME).get(0));
+            assertEquals(1, handler.getAllGroupMembers(QueryConstants.GROUP_2_NAME).size());
+            assertEquals(1, handler.getMyGroups(user1.getUserName()).size());
         } finally {
             //teardown
-            handler.removeGroupMember(QueryConstants.USERNAME, QueryConstants.GROUP_NAME);
-            handler.deleteGroup(QueryConstants.USERNAME, QueryConstants.GROUP_NAME);
-            if (user != null) {
-                String query = String.format(QueryConstants.TEARDOWN_DELETE, DBConstants.USER_TABLE, DBConstants.USER_ID, user.getUserID());
-                handler.doUpdateQuery(query);
-            }
+            handler.deleteGroup(user1.getUserName(), QueryConstants.GROUP_2_NAME);
+            String query = String.format(QueryConstants.TEARDOWN_DELETE, DBConstants.USER_TABLE, DBConstants.USER_ID, user1.getUserID());
+            handler.doUpdateQuery(query);
+            assertEquals("", handler.getUserName(user1.getUserID()));
         }
-
     }
 
 

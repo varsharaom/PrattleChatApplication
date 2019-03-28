@@ -20,8 +20,14 @@ import java.util.Set;
  */
 class ClientRunnableHelper {
 
+    /** The query handler. */
     private IQueryHandler queryHandler;
 
+    /**
+     * Instantiates a new client runnable helper.
+     *
+     * @param queryHandler the query handler
+     */
     ClientRunnableHelper(IQueryHandler queryHandler) {
         this.queryHandler = queryHandler;
     }
@@ -72,10 +78,21 @@ class ClientRunnableHelper {
         }
     }
 
+    /**
+     * Checks if a message is an action message.
+     *
+     * @param message the message
+     * @return true, if is action message
+     */
     private boolean isActionMessage(Message message) {
         return message.isActionMessage();
     }
 
+    /**
+     * Handle delete messages.
+     *
+     * @param clientMessage the client message
+     */
     private void handleDeleteMessages(Message clientMessage) {
         Message dbMessage = queryHandler.getMessage(clientMessage.getId());
         Message handshakeMessage;
@@ -131,10 +148,20 @@ class ClientRunnableHelper {
         }
     }
 
+    /**
+     * Delegate get info messages to the direct messages handler.
+     *
+     * @param msg the msg
+     */
     private void handleGetInfoMessages (Message msg) {
         Prattle.sendDirectMessage(msg);
     }
 
+    /**
+     * Handle action messages.
+     *
+     * @param message the message
+     */
     private void handleActionMessages(Message message) {
         String[] contents = message.getText().split(" ");
         String actualAction = contents[0];
@@ -159,9 +186,14 @@ class ClientRunnableHelper {
         else if (actualAction.equals(MessageConstants.REQUEST_GROUP_ADD_IDENTIFIER)) {
             handleRequestGroupAdd(message.getName(), contents);
         }
-
     }
 
+    /**
+     * Handle leave group message.
+     *
+     * @param sender the sender
+     * @param contents the contents
+     */
     private void handleRequestGroupAdd(String senderName, String[] contents) {
         String groupName = contents[1];
         String toBeMember = contents[2];
@@ -184,6 +216,13 @@ class ClientRunnableHelper {
         Prattle.sendAckMessage(handshakeMessage);
     }
 
+    /**
+     * Publish request to moderators.
+     *
+     * @param groupName the group name
+     * @param senderName the sender name
+     * @param toBeMember the to be member
+     */
     private void publishRequestToModerators(String groupName, String senderName, String toBeMember) {
         List<String> moderators = queryHandler.getGroupModerators(groupName);
         Set<String> moderatorSet = new HashSet<>(moderators);
@@ -194,6 +233,12 @@ class ClientRunnableHelper {
         Prattle.sendMessageToMultipleUsers(message, moderatorSet);
     }
 
+    /**
+     * Handle leave group.
+     *
+     * @param sender the sender
+     * @param contents the contents of the leave group message 
+     */
     private void handleLeaveGroup(String sender, String[] contents) {
         String groupName = contents[1];
         String ackMessage;
@@ -209,6 +254,12 @@ class ClientRunnableHelper {
         Prattle.sendAckMessage(message);
     }
 
+    /**
+     * Handle add member message.
+     *
+     * @param sender the sender
+     * @param contents the contents of the add member message
+     */
     private void handleAddMember(String sender, String[] contents) {
         String member = contents[1];
         String groupName = contents[2];
@@ -231,6 +282,12 @@ class ClientRunnableHelper {
         Prattle.sendAckMessage(message);
     }
 
+    /**
+     * Handle remove member message.
+     *
+     * @param sender the sender
+     * @param contents the contents
+     */
     private void handleRemoveMember(String sender, String[] contents) {
         String member = contents[1];
         String groupName = contents[2];
@@ -253,6 +310,12 @@ class ClientRunnableHelper {
         Prattle.sendAckMessage(message);
     }
 
+    /**
+     * Handle create moderator message.
+     *
+     * @param sender the sender
+     * @param contents the contents
+     */
     private void handleCreateModerator(String sender, String[] contents) {
         String toBeModerator = contents[1];
         String groupName = contents[2];
@@ -275,6 +338,12 @@ class ClientRunnableHelper {
         Prattle.sendAckMessage(message);
     }
 
+    /**
+     * Handle delete group message.
+     *
+     * @param sender the sender
+     * @param contents the contents
+     */
     private void handleDeleteGroup (String sender, String[] contents) {
         String groupName = contents[1];
         String ackMessage;
@@ -289,6 +358,12 @@ class ClientRunnableHelper {
         Prattle.sendAckMessage(message);
     }
 
+    /**
+     * Handle create group message.
+     *
+     * @param sender the sender
+     * @param contents the contents
+     */
     private void handleCreateGroup (String sender, String[] contents) {
         String groupName = contents[1];
         queryHandler.createGroup(sender, groupName);
@@ -385,6 +460,11 @@ class ClientRunnableHelper {
         }
     }
 
+    /**
+     * Handle group message.
+     *
+     * @param message the message
+     */
     private void handleGroupMessages(Message message) {
         String groupName = message.getMsgReceiver();
         if (isGroupPresent(groupName)) {
@@ -403,6 +483,11 @@ class ClientRunnableHelper {
         }
     }
 
+    /**
+     * Handle forwarded message.
+     *
+     * @param message the message
+     */
     private void handleForwardMessages(Message message) {
         if (isUserPresent(message.getMsgReceiver())) {
             long messageId = queryHandler.storeMessage(message.getName(), message.getMsgReceiver(),
@@ -419,6 +504,12 @@ class ClientRunnableHelper {
         }
     }
 
+    /**
+     * Gets the forward message text.
+     *
+     * @param message the message
+     * @return the forward message text
+     */
     private String getForwardMessageText(Message message) {
         StringBuilder sb = new StringBuilder(message.getText());
         sb.append(" <<< FORWARDED MESSAGE >>> ");
@@ -478,7 +569,6 @@ class ClientRunnableHelper {
             message = MessageFactory.createMessage(message, queryHandler);
 
         }
-//        TODO - should we change the incoming message as is? Or send a 5XX Error message
         return message;
     }
 }

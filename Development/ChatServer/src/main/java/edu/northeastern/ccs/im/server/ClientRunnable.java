@@ -71,6 +71,7 @@ public class ClientRunnable implements Runnable {
      */
     private Queue<Message> waitingList;
 
+    /** The client runnable helper instance. */
     private ClientRunnableHelper clientRunnableHelper;
 
     /**

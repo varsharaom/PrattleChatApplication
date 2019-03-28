@@ -14,16 +14,30 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * The Class QueryHandlerMySQLImpl.
+ */
 public class QueryHandlerMySQLImpl implements IQueryHandler {
 
+    /** The logger object. */
     final Logger logger = Logger.getGlobal();
+    
+    /** The SQL exception error message. */
     private static final String SQL_EXCEPTION_MSG = "SQL Exception";
+    
+    /** The JDBC connection. */
     private Connection connection;
 
+    /**
+     * Instantiates a new query handler for this MySQL implementation.
+     */
     QueryHandlerMySQLImpl() {
         connection = DBHandler.getConnection();
     }
 
+    /* (non-Javadoc)
+     * @see edu.northeastern.ccs.im.persistence.IQueryHandler#createUser(java.lang.String, java.lang.String, java.lang.String)
+     */
     //-----------------User Queries-------------------
     public User createUser(String userName, String pass, String nickName) {
         Date date = new Date(System.currentTimeMillis());
@@ -39,6 +53,9 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
         return user;
     }
 
+    /* (non-Javadoc)
+     * @see edu.northeastern.ccs.im.persistence.IQueryHandler#updateUserLastLogin(long)
+     */
     public int updateUserLastLogin(long userID) {
         Date date = new Date(System.currentTimeMillis());
         SimpleDateFormat format = new SimpleDateFormat(DBConstants.DATE_FORMAT);
@@ -48,6 +65,9 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
         return doUpdateQuery(query);
     }
 
+    /* (non-Javadoc)
+     * @see edu.northeastern.ccs.im.persistence.IQueryHandler#validateLogin(java.lang.String, java.lang.String)
+     */
     @Override
     public long validateLogin(String username, String password) {
         String query = String.format("SELECT %s from %s WHERE %s ='%s' and %s = '%s'",
@@ -65,6 +85,9 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
         doUpdateQuery(query);
     }
 
+    /* (non-Javadoc)
+     * @see edu.northeastern.ccs.im.persistence.IQueryHandler#storeMessage(java.lang.String, java.lang.String, edu.northeastern.ccs.serverim.MessageType, java.lang.String)
+     */
     //-----------------Message Queries-------------------
     public long storeMessage(String senderName, String receiverName, MessageType type, String msgText) {
         Date date = new Date(System.currentTimeMillis());
@@ -78,6 +101,9 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
         return doInsertQuery(query);
     }
 
+    /* (non-Javadoc)
+     * @see edu.northeastern.ccs.im.persistence.IQueryHandler#getMessage(long)
+     */
     public Message getMessage(long messageID) {
         String query = String.format("Select %s,%s,%s,%s,%s,%s from %s where %s=%s;",
                 DBConstants.MESSAGE_SENDER_ID, DBConstants.MESSAGE_RECEIVER_ID,
@@ -101,6 +127,9 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
         return message;
     }
 
+    /* (non-Javadoc)
+     * @see edu.northeastern.ccs.im.persistence.IQueryHandler#deleteMessage(long)
+     */
     public void deleteMessage(long messageID) {
         String query = String.format("Update %s set %s=%s where %s=%s;",
                 DBConstants.MESSAGE_TABLE, DBConstants.IS_DELETED, DBConstants.IS_DELETED_TRUE,
@@ -109,6 +138,9 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
         doUpdateQuery(query);
     }
 
+    /* (non-Javadoc)
+     * @see edu.northeastern.ccs.im.persistence.IQueryHandler#getMessagesSinceLastLogin(long)
+     */
     public List<Message> getMessagesSinceLastLogin(long userID) {
         List<Message> messages = new ArrayList<>();
         messages.addAll(getPrivateMessagesSinceLogin(userID));
@@ -211,6 +243,7 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
                 DBConstants.CIRCLE_USER_1_ID, senderID,
                 DBConstants.CIRCLE_USER_2_ID, senderID);
         Set<Long> circleIDs = new HashSet<>();
+
         try {
             PreparedStatement statement = connection.prepareStatement(query);
             ResultSet rs = statement.executeQuery();
@@ -234,7 +267,6 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
         return circleList;
 
     }
-
 
     public long getUserID(String userName) {
         String query = String.format("SELECT %s FROM %s where %s=\"%s\";",
@@ -346,6 +378,9 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
         return getPeopleHelper(query);
     }
 
+    /* (non-Javadoc)
+     * @see edu.northeastern.ccs.im.persistence.IQueryHandler#createGroup(java.lang.String, java.lang.String)
+     */
     @Override
     public long createGroup(String sender, String groupName) {
         String query = String.format("INSERT INTO %s (%s) values ('%s');",
@@ -355,6 +390,9 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
         return groupId;
     }
 
+    /* (non-Javadoc)
+     * @see edu.northeastern.ccs.im.persistence.IQueryHandler#deleteGroup(java.lang.String, java.lang.String)
+     */
     @Override
     public void deleteGroup(String sender, String groupName) {
         String groupInfoDeleteQuery = String.format(
@@ -374,6 +412,9 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
         doUpdateQuery(groupDeleteQuery);
     }
 
+    /* (non-Javadoc)
+     * @see edu.northeastern.ccs.im.persistence.IQueryHandler#isModerator(java.lang.String, java.lang.String)
+     */
     @Override
     public boolean isModerator(String sender, String groupName) {
         String query = String.format("SELECT gi.%s FROM %s as gi\n" +
@@ -395,6 +436,9 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
         return role == DBConstants.GROUP_INFO_USER_ROLE_ADMIN;
     }
 
+    /* (non-Javadoc)
+     * @see edu.northeastern.ccs.im.persistence.IQueryHandler#isGroupMember(java.lang.String, java.lang.String)
+     */
     @Override
     public boolean isGroupMember(String groupName, String sender) {
         String query = String.format("SELECT * FROM %s as gi\n" +
@@ -414,6 +458,9 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
         return isMember;
     }
 
+    /* (non-Javadoc)
+     * @see edu.northeastern.ccs.im.persistence.IQueryHandler#makeModerator(java.lang.String, java.lang.String)
+     */
     @Override
     public void makeModerator(String groupName, String toBeModerator) {
         String query = String.format("UPDATE %s as gi SET %s = %d\n" +
@@ -424,6 +471,9 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
         doUpdateQuery(query);
     }
 
+    /* (non-Javadoc)
+     * @see edu.northeastern.ccs.im.persistence.IQueryHandler#removeMember(java.lang.String, java.lang.String)
+     */
     @Override
     public void removeMember(String groupName, String member) {
         String query = String.format("DELETE FROM %s " +
@@ -433,6 +483,9 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
         doUpdateQuery(query);
     }
 
+    /* (non-Javadoc)
+     * @see edu.northeastern.ccs.im.persistence.IQueryHandler#getAllGroupMembers(java.lang.String)
+     */
     @Override
     public Set<String> getAllGroupMembers(String groupName) {
         String query = String.format("SELECT gi.%s FROM %s as gi\n" +
@@ -543,7 +596,6 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
 
     //helper method for queries that return ID
     private long idHelper(String query) {
-
         long id = -1l;
         try {
             PreparedStatement statement = connection.prepareStatement(query);
@@ -558,6 +610,7 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
         }
         return id;
     }
+
 
     //helper method for group members or moderator list
     private List<String> getPeopleHelper(String query) {
@@ -655,7 +708,7 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
                 DBConstants.MESSAGE_RECEIVER_ID, userID);
         return getMessages(query);
     }
-
+    
     private List<Message> getMessages(String query) {
         List<Message> messages = new ArrayList<>();
         try {
@@ -688,6 +741,15 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
             logger.log(Level.INFO, SQL_EXCEPTION_MSG);
         }
         return groups;
+    }
+
+    @Override
+    public void updateUserVisibility(String userName, Boolean makeInVisible) {
+        String query = String.format("UPDATE %s set %s=%d WHERE %s='%s'",
+                DBConstants.USER_TABLE, DBConstants.USER_INVISIBLE,
+                makeInVisible ? DBConstants.USER_INVISIBLE_TRUE : DBConstants.USER_INVISIBLE_FALSE,
+                DBConstants.USER_USERNAME, userName);
+        doUpdateQuery(query);
     }
 
 }
