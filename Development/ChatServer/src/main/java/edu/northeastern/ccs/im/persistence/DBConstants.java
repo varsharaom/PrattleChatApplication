@@ -28,6 +28,8 @@ public class DBConstants {
     public static final String USER_NICKNAME = "nickname";
     public static final String USER_LAST_SEEN = "last_seen";
     public static final String USER_INVISIBLE = "invisible";
+    public static final Integer USER_INVISIBLE_TRUE = 1;
+    public static final Integer USER_INVISIBLE_FALSE = 0;
 
     //GROUP
     public static final String GROUP_ID = "id";

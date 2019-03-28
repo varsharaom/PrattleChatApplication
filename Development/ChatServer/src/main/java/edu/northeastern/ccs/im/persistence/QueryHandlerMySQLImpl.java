@@ -56,6 +56,15 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
         return idHelper(query);
     }
 
+    @Override
+    public void updateUserVisibility(String userName, Boolean makeInVisible){
+        String query = String.format("UPDATE %s set %s=%s WHERE %s=%s",
+                DBConstants.USER_TABLE, DBConstants.USER_INVISIBLE,
+                makeInVisible ? DBConstants.USER_INVISIBLE_TRUE:DBConstants.USER_INVISIBLE_FALSE,
+                DBConstants.USER_USERNAME, userName);
+        doUpdateQuery(query);
+    }
+
     //-----------------Message Queries-------------------
     public long storeMessage(String senderName, String receiverName, MessageType type, String msgText) {
         Date date = new Date(System.currentTimeMillis());
@@ -172,7 +181,7 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
         String query = String.format("SELECT %s, %s, %s FROM %s where %s = %d;",
                 DBConstants.USER_ID, DBConstants.USER_USERNAME,
                 DBConstants.USER_NICKNAME, DBConstants.USER_TABLE,
-                DBConstants.USER_INVISIBLE, 0);
+                DBConstants.USER_INVISIBLE, DBConstants.USER_INVISIBLE_FALSE);
 
         List<User> userList = new ArrayList<>();
         try {
@@ -357,7 +366,7 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
                 DBConstants.GROUP_TABLE, DBConstants.GROUP_ID,
                 DBConstants.GROUP_NAME, groupName);
         String groupDeleteQuery = String.format("DELETE FROM %s" +
-                        "WHERE %s = '%s' AND %s > 0;",
+                        " WHERE %s = '%s' AND %s > 0;",
                 DBConstants.GROUP_TABLE, DBConstants.GROUP_NAME, groupName,
                 DBConstants.GROUP_ID);
 

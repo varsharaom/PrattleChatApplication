@@ -17,6 +17,8 @@ public interface IQueryHandler {
 
     public long validateLogin(String username, String password);
 
+    public void updateUserVisibility(String userName, Boolean makeInVisible);
+
     //Message Queries
     public long storeMessage(String senderName, String receiverName, MessageType type, String msgText);
 
