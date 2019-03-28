@@ -41,14 +41,29 @@ public class Message {
      */
     private String msgText;
 
+    /**
+     * Sets the id.
+     *
+     * @param id the new id
+     */
     public void setId(long id) {
         this.id = id;
     }
 
+    /**
+     * Gets the id.
+     *
+     * @return the id
+     */
     public long getId() {
         return this.id;
     }
     
+    /**
+     * Gets the isDeleted bit.
+     *
+     * @return the isDeleted bit
+     */
     public long getIsDeleted() {
         return this.isDeleted;
     }
@@ -71,6 +86,16 @@ public class Message {
         msgText = text;
     }
 
+    /**
+     * Instantiates a new message.
+     *
+     * @param id the id
+     * @param handle the handle
+     * @param sender the sender
+     * @param receiver the receiver
+     * @param text the text
+     * @param isDeleted the bit to indicate if a message is deleted
+     */
     public Message(long id, MessageType handle, String sender, String receiver, String text, int isDeleted) {
         this.msgType = handle;
         this.msgSender = sender;
@@ -80,6 +105,14 @@ public class Message {
         this.isDeleted = isDeleted;
     }
 
+    /**
+     * Instantiates a new message without the user id.
+     *
+     * @param handle the handle
+     * @param sender the sender
+     * @param receiver the receiver
+     * @param text the text
+     */
     public Message(MessageType handle, String sender, String receiver, String text) {
         this(-1L, handle, sender, receiver, text, 0);
     }
@@ -118,10 +151,20 @@ public class Message {
         return new Message(MessageType.BROADCAST, myName, text);
     }
 
+    /**
+     * Gets the message receiver.
+     *
+     * @return the message receiver
+     */
     public String getMsgReceiver() {
         return msgReceiver;
     }
 
+    /**
+     * Gets the message type.
+     *
+     * @return the message type
+     */
     public MessageType getMessageType() {
         return msgType;
     }
@@ -137,47 +180,130 @@ public class Message {
         return new Message(MessageType.HELLO, null, text);
     }
 
+    /**
+     * Make register message.
+     *
+     * @param userName the user name
+     * @param password the password
+     * @return the message
+     */
     public static Message makeRegisterMessage(String userName, String password) {
         return new Message(MessageType.REGISTER, userName, password);
     }
 
+    /**
+     * Make login message.
+     *
+     * @param userName the user name
+     * @param password the password
+     * @return the message
+     */
     public static Message makeLoginMessage(String userName, String password) {
         return new Message(MessageType.LOGIN, userName, password);
     }
 
+    /**
+     * Make login acknowledgement message.
+     *
+     * @param handle the handle
+     * @param sender the sender
+     * @param receiver the receiver
+     * @param msgText the message text
+     * @return the message
+     */
     public static Message makeLoginAckMessage(MessageType handle, String sender, String receiver, String msgText) {
         return new Message(handle, sender, receiver, msgText);
     }
 
+    /**
+     * Make acknowledgement message.
+     *
+     * @param handle the handle
+     * @param msgSender the message sender
+     * @param msgText the message text
+     * @return the message
+     */
     public static Message makeAckMessage(MessageType handle, String msgSender, String msgText) {
         return new Message(handle, msgSender, msgText);
     }
 
+    /**
+     * Make direct message.
+     *
+     * @param msgSender the message sender
+     * @param msgReceiver the message receiver
+     * @param msgText the message text
+     * @return the message
+     */
     public static Message makeDirectMessage(String msgSender, String msgReceiver, String msgText) {
         return new Message(MessageType.DIRECT, msgSender, msgReceiver, msgText);
     }
 
+    /**
+     * Make group message.
+     *
+     * @param msgSender the message sender
+     * @param groupName the group name
+     * @param msgText the message text
+     * @return the message
+     */
     public static Message makeGroupMessage(String msgSender, String groupName, String msgText) {
         return new Message(MessageType.GROUP, msgSender, groupName, msgText);
     }
 
+    /**
+     * Make get info message.
+     *
+     * @param msgSender the message sender
+     * @param msgReceiver the message receiver
+     * @param msgText the message text
+     * @return the message
+     */
     public static Message makeGetInfoMessage(String msgSender, String msgReceiver, String msgText) {
         return new Message(MessageType.GET_INFO, msgSender, msgReceiver, msgText);
     }
 
+    /**
+     * Make error message.
+     *
+     * @param msgSender the message sender
+     * @param msgText the message text
+     * @return the message
+     */
     public static Message makeErrorMessage(String msgSender, String msgText) {
         return new Message(MessageType.BROADCAST, msgSender, getErrorMessageText(msgText));
     }
 
+    /**
+     * Make delete message.
+     *
+     * @param messageId the message id
+     * @param msgSender the message sender
+     * @param msgReceiver the message receiver
+     * @return the message
+     */
     public static Message makeDeleteMessage(long messageId, String msgSender, String msgReceiver) {
         return new Message(messageId, MessageType.DELETE, msgSender, msgReceiver, "", 0);
     }
 
+    /**
+     * Make action message.
+     *
+     * @param sender the sender
+     * @param actualAction the actual action
+     * @return the message
+     */
     public static Message makeActionMessage(String sender, String actualAction) {
         return new Message(MessageType.ACTION, sender, actualAction);
     }
 
 
+    /**
+     * Gets the error message text.
+     *
+     * @param plainMessageText the plain message text
+     * @return the error message text
+     */
     private static String getErrorMessageText(String plainMessageText) {
         return MessageConstants.CUSTOM_COMMAND_PREFIX
                 + MessageConstants.ERROR_MSG_IDENTIFIER
@@ -236,6 +362,11 @@ public class Message {
         return msgText;
     }
 
+    /**
+     * Sets the text.
+     *
+     * @param text the new text
+     */
     public void setText(String text) {
         this.msgText = text;
     }
@@ -258,34 +389,74 @@ public class Message {
         return (msgType == MessageType.HELLO);
     }
 
+    /**
+     * Checks if is register message.
+     *
+     * @return true, if register message
+     */
     public boolean isRegisterMessage() {
         return (msgType == MessageType.REGISTER);
     }
 
+    /**
+     * Checks if message is a login message.
+     *
+     * @return true, if login message
+     */
     public boolean isLoginMessage() {
         return (msgType == MessageType.LOGIN);
     }
 
+    /**
+     * Checks if message is a direct message.
+     *
+     * @return true, if direct message
+     */
     public boolean isDirectMessage() {
         return (msgType == MessageType.DIRECT);
     }
 
+    /**
+     * Checks if message is a delete message.
+     *
+     * @return true, if delete message
+     */
     public boolean isDeleteMessage() {
         return (msgType == MessageType.DELETE);
     }
 
+    /**
+     * Checks if message is a group message.
+     *
+     * @return true, if group message
+     */
     public boolean isGroupMessage() {
         return (msgType == MessageType.GROUP);
     }
 
+    /**
+     * Checks if message is a getsinfo message.
+     *
+     * @return true, if getsinfo message
+     */
     public boolean isGetInfoMessage() {
         return (msgType == MessageType.GET_INFO);
     }
 
+    /**
+     * Checks if message is an action message.
+     *
+     * @return true, if action message
+     */
     public boolean isActionMessage() {
         return (msgType == MessageType.ACTION);
     }
 
+    /**
+     * Sets the message type.
+     *
+     * @param type the new message type
+     */
     public void setMessageType(MessageType type) {
         msgType = type;
     }

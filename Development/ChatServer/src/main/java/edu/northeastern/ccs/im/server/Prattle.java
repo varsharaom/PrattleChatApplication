@@ -70,6 +70,11 @@ public abstract class Prattle {
 		}
 	}
 
+	/**
+	 * Enqueue direct message for the receiving user.
+	 *
+	 * @param message the message
+	 */
 	static void sendDirectMessage(Message message) {
 		message.setMessageType(MessageType.BROADCAST);
 		for (ClientRunnable tt : active) {
@@ -79,6 +84,11 @@ public abstract class Prattle {
 		}
 	}
 
+	/**
+	 * Enqueue error message for the receiving user.
+	 *
+	 * @param message the message
+	 */
 	static void sendErrorMessage(Message message) {
 		message.setMessageType(MessageType.BROADCAST);
 		for (ClientRunnable tt : active) {
@@ -88,10 +98,16 @@ public abstract class Prattle {
 		}
 	}
 
-	static void sendGroupMessage(Message message, Set<String> groupMemebers) {
+	/**
+	 * Enqueue group message for the receiving user.
+	 *
+	 * @param message the message
+	 * @param groupMemebers the group members
+	 */
+	static void sendGroupMessage(Message message, Set<String> groupMembers) {
 		message.setMessageType(MessageType.BROADCAST);
 		for (ClientRunnable tt : active) {
-			if (tt.isInitialized() && (groupMemebers.contains(message.getName()))) {
+			if (tt.isInitialized() && (groupMembers.contains(message.getName()))) {
 				tt.enqueueMessage(message);
 			}
 		}
