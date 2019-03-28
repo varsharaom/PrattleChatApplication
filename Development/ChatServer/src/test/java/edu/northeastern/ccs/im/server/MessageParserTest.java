@@ -240,4 +240,15 @@ public class MessageParserTest {
         assertEquals(MessageConstants.LEAVE_GROUP_IDENTIFIER, contents[0]);
     }
 
+    @Test
+    public void testRequestGroupAddMessage() {
+        Message message = MessageUtil.getValidRequestGroupAddMessage();
+
+        Message constructedMessage = clientRunnableHelper.getCustomConstructedMessage(message);
+        String[] contents = constructedMessage.getText().split(" ");
+
+        assertTrue(constructedMessage.isActionMessage());
+        assertEquals(MessageConstants.REQUEST_GROUP_ADD_IDENTIFIER, contents[0]);
+    }
+
 }

@@ -391,4 +391,12 @@ public class ClientRunnableHelperTest {
         when(iQueryHandler.isModerator(anyString(), anyString())).thenReturn(false);
         clientRunnableHelper.handleMessages(groupDeleteMessage);
     }
+
+    @Test
+    public void testCreateModerator() {
+        Message message = MessageUtil.getValidAddModeratorMessage();
+        Message addModeratorMessage = clientRunnableHelper.getCustomConstructedMessage(message);
+
+        clientRunnableHelper.handleMessages(addModeratorMessage);
+    }
 }

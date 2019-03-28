@@ -110,6 +110,15 @@ public final class MessageUtil {
         return Message.makeBroadcastMessage(SIMPLE_USER, getValidLeaveGroupMessageText());
     }
 
+    public static Message getValidRequestGroupAddMessage() {
+        return Message.makeBroadcastMessage(SIMPLE_USER, getValidRequestGroupAddMessageText());
+    }
+
+    private static String getValidRequestGroupAddMessageText() {
+        return CUSTOM_COMMAND_PREFIX + ACTION_MSG_IDENTIFIER + CUSTOM_COMMAND_SUFFIX
+                + " " + REQUEST_GROUP_ADD_IDENTIFIER + " groupName toBeMember senderName";
+    }
+
     private static String getValidLeaveGroupMessageText() {
         return CUSTOM_COMMAND_PREFIX + ACTION_MSG_IDENTIFIER + CUSTOM_COMMAND_SUFFIX
                 + " " + LEAVE_GROUP_IDENTIFIER + " groupName senderName";
@@ -233,5 +242,4 @@ public final class MessageUtil {
     private MessageUtil() {
 
     }
-
 }
