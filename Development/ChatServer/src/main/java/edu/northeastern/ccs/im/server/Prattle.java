@@ -88,10 +88,10 @@ public abstract class Prattle {
 		}
 	}
 
-	static void sendGroupMessage(Message message, Set<String> groupMemebers) {
+	static void sendMessageToMultipleUsers(Message message, Set<String> userNames) {
 		message.setMessageType(MessageType.BROADCAST);
 		for (ClientRunnable tt : active) {
-			if (tt.isInitialized() && (groupMemebers.contains(message.getName()))) {
+			if (tt.isInitialized() && (userNames.contains(tt.getName()))) {
 				tt.enqueueMessage(message);
 			}
 		}

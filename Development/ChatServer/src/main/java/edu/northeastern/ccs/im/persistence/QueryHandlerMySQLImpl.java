@@ -223,6 +223,16 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
     }
 
     @Override
+    public void addMember(String groupName, String member) {
+        return;
+    }
+
+    @Override
+    public Set<String> getAllModerators(String groupName) {
+        return new HashSet<>();
+    }
+
+    @Override
     public List<User> getAllUsers() {
         String query = String.format("SELECT %s, %s, %s FROM %s;",
                 DBConstants.USER_ID, DBConstants.USER_USERNAME,

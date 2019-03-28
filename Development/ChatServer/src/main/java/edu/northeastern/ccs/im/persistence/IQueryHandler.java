@@ -55,4 +55,8 @@ public interface IQueryHandler {
     void removeMember(String groupName, String member);
 
     Set<String> getAllGroupMembers(String groupName);
+
+    void addMember(String groupName, String member);
+
+    Set<String> getAllModerators(String groupName);
 }
