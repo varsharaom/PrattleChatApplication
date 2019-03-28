@@ -23,6 +23,9 @@ public class QueryConstants {
 	
 	// Groups
 	public static final String GROUP_NAME = "GROUP";
+	public static final String GROUP_2_NAME = "GROUP_2";
+	public static final int MEMBER_ROLE_ID = 1;
+	public static final int MODERATOR_ROLE_ID = 2;
 	
 	// Queries
 	public static final String TEARDOWN_DELETE = "DELETE FROM %s where %s = %s;";

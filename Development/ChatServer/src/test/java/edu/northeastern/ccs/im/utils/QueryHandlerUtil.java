@@ -12,8 +12,8 @@ import java.util.List;
 public class QueryHandlerUtil {
 
     public static List<User> getUsers() {
-        User user1 = new User(1L, "user1", "nick1", Calendar.getInstance().getTimeInMillis());
-        User user2 = new User(2L, "user2", "nick2", Calendar.getInstance().getTimeInMillis());
+        User user1 = new User(1L, "user1", "nick1", Calendar.getInstance().getTimeInMillis(), 0);
+        User user2 = new User(2L, "user2", "nick2", Calendar.getInstance().getTimeInMillis(), 0);
 
         return Arrays.asList(user1, user2);
     }

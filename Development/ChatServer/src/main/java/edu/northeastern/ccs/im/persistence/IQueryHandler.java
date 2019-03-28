@@ -68,7 +68,7 @@ public interface IQueryHandler {
     
     public List<Message> getMessagesFromUserChat(long senderId, long receiverId);
 
-    void createGroup(String sender, String groupName);
+    long createGroup(String sender, String groupName);
 
     void deleteGroup(String sender, String groupName);
 
@@ -81,4 +81,7 @@ public interface IQueryHandler {
     void removeMember(String groupName, String member);
 
     Set<String> getAllGroupMembers(String groupName);
+    
+    // Circles
+    public long addUserToCircle(String senderName, String receiverName);
 }
