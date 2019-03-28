@@ -63,7 +63,9 @@ public interface IQueryHandler {
      */
     //Message Queries
     public long storeMessage(String senderName, String receiverName, MessageType type, String msgText);
-
+  
+    public void updateUserVisibility(String userName, Boolean makeInVisible);
+    
     /**
      * Gets the message.
      *

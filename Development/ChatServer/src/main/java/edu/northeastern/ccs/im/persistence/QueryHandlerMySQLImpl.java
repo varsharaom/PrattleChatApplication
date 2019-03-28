@@ -76,6 +76,15 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
         return idHelper(query);
     }
 
+    @Override
+    public void updateUserVisibility(String userName, Boolean makeInVisible) {
+        String query = String.format("UPDATE %s set %s=%d WHERE %s='%s'",
+                DBConstants.USER_TABLE, DBConstants.USER_INVISIBLE,
+                makeInVisible ? DBConstants.USER_INVISIBLE_TRUE : DBConstants.USER_INVISIBLE_FALSE,
+                DBConstants.USER_USERNAME, userName);
+        doUpdateQuery(query);
+    }
+
     /* (non-Javadoc)
      * @see edu.northeastern.ccs.im.persistence.IQueryHandler#storeMessage(java.lang.String, java.lang.String, edu.northeastern.ccs.serverim.MessageType, java.lang.String)
      */
@@ -204,7 +213,7 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
         String query = String.format("SELECT %s, %s, %s FROM %s where %s = %d;",
                 DBConstants.USER_ID, DBConstants.USER_USERNAME,
                 DBConstants.USER_NICKNAME, DBConstants.USER_TABLE,
-                DBConstants.USER_INVISIBLE, 0);
+                DBConstants.USER_INVISIBLE, DBConstants.USER_INVISIBLE_FALSE);
 
         List<User> userList = new ArrayList<>();
         try {
@@ -366,7 +375,6 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
                 DBConstants.GROUP_TABLE, DBConstants.GROUP_NAME, name,
                 DBConstants.GROUP_INFO_GROUP_ID, DBConstants.GROUP_ID,
                 DBConstants.GROUP_INFO_USER_ROLE, 2);
-        System.out.println(query);
         return getPeopleHelper(query);
     }
 
