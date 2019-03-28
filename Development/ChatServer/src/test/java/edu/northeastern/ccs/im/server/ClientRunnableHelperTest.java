@@ -1,5 +1,6 @@
 package edu.northeastern.ccs.im.server;
 
+import com.sun.org.apache.bcel.internal.generic.MULTIANEWARRAY;
 import edu.northeastern.ccs.im.constants.ClientRunnableHelperConstants;
 import edu.northeastern.ccs.im.constants.MessageConstants;
 import edu.northeastern.ccs.im.constants.MessageTestConstants;
@@ -24,12 +25,13 @@ import static edu.northeastern.ccs.im.constants.MessageConstants.MSG_ID_SUFFIX;
 import static edu.northeastern.ccs.im.constants.MessageTestConstants.BROADCAST_TEXT_MESSAGE;
 import static edu.northeastern.ccs.im.constants.MessageTestConstants.SIMPLE_USER;
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.nio.channels.MulticastChannel;
 import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
 import java.util.List;
@@ -301,10 +303,24 @@ public class ClientRunnableHelperTest {
     }
 
     @Test
-    public void testHandleGroupMessage() {
+    public void testHandleGroupMessageHappyPath() {
         Message message = MessageUtil.getValidGroupBroadcastMessage();
 
-        when(iQueryHandler.checkUserNameExists(anyString())).thenReturn(true);
+        when(iQueryHandler.checkGroupNameExists(anyString())).thenReturn(true);
+        when(iQueryHandler.storeMessage(anyString(), anyString(), any(), anyString()))
+                .thenReturn(1l);
+        Message groupMessage = clientRunnableHelper.getCustomConstructedMessage(message);
+        clientRunnableHelper.handleMessages(groupMessage);
+
+    }
+
+    @Test
+    public void testHandleGroupMessageToInvalidGroup() {
+        Message message = MessageUtil.getValidGroupBroadcastMessage();
+
+        when(iQueryHandler.checkGroupNameExists(anyString())).thenReturn(false);
+        when(iQueryHandler.storeMessage(anyString(), anyString(), any(), anyString()))
+                .thenReturn(1l);
         Message groupMessage = clientRunnableHelper.getCustomConstructedMessage(message);
         clientRunnableHelper.handleMessages(groupMessage);
 
@@ -321,6 +337,14 @@ public class ClientRunnableHelperTest {
 
         Message getUsersMessage = clientRunnableHelper.getCustomConstructedMessage(message);
         clientRunnableHelper.handleMessages(getUsersMessage);
+    }
+
+    @Test
+    public void testInvalidGetInfoMessage() {
+        Message message = MessageUtil.getInvalidGetInfoMessage();
+        Message invalidGetInfoMessage = clientRunnableHelper.getCustomConstructedMessage(message);
+
+        clientRunnableHelper.handleMessages(invalidGetInfoMessage);
     }
 
     @Test
@@ -348,8 +372,8 @@ public class ClientRunnableHelperTest {
     @Test
     public void testHandleDeleteMessage() {
         Message message = MessageUtil.getValidDeleteBroadcastMessage();
-
         Message groupMessage = clientRunnableHelper.getCustomConstructedMessage(message);
+
         clientRunnableHelper.handleMessages(groupMessage);
 
     }
@@ -370,33 +394,28 @@ public class ClientRunnableHelperTest {
     }
 
     @Test
-    public void testCreateGroup() {
-        Message message = MessageUtil.getValidGroupCreateMessage();
-        Message groupCreateMessage = clientRunnableHelper.getCustomConstructedMessage(message);
-        clientRunnableHelper.handleMessages(groupCreateMessage);
+    public void testForwardMessageHappyPath() {
+
+        Message message = MessageUtil.getValidForwardMessage();
+
+        when(iQueryHandler.getMessage(anyLong())).thenReturn(MessageUtil.getValidMessage());
+        Message fwdMessage = clientRunnableHelper.getCustomConstructedMessage(message);
+
+        when(iQueryHandler.checkUserNameExists(anyString())).thenReturn(true);
+        when(iQueryHandler.storeMessage(anyString(), anyString(), any(), anyString()))
+                .thenReturn(1l);
+        clientRunnableHelper.handleMessages(fwdMessage);
     }
 
     @Test
-    public void testDeleteGroupByModerator() {
-        Message message = MessageUtil.getValidGroupDeleteMessage();
-        Message groupDeleteMessage = clientRunnableHelper.getCustomConstructedMessage(message);
-        when(iQueryHandler.isModerator(anyString(), anyString())).thenReturn(true);
-        clientRunnableHelper.handleMessages(groupDeleteMessage);
-    }
+    public void testForwardMessageToInvalidReceiver() {
 
-    @Test
-    public void testDeleteGroupByNonModerator() {
-        Message message = MessageUtil.getValidGroupDeleteMessage();
-        Message groupDeleteMessage = clientRunnableHelper.getCustomConstructedMessage(message);
-        when(iQueryHandler.isModerator(anyString(), anyString())).thenReturn(false);
-        clientRunnableHelper.handleMessages(groupDeleteMessage);
-    }
+        Message message = MessageUtil.getValidForwardMessage();
 
-    @Test
-    public void testCreateModerator() {
-        Message message = MessageUtil.getValidAddModeratorMessage();
-        Message addModeratorMessage = clientRunnableHelper.getCustomConstructedMessage(message);
+        when(iQueryHandler.getMessage(anyLong())).thenReturn(MessageUtil.getValidMessage());
+        Message fwdMessage = clientRunnableHelper.getCustomConstructedMessage(message);
 
-        clientRunnableHelper.handleMessages(addModeratorMessage);
+        when(iQueryHandler.checkUserNameExists(anyString())).thenReturn(false);
+        clientRunnableHelper.handleMessages(fwdMessage);
     }
 }
