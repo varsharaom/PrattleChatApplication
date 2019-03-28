@@ -68,6 +68,7 @@ public final class MessageConstants {
     
     /** The command to leave a group. */
     public static final String LEAVE_GROUP_IDENTIFIER = "LV_GRP";
+    public static final String REQUEST_GROUP_ADD_IDENTIFIER = "REQ_GRP_ADD_MMBR";
 
     /** An error message code for server responses. */
     public static final String ERROR_MSG_IDENTIFIER = "ERR";
@@ -114,6 +115,8 @@ public final class MessageConstants {
     
     /** The Constant LEAVE_GROUP_SUCCESS_MSG. */
     public static final String LEAVE_GROUP_SUCCESS_MSG = "Sucessfully left the group...";
+    public static final String REQUEST_GROUP_ADD_SUCCESS_MSG = "Add request sucessfully sent to" +
+            "all moderators of the group...";
 
 	//  ERROR MESSAGES
 	/** The Constant LOGIN_FAILURE_ERR. */
@@ -151,10 +154,14 @@ public final class MessageConstants {
     /** The Constant ADD_MMBR_INVALID_ERR. */
     public static final String ADD_MMBR_INVALID_ERR = OPERATION_UNSUCCESSFUL_ERR +
             "Only valid members can be added to the group.";
-    
+
+    /** The Constant INVALID_USER_ERR. */
+    public static final String INVALID_USER_ERR = OPERATION_UNSUCCESSFUL_ERR +
+            "Only valid members can be added to the group.";
+
     /** The Constant INVALID_GROUP_MEMBER_ERR. */
     public static final String INVALID_GROUP_MEMBER_ERR = OPERATION_UNSUCCESSFUL_ERR +
-            "Only group members can leave the group...";
+            "Only group perform the requested action...";
 
     /** The Constant ERROR_DELETE_INVALID_MSG_ID. */
     public static final String ERROR_DELETE_INVALID_MSG_ID = "Message ID entered is invalid." +

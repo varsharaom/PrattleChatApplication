@@ -99,19 +99,18 @@ public abstract class Prattle {
 	}
 
 	/**
-	 * Enqueue group message for the receiving user.
+	 * Enqueue group message for the receiving users.
 	 *
 	 * @param message the message
 	 * @param groupMemebers the group members
 	 */
-	static void sendGroupMessage(Message message, Set<String> groupMembers) {
+	static void sendMessageToMultipleUsers(Message message, Set<String> userNames) {
 		message.setMessageType(MessageType.BROADCAST);
 		for (ClientRunnable tt : active) {
-			if (tt.isInitialized() && (groupMembers.contains(message.getName()))) {
+			if (tt.isInitialized() && (userNames.contains(tt.getName()))) {
 				tt.enqueueMessage(message);
 			}
 		}
-
 	}
 
 	/**

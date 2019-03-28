@@ -6,9 +6,8 @@ import edu.northeastern.ccs.serverim.MessageType;
 import edu.northeastern.ccs.im.constants.MessageConstants;
 import edu.northeastern.ccs.im.persistence.IQueryHandler;
 import edu.northeastern.ccs.im.persistence.QueryFactory;
-import edu.northeastern.ccs.serverim.User;
 
-import javax.xml.ws.soap.MTOM;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -184,6 +183,42 @@ class ClientRunnableHelper {
         else if (actualAction.equals(MessageConstants.LEAVE_GROUP_IDENTIFIER)) {
             handleLeaveGroup(message.getName(), contents);
         }
+        else if (actualAction.equals(MessageConstants.REQUEST_GROUP_ADD_IDENTIFIER)) {
+            handleRequestGroupAdd(message.getName(), contents);
+        }
+
+    }
+
+    private void handleRequestGroupAdd(String senderName, String[] contents) {
+        String groupName = contents[1];
+        String toBeMember = contents[2];
+        String ackMessage;
+
+        if (queryHandler.isGroupMember(groupName, senderName)) {
+            if (queryHandler.checkUserNameExists(toBeMember)) {
+                ackMessage = MessageConstants.REQUEST_GROUP_ADD_SUCCESS_MSG;
+                publishRequestToModerators(groupName, senderName, toBeMember);
+            }
+            else {
+                ackMessage = MessageConstants.INVALID_USER_ERR;
+            }
+        }
+        else {
+            ackMessage = MessageConstants.INVALID_GROUP_MEMBER_ERR;
+        }
+
+        Message handshakeMessage = Message.makeAckMessage(MessageType.ACTION, senderName, ackMessage);
+        Prattle.sendAckMessage(handshakeMessage);
+    }
+
+    private void publishRequestToModerators(String groupName, String senderName, String toBeMember) {
+        List<String> moderators = queryHandler.getGroupModerators(groupName);
+        Set<String> moderatorSet = new HashSet<>(moderators);
+        String content = String.format("%s has requested to add %s to the group %s"
+                , senderName, toBeMember , groupName);
+
+        Message message = Message.makeBroadcastMessage(senderName, content);
+        Prattle.sendMessageToMultipleUsers(message, moderatorSet);
     }
 
     /**
@@ -218,13 +253,13 @@ class ClientRunnableHelper {
         String groupName = contents[2];
         String ackMessage;
 
-        if (queryHandler.isModerator(groupName, sender)) {
+        if (queryHandler.isModerator(sender, groupName)) {
             if (queryHandler.checkUserNameExists(member)) {
-                queryHandler.removeMember(groupName, member);
+                queryHandler.addGroupMember(groupName, member, 1);
                 ackMessage = MessageConstants.ADD_MMBR_SUCCESS_MSG;
             }
             else {
-                ackMessage = MessageConstants.ADD_MMBR_INVALID_ERR;
+                ackMessage = MessageConstants.INVALID_USER_ERR;
             }
         }
         else {
@@ -246,7 +281,7 @@ class ClientRunnableHelper {
         String groupName = contents[2];
         String ackMessage;
 
-        if (queryHandler.isModerator(groupName, sender)) {
+        if (queryHandler.isModerator(sender, groupName)) {
             if (queryHandler.isGroupMember(groupName, sender)) {
                 queryHandler.removeMember(groupName, member);
                 ackMessage = MessageConstants.RMV_MMBR_SUCCESS_MSG;
@@ -274,7 +309,7 @@ class ClientRunnableHelper {
         String groupName = contents[2];
         String ackMessage;
 
-        if (queryHandler.isModerator(groupName, sender)) {
+        if (queryHandler.isModerator(sender, groupName)) {
             if (queryHandler.isGroupMember(groupName, sender)) {
                 queryHandler.makeModerator(groupName, toBeModerator);
                 ackMessage = MessageConstants.ADD_MDRTR_SUCCESS_MSG;
@@ -427,7 +462,7 @@ class ClientRunnableHelper {
 
             message.setText(getPrependedMessageText(message.getText(), messageId));
             Set<String> groupMemberNames = queryHandler.getAllGroupMembers(groupName);
-            Prattle.sendGroupMessage(message, groupMemberNames);
+            Prattle.sendMessageToMultipleUsers(message, groupMemberNames);
         }
         else {
             Message errorMessage = Message.makeErrorMessage(message.getName(),

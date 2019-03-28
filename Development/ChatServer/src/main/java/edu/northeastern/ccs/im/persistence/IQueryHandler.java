@@ -301,7 +301,7 @@ public interface IQueryHandler {
      * @return the all group members
      */
     Set<String> getAllGroupMembers(String groupName);
-    
+
     // Circles
     public long addUserToCircle(String senderName, String receiverName);
 }
