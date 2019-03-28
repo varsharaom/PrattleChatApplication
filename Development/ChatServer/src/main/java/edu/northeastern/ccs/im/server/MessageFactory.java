@@ -115,7 +115,7 @@ public class MessageFactory {
         String receiver = arr[1];
         String actualContent = arr[2];
 
-        return Message.makeDirectMessage(sender, receiver, sender + " : " + actualContent);
+        return Message.makeDirectMessage(sender, receiver,  actualContent);
     }
 
     /**
