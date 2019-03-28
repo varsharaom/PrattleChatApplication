@@ -38,7 +38,9 @@ public class DBConstants {
     public static final String GROUP_INFO_GROUP_ID = "group_id";
     public static final String GROUP_INFO_USER_ID = "uid";
     public static final String GROUP_INFO_USER_ROLE = "role";
-    public static final int GROUP_INFO_ADMIN_ROLE_ID = 2;
+    public static final int GROUP_INFO_USER_ROLE_MEMBER = 1;
+    public static final int GROUP_INFO_USER_ROLE_ADMIN = 2;
+
 
     //CIRCLES
     public static final String CIRCLE_ID = "id";

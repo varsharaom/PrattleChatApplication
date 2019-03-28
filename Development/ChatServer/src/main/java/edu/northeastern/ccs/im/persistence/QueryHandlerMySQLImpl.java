@@ -343,17 +343,28 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
         String query = String.format("INSERT INTO %s (%s) values ('%s');",
                 DBConstants.GROUP_TABLE, DBConstants.GROUP_NAME, groupName);
         long groupId = doInsertQuery(query);
-        addGroupMember(sender, groupName, DBConstants.GROUP_INFO_ADMIN_ROLE_ID);
+        addGroupMember(sender, groupName, DBConstants.GROUP_INFO_USER_ROLE_ADMIN);
         return groupId;
     }
 
     @Override
     public void deleteGroup(String sender, String groupName) {
-        String query = String.format("DELETE FROM %s" +
+        String groupInfoDeleteQuery = String.format(
+                "DELETE FROM %s inner join %s on " +
+                        "%s.%s = %s.%s WHERE %s = \'%s\'",
+                DBConstants.GROUP_INFO_TABLE, DBConstants.GROUP_TABLE,
+                DBConstants.GROUP_INFO_TABLE, DBConstants.GROUP_INFO_GROUP_ID,
+                DBConstants.GROUP_TABLE, DBConstants.GROUP_ID,
+                DBConstants.GROUP_NAME, groupName);
+        String groupDeleteQuery = String.format("DELETE FROM %s" +
                         "WHERE %s = '%s' AND %s > 0;",
                 DBConstants.GROUP_TABLE, DBConstants.GROUP_NAME, groupName,
                 DBConstants.GROUP_ID);
-        doUpdateQuery(query);
+
+        //delete entries from group info
+        doUpdateQuery(groupInfoDeleteQuery);
+        //delete group
+        doUpdateQuery(groupDeleteQuery);
     }
 
     @Override
@@ -374,7 +385,7 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
         } catch (SQLException e) {
             logger.log(Level.INFO, SQL_EXCEPTION_MSG);
         }
-        return role == DBConstants.GROUP_INFO_ADMIN_ROLE_ID;
+        return role == DBConstants.GROUP_INFO_USER_ROLE_ADMIN;
     }
 
     @Override
@@ -400,7 +411,7 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
     public void makeModerator(String groupName, String toBeModerator) {
         String query = String.format("UPDATE %s as gi SET %s = %d\n" +
                         "where gi.%s = %d AND gi.%s = %s AND gi.%s > 0;",
-                DBConstants.GROUP_INFO_TABLE, DBConstants.GROUP_INFO_USER_ROLE, DBConstants.GROUP_INFO_ADMIN_ROLE_ID,
+                DBConstants.GROUP_INFO_TABLE, DBConstants.GROUP_INFO_USER_ROLE, DBConstants.GROUP_INFO_USER_ROLE_ADMIN,
                 DBConstants.GROUP_INFO_GROUP_ID, getGroupID(groupName),
                 DBConstants.GROUP_INFO_USER_ID, getUserID(toBeModerator), DBConstants.GROUP_INFO_ID);
         doUpdateQuery(query);
