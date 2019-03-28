@@ -47,10 +47,6 @@ public interface IQueryHandler {
     
     public List<String> getGroupModerators(String name);
     
-    public long createGroup(String name);
-    
-    public long deleteGroup(String name);
-    
     public long addGroupMember(String userName, String groupName, int role);
     
     public long removeGroupMember(String userName, String groupName);
