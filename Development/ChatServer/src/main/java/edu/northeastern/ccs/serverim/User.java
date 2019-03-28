@@ -12,13 +12,15 @@ public class User {
     private final String nickName;
     private Set<User> connections;
     private long lastSeen;
+    private int invisible;
 
-    public User(Long userID, String userName, String nickName, long time) {
+    public User(Long userID, String userName, String nickName, long time, int invisible) {
         this.userID = userID;
         this.userName = userName;
         this.nickName = nickName;
         this.connections = new HashSet<>();
         this.lastSeen = time;
+        this.invisible = invisible;
     }
 
     public Long getUserID() {
