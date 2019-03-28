@@ -11,6 +11,13 @@ import java.util.*;
 public class MessageFactory {
 
 
+    /**
+     * Creates a new Message object.
+     *
+     * @param clientMessage the message received from the client
+     * @param queryHandler the query handler
+     * @return the message
+     */
     public static Message createMessage(Message clientMessage, IQueryHandler queryHandler) {
 
         Message message;
@@ -46,6 +53,13 @@ public class MessageFactory {
         return  message;
     }
 
+    /**
+     * Construct an action message.
+     *
+     * @param type the type
+     * @param restOfMessageText the rest of message text
+     * @return the message
+     */
     private static Message constructActionMessage(String type, String restOfMessageText) {
 
         String[] contents = restOfMessageText.split(" ");
@@ -56,6 +70,12 @@ public class MessageFactory {
         return Message.makeActionMessage(sender, actionContent);
     }
 
+    /**
+     * Construct a custom delete message.
+     *
+     * @param restOfMessageText the rest of message text
+     * @return the message
+     */
     private static Message constructCustomDeleteMessage(String restOfMessageText) {
         String[] arr = restOfMessageText.split(" ", 3);
 
@@ -121,6 +141,13 @@ public class MessageFactory {
         return Message.makeGroupMessage(sender, groupName, actualContent);
     }
 
+    /**
+     * Construct a custom get info message.
+     *
+     * @param restOfMessageText the rest of message text
+     * @param queryHandler the query handler
+     * @return the message
+     */
     private static Message constructCustomGetInfoMessage(String restOfMessageText, IQueryHandler queryHandler) {
         String[] content = restOfMessageText.split(" ", 2 );
         String commandType  = content[0];
@@ -131,6 +158,13 @@ public class MessageFactory {
         return Message.makeGetInfoMessage(sender, sender, result);
     }
 
+    /**
+     * Construct a custom forward message.
+     *
+     * @param restOfMessagetext the rest of messagetext
+     * @param queryHandler the query handler
+     * @return the message
+     */
     private static Message constructCustomForwardMessage (String restOfMessagetext, IQueryHandler queryHandler) {
         String[] content = restOfMessagetext.split(" ");
         String receiver = content[0];
@@ -146,6 +180,14 @@ public class MessageFactory {
         return Message.makeDirectMessage(sender, receiver, text);
     }
 
+    /**
+     * Handle get info command query calls.
+     *
+     * @param senderName the sender name
+     * @param commandType the command type
+     * @param queryHandler the query handler
+     * @return the requested info results
+     */
     private static String getInfo(String senderName, String commandType, IQueryHandler queryHandler) {
 
         String info = null;
@@ -171,6 +213,13 @@ public class MessageFactory {
         return info;
     }
 
+    /**
+     * Handle get users.
+     *
+     * @param consoleInfo the console info
+     * @param users the users
+     * @return the string with concatenated user names
+     */
     private static String handleGetUsers(String consoleInfo, List<User> users) {
 
         StringBuilder sb = new StringBuilder();
@@ -181,6 +230,13 @@ public class MessageFactory {
         return sb.toString();
     }
 
+    /**
+     * Handle get groups.
+     *
+     * @param consoleInfo the console info
+     * @param groups the groups
+     * @return the string with concatenated group names
+     */
     private static String handleGetGroups(String consoleInfo, List<Group> groups) {
         StringBuilder sb = new StringBuilder();
         sb.append(consoleInfo + "\n");
@@ -197,7 +253,7 @@ public class MessageFactory {
     private static String getType(String s) {
         String messageTypeAsString = "";
         if(s.length() > 2) {
-//            removing $$ at the beginning and # at the end
+        		// removing $$ at the beginning and # at the end
             messageTypeAsString = s.substring(2, s.length()-1);
         }
         return messageTypeAsString;
