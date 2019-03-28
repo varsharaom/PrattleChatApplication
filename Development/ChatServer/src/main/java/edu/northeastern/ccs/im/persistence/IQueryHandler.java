@@ -8,6 +8,7 @@ import edu.northeastern.ccs.serverim.User;
 import java.util.List;
 import java.util.Set;
 
+// TODO: Auto-generated Javadoc
 /**
  * The Interface IQueryHandler.
  */
@@ -17,7 +18,7 @@ public interface IQueryHandler {
      * Creates the user.
      *
      * @param userName the user name
-     * @param pass the password
+     * @param pass the pass
      * @param nickName the nick name
      * @return the user
      */
@@ -28,29 +29,18 @@ public interface IQueryHandler {
      * Update user last login.
      *
      * @param userID the user ID
-     * @return the user id for the record in the users table
+     * @return the int
      */
     public int updateUserLastLogin(long userID);
 
     /**
-     * Validate login with username and password.
+     * Validate login.
      *
      * @param username the username
      * @param password the password
-     * @return the user id if the given username and password match, else -1
+     * @return the long
      */
     public long validateLogin(String username, String password);
-
-    /**
-     * Store message.
-     *
-     * @param senderName the sender name
-     * @param receiverName the receiver name
-     * @param type the message type
-     * @param msgText the message text
-     * @return the message id
-     */
-    public void updateUserVisibility(String userName, Boolean makeInVisible);
 
     /**
      * Store message.
@@ -64,6 +54,12 @@ public interface IQueryHandler {
     //Message Queries
     public long storeMessage(String senderName, String receiverName, MessageType type, String msgText);
   
+    /**
+     * Update user visibility.
+     *
+     * @param userName the user name
+     * @param makeInVisible the make in visible
+     */
     public void updateUserVisibility(String userName, Boolean makeInVisible);
     
     /**
@@ -90,7 +86,7 @@ public interface IQueryHandler {
     public List<Message> getMessagesSinceLastLogin(long userID);
 
     /**
-     * Check if user name exists.
+     * Check user name exists.
      *
      * @param name the name
      * @return true, if successful
@@ -105,7 +101,7 @@ public interface IQueryHandler {
     public List<User> getAllUsers();
 
     /**
-     * Gets the users in the circle of the requesting user.
+     * Gets the my users.
      *
      * @param senderName the sender name
      * @return the my users
@@ -113,7 +109,7 @@ public interface IQueryHandler {
     public List<User> getMyUsers(String senderName);
 
     /**
-     * Gets the user name from the user ID.
+     * Gets the user name.
      *
      * @param userID the user ID
      * @return the user name
@@ -121,7 +117,7 @@ public interface IQueryHandler {
     public String getUserName(long userID);
 
     /**
-     * Gets the user ID from the user name.
+     * Gets the user ID.
      *
      * @param userName the user name
      * @return the user ID
@@ -129,7 +125,7 @@ public interface IQueryHandler {
     public long getUserID(String userName);
     
     /**
-     * Check if group name exists.
+     * Check group name exists.
      *
      * @param groupName the group name
      * @return true, if successful
@@ -145,7 +141,7 @@ public interface IQueryHandler {
     public List<Group> getAllGroups();
 
     /**
-     * Gets all the groups a user is a member of.
+     * Gets the my groups.
      *
      * @param senderName the sender name
      * @return the my groups
@@ -153,7 +149,7 @@ public interface IQueryHandler {
     public  List<Group> getMyGroups(String senderName);
     
     /**
-     * Gets all the members of a group.
+     * Gets the group members.
      *
      * @param name the name
      * @return the group members
@@ -169,7 +165,7 @@ public interface IQueryHandler {
     public List<String> getGroupModerators(String name);
         
     /**
-     * Add a group member.
+     * Adds the group member.
      *
      * @param userName the user name
      * @param groupName the group name
@@ -179,7 +175,7 @@ public interface IQueryHandler {
     public long addGroupMember(String userName, String groupName, int role);
     
     /**
-     * Remove a group member.
+     * Removes the group member.
      *
      * @param userName the user name
      * @param groupName the group name
@@ -188,7 +184,7 @@ public interface IQueryHandler {
     public long removeGroupMember(String userName, String groupName);
     
     /**
-     * Change a group member's role.
+     * Change member role.
      *
      * @param userId the user id
      * @param groupId the group id
@@ -197,7 +193,7 @@ public interface IQueryHandler {
     public void changeMemberRole(long userId, long groupId, int role);
     
     /**
-     * Gets the group ID from group name.
+     * Gets the group ID.
      *
      * @param groupName the group name
      * @return the group ID
@@ -205,7 +201,7 @@ public interface IQueryHandler {
     public long getGroupID(String groupName);
     
     /**
-     * Gets the group name from group ID.
+     * Gets the group name.
      *
      * @param groupID the group ID
      * @return the group name
@@ -213,9 +209,9 @@ public interface IQueryHandler {
     public String getGroupName(long groupID);
     
     /**
-     * Gets the messages sent by a user.
+     * Gets the messages sent by user.
      *
-     * @param id the user id
+     * @param id the id
      * @param type the type
      * @return the messages sent by user
      */
@@ -223,7 +219,7 @@ public interface IQueryHandler {
     public List<Message> getMessagesSentByUser(long id, MessageType type);
     
     /**
-     * Gets the messages sent to a user.
+     * Gets the messages sent to user.
      *
      * @param id the id
      * @param type the type
@@ -232,7 +228,7 @@ public interface IQueryHandler {
     public List<Message> getMessagesSentToUser(long id, MessageType type);
     
     /**
-     * Gets the messages from user chat between two users.
+     * Gets the messages from user chat.
      *
      * @param senderId the sender id
      * @param receiverId the receiver id
@@ -241,16 +237,16 @@ public interface IQueryHandler {
     public List<Message> getMessagesFromUserChat(long senderId, long receiverId);
 
     /**
-     * Create a group.
+     * Creates the group.
      *
      * @param sender the sender
      * @param groupName the group name
-     * @return the group id
+     * @return the long
      */
     long createGroup(String sender, String groupName);
 
     /**
-     * Delete a group.
+     * Delete group.
      *
      * @param sender the sender
      * @param groupName the group name
@@ -258,7 +254,7 @@ public interface IQueryHandler {
     void deleteGroup(String sender, String groupName);
 
     /**
-     * Checks if a user is moderator for a group.
+     * Checks if is moderator.
      *
      * @param sender the sender
      * @param groupName the group name
@@ -267,7 +263,7 @@ public interface IQueryHandler {
     boolean isModerator(String sender, String groupName);
 
     /**
-     * Checks if a user is a member of a group.
+     * Checks if is group member.
      *
      * @param groupName the group name
      * @param sender the sender
@@ -276,7 +272,7 @@ public interface IQueryHandler {
     boolean isGroupMember(String groupName, String sender);
 
     /**
-     * Make a user the moderator of a group.
+     * Make moderator.
      *
      * @param groupName the group name
      * @param toBeModerator the to be moderator
@@ -284,7 +280,7 @@ public interface IQueryHandler {
     void makeModerator(String groupName, String toBeModerator);
 
     /**
-     * Removes a user from a group.
+     * Removes the member.
      *
      * @param groupName the group name
      * @param member the member
