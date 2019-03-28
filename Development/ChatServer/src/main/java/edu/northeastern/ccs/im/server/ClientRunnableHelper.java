@@ -163,8 +163,8 @@ class ClientRunnableHelper {
     }
 
     private void handleRequestGroupAdd(String senderName, String[] contents) {
-        String groupName = contents[1];
-        String toBeMember = contents[2];
+        String toBeMember = contents[1];
+        String groupName = contents[2];
         String ackMessage;
 
         if (queryHandler.isGroupMember(groupName, senderName)) {
@@ -216,7 +216,7 @@ class ClientRunnableHelper {
 
         if (queryHandler.isModerator(sender, groupName)) {
             if (queryHandler.checkUserNameExists(member)) {
-                queryHandler.addGroupMember(groupName, member, 1);
+                queryHandler.addGroupMember(member, groupName, 1);
                 ackMessage = MessageConstants.ADD_MMBR_SUCCESS_MSG;
             }
             else {

@@ -27,7 +27,7 @@ public final class MessageConstants {
     public static final String GROUP_REMOVE_MEMBER_IDENTIFIER = "GRP_RMV_MMBR";
     public static final String GROUP_ADD_MEMBER_IDENTIFIER = "GRP_ADD_MMBR";
     public static final String LEAVE_GROUP_IDENTIFIER = "LV_GRP";
-    public static final String REQUEST_GROUP_ADD_IDENTIFIER = "REQ_GRP_ADD_MMBR";
+    public static final String REQUEST_GROUP_ADD_IDENTIFIER = "GRP_REQ";
 
     public static final String ERROR_MSG_IDENTIFIER = "ERR";
 

@@ -285,6 +285,7 @@ public class ClientRunnable implements Runnable {
     /**
      * Terminate a client that we wish to remove. This termination could happen at
      * the client's request or due to system need.
+     * the client's request or due to system need.
      */
     public void terminateClient() {
         // Once the communication is done, close this connection.
