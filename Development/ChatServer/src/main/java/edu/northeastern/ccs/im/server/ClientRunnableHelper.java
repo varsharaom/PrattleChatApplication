@@ -195,7 +195,7 @@ class ClientRunnableHelper {
     }
 
     private void handleLeaveGroup(String sender, String[] contents) {
-        String groupName = contents[0];
+        String groupName = contents[1];
         String ackMessage;
 
         if (queryHandler.isGroupMember(groupName, sender)) {
