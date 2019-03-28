@@ -54,6 +54,7 @@ public final class MessageConstants {
             "all moderators of the group...";
 
 //    ERROR MESSAGES
+    public static final String OP_UNSUCCESSFUL = "Operation unsucessful... ";
     public static final String LOGIN_FAILURE_ERR = "Your credentials mismatch...";
     public static final String REGISTER_FAILURE_ERR = "Invalid credentials.." +
             "Please try with new user information.";
@@ -66,12 +67,16 @@ public final class MessageConstants {
     public static final String EMPTY_MESSAGE_ERR = "Message Content is empty...";
     public static final String ADD_MDRTR_INVALID_ERR = "Operation unsuccessful." +
             "Only group members can be made as moderator...";
-    public static final String RMV_MMBR_INVALID_ERR = "Operation unsuccessful. " +
+    public static final String RMV_MMBR_INVALID_ERR = OP_UNSUCCESSFUL +
             "Only group members can be removed.";
-    public static final String INVALID_USER_ERR = "Operation unsuccessful. " +
+    public static final String INVALID_USER_ERR = OP_UNSUCCESSFUL +
             "Only valid members can be added to the group.";
-    public static final String INVALID_GROUP_MEMBER_ERR = "Operation unsuccessful. " +
+    public static final String INVALID_GROUP_MEMBER_ERR = OP_UNSUCCESSFUL +
             "Only group perform the requested action...";
+    public static final String INVALID_ACTION_TYPE_ERR = OP_UNSUCCESSFUL +
+            "Invalid Action type. Please retry with a valid one.";
+    public static final String INVALID_GROUP_INFO_ERR = OP_UNSUCCESSFUL +
+            "Invalid get info command. Please retry with a valid command... ";
 
     public static final String ERROR_DELETE_INVALID_MSG_ID = "Message ID entered is invalid." +
             "Please try with a valid message ID";

@@ -19,37 +19,26 @@ public class MessageFactory {
             String type = getType(arr[0]);
             String restOfMessageText = arr[1];
 
-            switch(type) {
-                case MessageConstants.REGISTER_MSG_IDENTIFIER:
+            if(type.equals(MessageConstants.REGISTER_MSG_IDENTIFIER))
                     message = constructCustomRegisterMessage(restOfMessageText);
-                    break;
-                case MessageConstants.DIRECT_MSG_IDENTIFIER:
-                    message = constructCustomDirectMessage(restOfMessageText);
-                    break;
-                case MessageConstants.LOGIN_MSG_IDENTIFIER:
-                    message = constructCustomLoginMessage(restOfMessageText);
-                    break;
-                case MessageConstants.GROUP_MSG_IDENTIFIER:
-                    message = constructCustomGroupMessage(restOfMessageText);
-                    break;
-                case MessageConstants.DELETE_MESSAGE_IDENTIFIER:
-                    message = constructCustomDeleteMessage(restOfMessageText);
-                    break;
-                case MessageConstants.GET_INFO_IDENTIFIER:
-                    message = constructCustomGetInfoMessage(restOfMessageText, queryHandler);
-                    break;
-                case MessageConstants.FORWARD_MSG_IDENTIFIER:
-                    message = constructCustomForwardMessage(restOfMessageText, queryHandler);
-                    break;
-                case MessageConstants.ACTION_MSG_IDENTIFIER:
-                    message = constructActionMessage(type, restOfMessageText);
-                    break;
-                default:
-                    message = Message.makeErrorMessage(clientMessage.getName(),
-                            MessageConstants.UNKNOWN_MESSAGE_TYPE_ERR);
-                    break;
+            else if (type.equals(MessageConstants.DIRECT_MSG_IDENTIFIER))
+                message = constructCustomDirectMessage(restOfMessageText);
+            else if (type.equals(MessageConstants.LOGIN_MSG_IDENTIFIER))
+                message = constructCustomLoginMessage(restOfMessageText);
+            else if (type.equals(MessageConstants.GROUP_MSG_IDENTIFIER))
+                message = constructCustomGroupMessage(restOfMessageText);
+            else if (type.equals(MessageConstants.DELETE_MESSAGE_IDENTIFIER))
+                message = constructCustomDeleteMessage(restOfMessageText);
+            else if (type.equals(MessageConstants.GET_INFO_IDENTIFIER))
+                message = constructCustomGetInfoMessage(restOfMessageText, queryHandler);
+            else if (type.equals(MessageConstants.FORWARD_MSG_IDENTIFIER))
+                message = constructCustomForwardMessage(restOfMessageText, queryHandler);
+            else if (type.equals(MessageConstants.ACTION_MSG_IDENTIFIER))
+                message = constructActionMessage(type, restOfMessageText);
+            else
+                message = Message.makeErrorMessage(clientMessage.getName(),
+                        MessageConstants.UNKNOWN_MESSAGE_TYPE_ERR);
             }
-        }
         else {
             message = Message.makeErrorMessage(clientMessage.getName(),
                     MessageConstants.EMPTY_MESSAGE_ERR);
@@ -177,7 +166,7 @@ public class MessageFactory {
             info = handleGetGroups(MessageConstants.GET_MY_GROUPS_CONSOLE_INFO, groups);
         }
         else{
-//            TODO - an error message saying type of info is wrong
+            return MessageConstants.INVALID_GROUP_INFO_ERR;
         }
         return info;
     }

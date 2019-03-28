@@ -123,11 +123,8 @@ class ClientRunnableHelper {
         if(msg.isDirectMessage()) {
             handleDirectMessages(msg);
         }
-        else if (msg.isGroupMessage()) {
-            handleGroupMessages(msg);
-        }
         else {
-            handleForwardMessages(msg);
+            handleGroupMessages(msg);
         }
     }
 
@@ -138,6 +135,7 @@ class ClientRunnableHelper {
     private void handleActionMessages(Message message) {
         String[] contents = message.getText().split(" ");
         String actualAction = contents[0];
+
         if (actualAction.equals(MessageConstants.GROUP_CREATE_IDENTIFIER)) {
             handleCreateGroup(message.getName(), contents);
         }
@@ -160,6 +158,12 @@ class ClientRunnableHelper {
             handleRequestGroupAdd(message.getName(), contents);
         }
 
+        else {
+            Message errorMessage = Message.makeErrorMessage(message.getName()
+                    , MessageConstants.INVALID_ACTION_TYPE_ERR);
+            Prattle.sendErrorMessage(errorMessage);
+        }
+
     }
 
     private void handleRequestGroupAdd(String senderName, String[] contents) {
@@ -168,13 +172,7 @@ class ClientRunnableHelper {
         String ackMessage;
 
         if (queryHandler.isGroupMember(groupName, senderName)) {
-            if (queryHandler.checkUserNameExists(toBeMember)) {
-                ackMessage = MessageConstants.REQUEST_GROUP_ADD_SUCCESS_MSG;
-                publishRequestToModerators(groupName, senderName, toBeMember);
-            }
-            else {
-                ackMessage = MessageConstants.INVALID_USER_ERR;
-            }
+            ackMessage = requestGroupAddByGroupMember(groupName, senderName, toBeMember);
         }
         else {
             ackMessage = MessageConstants.INVALID_GROUP_MEMBER_ERR;
@@ -182,6 +180,18 @@ class ClientRunnableHelper {
 
         Message handshakeMessage = Message.makeAckMessage(MessageType.ACTION, senderName, ackMessage);
         Prattle.sendAckMessage(handshakeMessage);
+    }
+
+    private String requestGroupAddByGroupMember(String groupName, String senderName, String toBeMember) {
+        String ackMessage;
+        if (queryHandler.checkUserNameExists(toBeMember)) {
+            ackMessage = MessageConstants.REQUEST_GROUP_ADD_SUCCESS_MSG;
+            publishRequestToModerators(groupName, senderName, toBeMember);
+        }
+        else {
+            ackMessage = MessageConstants.INVALID_USER_ERR;
+        }
+        return ackMessage;
     }
 
     private void publishRequestToModerators(String groupName, String senderName, String toBeMember) {
@@ -215,13 +225,7 @@ class ClientRunnableHelper {
         String ackMessage;
 
         if (queryHandler.isModerator(sender, groupName)) {
-            if (queryHandler.checkUserNameExists(member)) {
-                queryHandler.addGroupMember(member, groupName, 1);
-                ackMessage = MessageConstants.ADD_MMBR_SUCCESS_MSG;
-            }
-            else {
-                ackMessage = MessageConstants.INVALID_USER_ERR;
-            }
+            ackMessage = addMemberByModerator(groupName, sender, member);
         }
         else {
             ackMessage = MessageConstants.INVALID_MODERATOR_ERR;
@@ -229,6 +233,18 @@ class ClientRunnableHelper {
 
         Message message = Message.makeAckMessage(MessageType.ACTION, sender, ackMessage);
         Prattle.sendAckMessage(message);
+    }
+
+    private String addMemberByModerator(String groupName, String sender, String member) {
+        String ackMessage;
+        if (queryHandler.checkUserNameExists(member)) {
+            queryHandler.addGroupMember(member, groupName, 1);
+            ackMessage = MessageConstants.ADD_MMBR_SUCCESS_MSG;
+        }
+        else {
+            ackMessage = MessageConstants.INVALID_USER_ERR;
+        }
+        return ackMessage;
     }
 
     private void handleRemoveMember(String sender, String[] contents) {
@@ -237,13 +253,7 @@ class ClientRunnableHelper {
         String ackMessage;
 
         if (queryHandler.isModerator(sender, groupName)) {
-            if (queryHandler.isGroupMember(groupName, sender)) {
-                queryHandler.removeMember(groupName, member);
-                ackMessage = MessageConstants.RMV_MMBR_SUCCESS_MSG;
-            }
-            else {
-                ackMessage = MessageConstants.RMV_MMBR_INVALID_ERR;
-            }
+            ackMessage = removeMemberByModerator(groupName, sender, member);
         }
         else {
             ackMessage = MessageConstants.INVALID_MODERATOR_ERR;
@@ -251,6 +261,18 @@ class ClientRunnableHelper {
 
         Message message = Message.makeAckMessage(MessageType.ACTION, sender, ackMessage);
         Prattle.sendAckMessage(message);
+    }
+
+    private String removeMemberByModerator(String groupName, String sender, String member) {
+        String ackMessage;
+        if (queryHandler.isGroupMember(groupName, sender)) {
+            queryHandler.removeMember(groupName, member);
+            ackMessage = MessageConstants.RMV_MMBR_SUCCESS_MSG;
+        }
+        else {
+            ackMessage = MessageConstants.RMV_MMBR_INVALID_ERR;
+        }
+        return ackMessage;
     }
 
     private void handleCreateModerator(String sender, String[] contents) {
@@ -259,13 +281,7 @@ class ClientRunnableHelper {
         String ackMessage;
 
         if (queryHandler.isModerator(sender, groupName)) {
-            if (queryHandler.isGroupMember(groupName, sender)) {
-                queryHandler.makeModerator(groupName, toBeModerator);
-                ackMessage = MessageConstants.ADD_MDRTR_SUCCESS_MSG;
-            }
-            else {
-                ackMessage = MessageConstants.ADD_MDRTR_INVALID_ERR;
-            }
+            ackMessage = createModeratorByModerator(groupName, sender, toBeModerator);
         }
         else {
             ackMessage = MessageConstants.INVALID_MODERATOR_ERR;
@@ -274,6 +290,19 @@ class ClientRunnableHelper {
         Message message = Message.makeAckMessage(MessageType.ACTION, sender, ackMessage);
         Prattle.sendAckMessage(message);
     }
+
+    private String createModeratorByModerator(String groupName, String sender, String toBeModerator) {
+        String ackMessage;
+        if (queryHandler.isGroupMember(groupName, sender)) {
+            queryHandler.makeModerator(groupName, toBeModerator);
+            ackMessage = MessageConstants.ADD_MDRTR_SUCCESS_MSG;
+        }
+        else {
+            ackMessage = MessageConstants.ADD_MDRTR_INVALID_ERR;
+        }
+        return ackMessage;
+    }
+
 
     private void handleDeleteGroup (String sender, String[] contents) {
         String groupName = contents[1];
@@ -401,28 +430,6 @@ class ClientRunnableHelper {
                     MessageConstants.INVALID_GROUP_RECEIVER_MSG);
             Prattle.sendErrorMessage(errorMessage);
         }
-    }
-
-    private void handleForwardMessages(Message message) {
-        if (isUserPresent(message.getMsgReceiver())) {
-            long messageId = queryHandler.storeMessage(message.getName(), message.getMsgReceiver(),
-                    message.getMessageType(),
-                    getForwardMessageText(message));
-
-            message.setText(getPrependedMessageText(message.getText(), messageId));
-            Prattle.sendDirectMessage(message);
-        }
-        else {
-            Message errorMessage = Message.makeErrorMessage(message.getName(),
-                    MessageConstants.INVALID_DIRECT_RECEIVER_MSG);
-            Prattle.sendErrorMessage(errorMessage);
-        }
-    }
-
-    private String getForwardMessageText(Message message) {
-        StringBuilder sb = new StringBuilder(message.getText());
-        sb.append(" <<< FORWARDED MESSAGE >>> ");
-        return sb.toString();
     }
 
     /**

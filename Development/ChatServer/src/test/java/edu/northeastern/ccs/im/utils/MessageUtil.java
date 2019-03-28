@@ -23,28 +23,32 @@ public final class MessageUtil {
     }
 
     public static Message getValidDirectBroadcastMessage() {
-        return Message.makeBroadcastMessage(SIMPLE_USER,
-                getValidDirectMessageText());
+        return Message.makeBroadcastMessage(SIMPLE_USER, getValidDirectMessageText());
     }
     
     public static Message getValidGetUsersMessage() {
-        return Message.makeBroadcastMessage(SIMPLE_USER,
-        		getValidGetUsersMessageText());
+        return Message.makeBroadcastMessage(SIMPLE_USER, getValidGetUsersMessageText());
     }
 
     public static Message getValidGetMyUsersMessage() {
-        return Message.makeBroadcastMessage(SIMPLE_USER,
-                getValidGetMyUsersMessageText());
+        return Message.makeBroadcastMessage(SIMPLE_USER, getValidGetMyUsersMessageText());
     }
 
     public static Message getValidGetGroupsMessage() {
-        return Message.makeBroadcastMessage(SIMPLE_USER,
-                getValidGetGroupsMessageText());
+        return Message.makeBroadcastMessage(SIMPLE_USER, getValidGetGroupsMessageText());
     }
 
     public static Message getValidGetMyGroupsMessage() {
-        return Message.makeBroadcastMessage(SIMPLE_USER,
-                getValidGetMyGroupsMessageText());
+        return Message.makeBroadcastMessage(SIMPLE_USER, getValidGetMyGroupsMessageText());
+    }
+    public static Message getInvalidGetInfoMessage() {
+        return Message.makeBroadcastMessage(SIMPLE_USER, getInvalidGetInfoMessageText());
+    }
+
+    private static String getInvalidGetInfoMessageText() {
+        return CUSTOM_COMMAND_PREFIX + GET_INFO_IDENTIFIER
+                + CUSTOM_COMMAND_SUFFIX + " " + " INVALID_IDENTIFIER "
+                + " senderName";
     }
 
     public static Message getValidDirectBroadcastMessageDifferentUser() {
@@ -74,11 +78,6 @@ public final class MessageUtil {
     public static Message getInvalidMessageWithInvalidType() {
         return Message.makeBroadcastMessage(SIMPLE_USER,
                 getInvalidTypeMessageText());
-    }
-
-    public static Message getValidDeleteMessage() {
-        return Message.makeBroadcastMessage(SIMPLE_USER,
-                getValidDeleteMessageText());
     }
 
     public static Message getValidForwardMessage() {
@@ -113,6 +112,24 @@ public final class MessageUtil {
     public static Message getValidRequestGroupAddMessage() {
         return Message.makeBroadcastMessage(SIMPLE_USER, getValidRequestGroupAddMessageText());
     }
+
+    public static Message getValidMessage() {
+        return Message.makeBroadcastMessage(SIMPLE_USER, getValidMessageText());
+    }
+
+    public static Message getInvalidActionTypeMessage() {
+        return Message.makeBroadcastMessage(SIMPLE_USER, getInvalidActionMessageText());
+    }
+
+    private static String getInvalidActionMessageText() {
+        return CUSTOM_COMMAND_PREFIX + ACTION_MSG_IDENTIFIER + CUSTOM_COMMAND_SUFFIX
+                + " " + "INVALID_ACTION_TYPE" + " groupName toBeMember senderName";
+    }
+
+    private static String getValidMessageText() {
+        return "This is a plain valid message";
+    }
+
 
     private static String getValidRequestGroupAddMessageText() {
         return CUSTOM_COMMAND_PREFIX + ACTION_MSG_IDENTIFIER + CUSTOM_COMMAND_SUFFIX
@@ -151,7 +168,7 @@ public final class MessageUtil {
 
     private static String getValidForwardMessageText() {
         return CUSTOM_COMMAND_PREFIX + FORWARD_MSG_IDENTIFIER + CUSTOM_COMMAND_SUFFIX
-                + " sender receiver 123";
+                + " receiver 123 sender";
     }
 
     private static String getInvalidTypeMessageText() {
@@ -242,4 +259,5 @@ public final class MessageUtil {
     private MessageUtil() {
 
     }
+    
 }
