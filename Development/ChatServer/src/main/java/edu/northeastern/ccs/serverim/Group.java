@@ -3,7 +3,6 @@ package edu.northeastern.ccs.serverim;
 import java.util.HashSet;
 import java.util.Set;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class Group.
  */

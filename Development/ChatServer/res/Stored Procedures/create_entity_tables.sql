@@ -18,7 +18,8 @@ create table circles (
 
 create table groups (
 	id INTEGER PRIMARY KEY NOT NULL auto_increment,
-    name VARCHAR(40)
+    name VARCHAR(40),
+    isPrivate INTEGER DEFAULT 0
 );
 
 create table group_info (
