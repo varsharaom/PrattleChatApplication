@@ -78,7 +78,9 @@ public class DBConstants {
     
     /** The role field in group_info table. */
     public static final String GROUP_INFO_USER_ROLE = "role";
-    public static final int GROUP_INFO_ADMIN_ROLE_ID = 2;
+    public static final int GROUP_INFO_USER_ROLE_MEMBER = 1;
+    public static final int GROUP_INFO_USER_ROLE_ADMIN = 2;
+
 
     // CIRCLES
     /** The id field in the circles table. */

@@ -179,7 +179,6 @@ public final class MessageConstants {
     public static final String INVALID_MODERATOR_ERR = OPERATION_UNSUCCESSFUL_ERR +
             "Only moderators are permitted to perform this action.";
 
-
     /**
      * Private constructor for class with static methods.
      */

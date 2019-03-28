@@ -186,9 +186,14 @@ class ClientRunnableHelper {
         else if (actualAction.equals(MessageConstants.REQUEST_GROUP_ADD_IDENTIFIER)) {
             handleRequestGroupAdd(message.getName(), contents);
         }
-
     }
 
+    /**
+     * Handle leave group message.
+     *
+     * @param sender the sender
+     * @param contents the contents
+     */
     private void handleRequestGroupAdd(String senderName, String[] contents) {
         String groupName = contents[1];
         String toBeMember = contents[2];
@@ -211,6 +216,13 @@ class ClientRunnableHelper {
         Prattle.sendAckMessage(handshakeMessage);
     }
 
+    /**
+     * Publish request to moderators.
+     *
+     * @param groupName the group name
+     * @param senderName the sender name
+     * @param toBeMember the to be member
+     */
     private void publishRequestToModerators(String groupName, String senderName, String toBeMember) {
         List<String> moderators = queryHandler.getGroupModerators(groupName);
         Set<String> moderatorSet = new HashSet<>(moderators);
@@ -222,13 +234,13 @@ class ClientRunnableHelper {
     }
 
     /**
-     * Handle leave group message.
+     * Handle leave group.
      *
      * @param sender the sender
-     * @param contents the contents
+     * @param contents the contents of the leave group message 
      */
     private void handleLeaveGroup(String sender, String[] contents) {
-        String groupName = contents[0];
+        String groupName = contents[1];
         String ackMessage;
 
         if (queryHandler.isGroupMember(groupName, sender)) {
@@ -246,7 +258,7 @@ class ClientRunnableHelper {
      * Handle add member message.
      *
      * @param sender the sender
-     * @param contents the contents
+     * @param contents the contents of the add member message
      */
     private void handleAddMember(String sender, String[] contents) {
         String member = contents[1];
