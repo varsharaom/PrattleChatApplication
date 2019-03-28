@@ -6,6 +6,7 @@ import edu.northeastern.ccs.serverim.MessageType;
 import edu.northeastern.ccs.serverim.User;
 
 import java.util.List;
+import java.util.Set;
 
 public interface IQueryHandler {
 
@@ -34,11 +35,49 @@ public interface IQueryHandler {
     public String getUserName(long userID);
 
     public long getUserID(String userName);
-
+    
+    //Group Queries
     public boolean checkGroupNameExists(String groupName);
 
     public List<Group> getAllGroups();
 
     public  List<Group> getMyGroups(String senderName);
+    
+    public List<String> getGroupMembers(String name);
+    
+    public List<String> getGroupModerators(String name);
+    
+    public long addGroupMember(String userName, String groupName, int role);
+    
+    public long removeGroupMember(String userName, String groupName);
+    
+    public void changeMemberRole(long userId, long groupId, int role);
+    
+    public long getGroupID(String groupName);
+    
+    public String getGroupName(long groupID);
+    
+    //Message Log Queries
+    public List<Message> getMessagesSentByUser(long id, MessageType type);
+    
+    public List<Message> getMessagesSentToUser(long id, MessageType type);
+    
+    public List<Message> getMessagesFromUserChat(long senderId, long receiverId);
 
+    long createGroup(String sender, String groupName);
+
+    void deleteGroup(String sender, String groupName);
+
+    boolean isModerator(String sender, String groupName);
+
+    boolean isGroupMember(String groupName, String sender);
+
+    void makeModerator(String groupName, String toBeModerator);
+
+    void removeMember(String groupName, String member);
+
+    Set<String> getAllGroupMembers(String groupName);
+
+    // Circles
+    public long addUserToCircle(String senderName, String receiverName);
 }

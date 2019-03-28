@@ -36,12 +36,13 @@ public enum  MessageType {
 
 	GROUP(MessageConstants.GROUP_MSG_IDENTIFIER),
 
-	DELETE(MessageConstants.DELETE_MESSAGE_IDENTIFIER),
+    DELETE(MessageConstants.DELETE_MESSAGE_IDENTIFIER),
 
 	ERROR(MessageConstants.ERROR_MSG_IDENTIFIER),
 
 	GET_INFO(MessageConstants.GET_INFO_IDENTIFIER),
 
+    ACTION(MessageConstants.ACTION_MSG_IDENTIFIER),
     /**
      * Message sent by the user to start the logging out process and sent by the
      * server once the logout process completes.

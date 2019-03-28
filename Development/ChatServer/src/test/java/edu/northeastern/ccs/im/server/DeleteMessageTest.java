@@ -11,7 +11,6 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import static edu.northeastern.ccs.im.utils.MessageUtil.getValidDeleteBroadcastMessage;
 import static org.mockito.Matchers.anyLong;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)

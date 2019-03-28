@@ -34,7 +34,7 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
         long id = doInsertQuery(query);
         User user = null;
         if (id != -1) {
-            user = new User(id, userName, nickName, date.getTime());
+            user = new User(id, userName, nickName, date.getTime(), 0);
         }
         return user;
     }
@@ -70,7 +70,7 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
     }
 
     public Message getMessage(long messageID) {
-        String query = String.format("Select %s,%s,%s,%s,%s,%s from %s where %s=%s",
+        String query = String.format("Select %s,%s,%s,%s,%s,%s from %s where %s=%s;",
                 DBConstants.MESSAGE_SENDER_ID, DBConstants.MESSAGE_RECEIVER_ID,
                 DBConstants.MESSAGE_TYPE, DBConstants.MESSAGE_BODY, DBConstants.MESSAGE_ID, DBConstants.IS_DELETED,
                 DBConstants.MESSAGE_TABLE,
@@ -93,7 +93,7 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
     }
 
     public void deleteMessage(long messageID) {
-        String query = String.format("Update %s set %s=%s where %s=%s",
+        String query = String.format("Update %s set %s=%s where %s=%s;",
                 DBConstants.MESSAGE_TABLE, DBConstants.IS_DELETED, DBConstants.IS_DELETED_TRUE,
                 DBConstants.MESSAGE_ID, messageID
         );
@@ -105,6 +105,17 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
         messages.addAll(getPrivateMessagesSinceLogin(userID));
         messages.addAll(getGroupMessagesSinceLogin(userID));
         return messages;
+    }
+
+
+    public long addUserToCircle(String senderName, String receiverName) {
+        long senderID = getUserID(senderName);
+        long receiverID = getUserID(receiverName);
+
+        String query = String.format("INSERT INTO %s (%s, %s) VALUES(%d,%d);",
+                DBConstants.CIRCLES_TABLE, DBConstants.CIRCLE_USER_1_ID,
+                DBConstants.CIRCLE_USER_2_ID, senderID, receiverID);
+        return doInsertQuery(query);
     }
 
     public boolean checkUserNameExists(String name) {
@@ -158,9 +169,10 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
 
     @Override
     public List<User> getAllUsers() {
-        String query = String.format("SELECT %s, %s, %s FROM %s;",
+        String query = String.format("SELECT %s, %s, %s FROM %s where %s = %d;",
                 DBConstants.USER_ID, DBConstants.USER_USERNAME,
-                DBConstants.USER_NICKNAME, DBConstants.USER_TABLE);
+                DBConstants.USER_NICKNAME, DBConstants.USER_TABLE,
+                DBConstants.USER_INVISIBLE, 0);
 
         List<User> userList = new ArrayList<>();
         try {
@@ -170,7 +182,7 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
             Date date = new Date(System.currentTimeMillis());
             while (rs.next()) {
                 User user = new User(rs.getLong(1),
-                        rs.getString(2), rs.getString(3), date.getTime());
+                        rs.getString(2), rs.getString(3), date.getTime(), 0);
                 userList.add(user);
             }
             rs.close();
@@ -233,7 +245,7 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
 
 
     public List<Message> getMessagesSentByUser(long id, MessageType type) {
-    		String query = String.format("SELECT * FROM %s WHERE %s = %d AND %s = '%s';",
+        String query = String.format("SELECT * FROM %s WHERE %s = %d AND %s = '%s';",
                 DBConstants.MESSAGE_TABLE, DBConstants.MESSAGE_SENDER_ID, id, DBConstants.MESSAGE_TYPE, type);
 
         List<Message> messageList = new ArrayList<>();
@@ -243,7 +255,7 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
 
             while (rs.next()) {
                 Message msg = new Message(rs.getLong(1), MessageType.get(rs.getString(4)), getUserName(rs.getInt(2)),
-                		getUserName(rs.getInt(3)), rs.getString(5), rs.getInt(7));
+                        getUserName(rs.getInt(3)), rs.getString(5), rs.getInt(7));
                 messageList.add(msg);
             }
             rs.close();
@@ -255,8 +267,8 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
     }
 
     public List<Message> getMessagesSentToUser(long id, MessageType type) {
-    		String query = String.format("SELECT * FROM %s WHERE %s = %d AND %s = '%s';",
-    				DBConstants.MESSAGE_TABLE, DBConstants.MESSAGE_RECEIVER_ID, id, DBConstants.MESSAGE_TYPE, type);
+        String query = String.format("SELECT * FROM %s WHERE %s = %d AND %s = '%s';",
+                DBConstants.MESSAGE_TABLE, DBConstants.MESSAGE_RECEIVER_ID, id, DBConstants.MESSAGE_TYPE, type);
 
         List<Message> messageList = new ArrayList<>();
         try {
@@ -265,7 +277,7 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
 
             while (rs.next()) {
                 Message msg = new Message(rs.getLong(1), MessageType.get(rs.getString(4)), getUserName(rs.getInt(2)),
-                		getUserName(rs.getInt(3)), rs.getString(5), rs.getInt(7));
+                        getUserName(rs.getInt(3)), rs.getString(5), rs.getInt(7));
                 messageList.add(msg);
             }
             rs.close();
@@ -277,28 +289,28 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
     }
 
     public List<Message> getMessagesFromUserChat(long senderId, long receiverId) {
-		String query = String.format("SELECT * FROM %s WHERE %s = %d AND %s = %d AND %s = '%s';",
-				DBConstants.MESSAGE_TABLE, DBConstants.MESSAGE_RECEIVER_ID, receiverId,
-										  DBConstants.MESSAGE_SENDER_ID, senderId,
-										  DBConstants.MESSAGE_TYPE, MessageType.DIRECT);
+        String query = String.format("SELECT * FROM %s WHERE %s = %d AND %s = %d AND %s = '%s';",
+                DBConstants.MESSAGE_TABLE, DBConstants.MESSAGE_RECEIVER_ID, receiverId,
+                DBConstants.MESSAGE_SENDER_ID, senderId,
+                DBConstants.MESSAGE_TYPE, MessageType.DIRECT);
 
-	    List<Message> messageList = new ArrayList<>();
-	    try {
-	        PreparedStatement statement = connection.prepareStatement(query);
-	        ResultSet rs = statement.executeQuery();
+        List<Message> messageList = new ArrayList<>();
+        try {
+            PreparedStatement statement = connection.prepareStatement(query);
+            ResultSet rs = statement.executeQuery();
 
-	        while (rs.next()) {
-	            Message msg = new Message(rs.getLong(1), MessageType.get(rs.getString(4)), getUserName(rs.getInt(2)),
-	            		getUserName(rs.getInt(3)), rs.getString(5), rs.getInt(7));
-	            messageList.add(msg);
-	        }
-	        rs.close();
-	        statement.close();
-	    } catch (SQLException e) {
-	        logger.log(Level.INFO, SQL_EXCEPTION_MSG);
-	    }
-	    return messageList;
-	}
+            while (rs.next()) {
+                Message msg = new Message(rs.getLong(1), MessageType.get(rs.getString(4)), getUserName(rs.getInt(2)),
+                        getUserName(rs.getInt(3)), rs.getString(5), rs.getInt(7));
+                messageList.add(msg);
+            }
+            rs.close();
+            statement.close();
+        } catch (SQLException e) {
+            logger.log(Level.INFO, SQL_EXCEPTION_MSG);
+        }
+        return messageList;
+    }
 
     //-----------------Group Queries----------------------------------
 
@@ -322,26 +334,105 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
                 DBConstants.GROUP_TABLE, DBConstants.GROUP_NAME, name,
                 DBConstants.GROUP_INFO_GROUP_ID, DBConstants.GROUP_ID,
                 DBConstants.GROUP_INFO_USER_ROLE, 2);
-
+        System.out.println(query);
         return getPeopleHelper(query);
     }
 
-    public long createGroup(String name) {
-        //to-do : take creator as a param and update them as default moderator.
-        String query = String.format("INSERT INTO %s (%s)\n" +
-                        "VALUES ('%s');",
-                DBConstants.GROUP_TABLE, DBConstants.GROUP_NAME, name);
-
-        return doInsertQuery(query);
+    @Override
+    public long createGroup(String sender, String groupName) {
+        String query = String.format("INSERT INTO %s (%s) values ('%s');",
+                DBConstants.GROUP_TABLE, DBConstants.GROUP_NAME, groupName);
+        long groupId = doInsertQuery(query);
+        addGroupMember(sender, groupName, DBConstants.GROUP_INFO_ADMIN_ROLE_ID);
+        return groupId;
     }
 
-    public long deleteGroup(String name) {
-        //to-do : drop all users from the group-info and then delete this table (or)
-        //set cascade on delete in DB.
-        String query = String.format("DELETE FROM %s\n" +
-                        "WHERE %s = '%s' and %s > 0;",
-                DBConstants.GROUP_TABLE, DBConstants.GROUP_NAME, name, DBConstants.GROUP_ID);
-        return doUpdateQuery(query);
+    @Override
+    public void deleteGroup(String sender, String groupName) {
+        String query = String.format("DELETE FROM %s" +
+                        "WHERE %s = '%s' AND %s > 0;",
+                DBConstants.GROUP_TABLE, DBConstants.GROUP_NAME, groupName,
+                DBConstants.GROUP_ID);
+        doUpdateQuery(query);
+    }
+
+    @Override
+    public boolean isModerator(String sender, String groupName) {
+        String query = String.format("SELECT gi.%s FROM %s as gi\n" +
+                        "where gi.%s = %d AND gi.%s = %d;",
+                DBConstants.GROUP_INFO_USER_ROLE, DBConstants.GROUP_INFO_TABLE, DBConstants.GROUP_INFO_GROUP_ID,
+                getGroupID(groupName), DBConstants.GROUP_INFO_USER_ID, getUserID(sender));
+        int role = -1;
+        try {
+            PreparedStatement statement = connection.prepareStatement(query);
+            ResultSet rs = statement.executeQuery();
+            if (rs.next()) {
+                role = rs.getInt(1);
+            }
+            rs.close();
+            statement.close();
+        } catch (SQLException e) {
+            logger.log(Level.INFO, SQL_EXCEPTION_MSG);
+        }
+        return role == DBConstants.GROUP_INFO_ADMIN_ROLE_ID;
+    }
+
+    @Override
+    public boolean isGroupMember(String groupName, String sender) {
+        String query = String.format("SELECT * FROM %s as gi\n" +
+                        "where gi.%s = %d AND gi.%s = %d;",
+                DBConstants.GROUP_INFO_TABLE, DBConstants.GROUP_INFO_GROUP_ID,
+                getGroupID(groupName), DBConstants.GROUP_INFO_USER_ID, getUserID(sender));
+        boolean isMember = false;
+        try {
+            PreparedStatement statement = connection.prepareStatement(query);
+            ResultSet rs = statement.executeQuery();
+            isMember = rs.next();
+            rs.close();
+            statement.close();
+        } catch (SQLException e) {
+            logger.log(Level.INFO, SQL_EXCEPTION_MSG);
+        }
+        return isMember;
+    }
+
+    @Override
+    public void makeModerator(String groupName, String toBeModerator) {
+        String query = String.format("UPDATE %s as gi SET %s = %d\n" +
+                        "where gi.%s = %d AND gi.%s = %s AND gi.%s > 0;",
+                DBConstants.GROUP_INFO_TABLE, DBConstants.GROUP_INFO_USER_ROLE, DBConstants.GROUP_INFO_ADMIN_ROLE_ID,
+                DBConstants.GROUP_INFO_GROUP_ID, getGroupID(groupName),
+                DBConstants.GROUP_INFO_USER_ID, getUserID(toBeModerator), DBConstants.GROUP_INFO_ID);
+        doUpdateQuery(query);
+    }
+
+    @Override
+    public void removeMember(String groupName, String member) {
+        String query = String.format("DELETE FROM %s " +
+                        "WHERE %s = %d AND %s = %d AND %s > 0;",
+                DBConstants.GROUP_INFO_TABLE, DBConstants.GROUP_INFO_GROUP_ID, getGroupID(groupName),
+                DBConstants.GROUP_INFO_USER_ID, getUserID(member), DBConstants.GROUP_INFO_ID);
+        doUpdateQuery(query);
+    }
+
+    @Override
+    public Set<String> getAllGroupMembers(String groupName) {
+        String query = String.format("SELECT gi.%s FROM %s as gi\n" +
+                        "WHERE gi.%s = %d;",
+                DBConstants.GROUP_INFO_USER_ID, DBConstants.GROUP_INFO_TABLE, DBConstants.GROUP_INFO_GROUP_ID, getGroupID(groupName));
+        Set<String> groupMembers = new HashSet<>();
+        try {
+            PreparedStatement statement = connection.prepareStatement(query);
+            ResultSet rs = statement.executeQuery();
+            while (rs.next()) {
+                groupMembers.add(getUserName(rs.getLong(1)));
+            }
+            rs.close();
+            statement.close();
+        } catch (SQLException e) {
+            logger.log(Level.INFO, SQL_EXCEPTION_MSG);
+        }
+        return groupMembers;
     }
 
     public long addGroupMember(String userName, String groupName, int role) {

@@ -7,7 +7,9 @@ import edu.northeastern.ccs.im.constants.MessageConstants;
 import edu.northeastern.ccs.im.persistence.IQueryHandler;
 import edu.northeastern.ccs.im.persistence.QueryFactory;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 
 /**
@@ -53,7 +55,7 @@ class ClientRunnableHelper {
         if (isRegisterOrLogin(message)) {
             handleRegisterLoginMessages(message);
         }
-        else if (isDirectOrGroupMessage(message)){
+        else if (isChatMessage(message)){
             handleChatMessages(message);
         }
         else if (message.isDeleteMessage()) {
@@ -62,9 +64,16 @@ class ClientRunnableHelper {
         else if (isGetInfoMessage(message)) {
         		handleGetInfoMessages(message);
         }
+        else if (isActionMessage(message)) {
+            handleActionMessages(message);
+        }
         else {
             handleErrorMessages(message);
         }
+    }
+
+    private boolean isActionMessage(Message message) {
+        return message.isActionMessage();
     }
 
     private void handleDeleteMessages(Message clientMessage) {
@@ -114,19 +123,182 @@ class ClientRunnableHelper {
         if(msg.isDirectMessage()) {
             handleDirectMessages(msg);
         }
-        else {
+        else if (msg.isGroupMessage()) {
             handleGroupMessages(msg);
+        }
+        else {
+            handleForwardMessages(msg);
         }
     }
 
-    private void handleGetInfoMessages(Message msg) {
+    private void handleGetInfoMessages (Message msg) {
         Prattle.sendDirectMessage(msg);
     }
+
+    private void handleActionMessages(Message message) {
+        String[] contents = message.getText().split(" ");
+        String actualAction = contents[0];
+        if (actualAction.equals(MessageConstants.GROUP_CREATE_IDENTIFIER)) {
+            handleCreateGroup(message.getName(), contents);
+        }
+        else if (actualAction.equals(MessageConstants.GROUP_DELETE_IDENTIFIER)) {
+            handleDeleteGroup(message.getName(), contents);
+        }
+        else if (actualAction.equals(MessageConstants.GROUP_ADD_MODERATOR)) {
+            handleCreateModerator(message.getName(), contents);
+        }
+        else if (actualAction.equals(MessageConstants.GROUP_REMOVE_MEMBER_IDENTIFIER)) {
+            handleRemoveMember(message.getName(), contents);
+        }
+        else if (actualAction.equals(MessageConstants.GROUP_ADD_MEMBER_IDENTIFIER)) {
+            handleAddMember(message.getName(), contents);
+        }
+        else if (actualAction.equals(MessageConstants.LEAVE_GROUP_IDENTIFIER)) {
+            handleLeaveGroup(message.getName(), contents);
+        }
+        else if (actualAction.equals(MessageConstants.REQUEST_GROUP_ADD_IDENTIFIER)) {
+            handleRequestGroupAdd(message.getName(), contents);
+        }
+
+    }
+
+    private void handleRequestGroupAdd(String senderName, String[] contents) {
+        String groupName = contents[1];
+        String toBeMember = contents[2];
+        String ackMessage;
+
+        if (queryHandler.isGroupMember(groupName, senderName)) {
+            if (queryHandler.checkUserNameExists(toBeMember)) {
+                ackMessage = MessageConstants.REQUEST_GROUP_ADD_SUCCESS_MSG;
+                publishRequestToModerators(groupName, senderName, toBeMember);
+            }
+            else {
+                ackMessage = MessageConstants.INVALID_USER_ERR;
+            }
+        }
+        else {
+            ackMessage = MessageConstants.INVALID_GROUP_MEMBER_ERR;
+        }
+
+        Message handshakeMessage = Message.makeAckMessage(MessageType.ACTION, senderName, ackMessage);
+        Prattle.sendAckMessage(handshakeMessage);
+    }
+
+    private void publishRequestToModerators(String groupName, String senderName, String toBeMember) {
+        List<String> moderators = queryHandler.getGroupModerators(groupName);
+        Set<String> moderatorSet = new HashSet<>(moderators);
+        String content = String.format("%s has requested to add %s to the group %s"
+                , senderName, toBeMember , groupName);
+
+        Message message = Message.makeBroadcastMessage(senderName, content);
+        Prattle.sendMessageToMultipleUsers(message, moderatorSet);
+    }
+
+    private void handleLeaveGroup(String sender, String[] contents) {
+        String groupName = contents[0];
+        String ackMessage;
+
+        if (queryHandler.isGroupMember(groupName, sender)) {
+            queryHandler.removeMember(groupName, sender);
+            ackMessage = MessageConstants.LEAVE_GROUP_SUCCESS_MSG;
+        }
+        else {
+            ackMessage = MessageConstants.INVALID_GROUP_MEMBER_ERR;
+        }
+        Message message = Message.makeAckMessage(MessageType.ACTION, sender, ackMessage);
+        Prattle.sendAckMessage(message);
+    }
+
+    private void handleAddMember(String sender, String[] contents) {
+        String member = contents[1];
+        String groupName = contents[2];
+        String ackMessage;
+
+        if (queryHandler.isModerator(sender, groupName)) {
+            if (queryHandler.checkUserNameExists(member)) {
+                queryHandler.addGroupMember(groupName, member, 1);
+                ackMessage = MessageConstants.ADD_MMBR_SUCCESS_MSG;
+            }
+            else {
+                ackMessage = MessageConstants.INVALID_USER_ERR;
+            }
+        }
+        else {
+            ackMessage = MessageConstants.INVALID_MODERATOR_ERR;
+        }
+
+        Message message = Message.makeAckMessage(MessageType.ACTION, sender, ackMessage);
+        Prattle.sendAckMessage(message);
+    }
+
+    private void handleRemoveMember(String sender, String[] contents) {
+        String member = contents[1];
+        String groupName = contents[2];
+        String ackMessage;
+
+        if (queryHandler.isModerator(sender, groupName)) {
+            if (queryHandler.isGroupMember(groupName, sender)) {
+                queryHandler.removeMember(groupName, member);
+                ackMessage = MessageConstants.RMV_MMBR_SUCCESS_MSG;
+            }
+            else {
+                ackMessage = MessageConstants.RMV_MMBR_INVALID_ERR;
+            }
+        }
+        else {
+            ackMessage = MessageConstants.INVALID_MODERATOR_ERR;
+        }
+
+        Message message = Message.makeAckMessage(MessageType.ACTION, sender, ackMessage);
+        Prattle.sendAckMessage(message);
+    }
+
+    private void handleCreateModerator(String sender, String[] contents) {
+        String toBeModerator = contents[1];
+        String groupName = contents[2];
+        String ackMessage;
+
+        if (queryHandler.isModerator(sender, groupName)) {
+            if (queryHandler.isGroupMember(groupName, sender)) {
+                queryHandler.makeModerator(groupName, toBeModerator);
+                ackMessage = MessageConstants.ADD_MDRTR_SUCCESS_MSG;
+            }
+            else {
+                ackMessage = MessageConstants.ADD_MDRTR_INVALID_ERR;
+            }
+        }
+        else {
+            ackMessage = MessageConstants.INVALID_MODERATOR_ERR;
+        }
+
+        Message message = Message.makeAckMessage(MessageType.ACTION, sender, ackMessage);
+        Prattle.sendAckMessage(message);
+    }
+
+    private void handleDeleteGroup (String sender, String[] contents) {
+        String groupName = contents[1];
+        String ackMessage;
+        if (queryHandler.isModerator(sender, groupName)) {
+            queryHandler.deleteGroup(sender, groupName);
+            ackMessage = MessageConstants.GROUP_DELETE_SUCCESS_MSG;
+        }
+        else {
+            ackMessage = MessageConstants.INVALID_MODERATOR_ERR;
+        }
+        Message message = Message.makeAckMessage(MessageType.ACTION, sender, ackMessage);
+        Prattle.sendAckMessage(message);
+    }
+
+    private void handleCreateGroup (String sender, String[] contents) {
+        String groupName = contents[1];
+        queryHandler.createGroup(sender, groupName);
+    }
+
 
     /**
      * Error messages are routed back to the sender.
      */
-    private void handleErrorMessages(Message msg) {
+    private void handleErrorMessages (Message msg) {
         Prattle.sendErrorMessage(msg);
     }
 
@@ -155,7 +327,7 @@ class ClientRunnableHelper {
 
     /** On a login request, this verifies user credentials and then acknowledges the user with
      * a success / failure message */
-    private void handleLoginMessage(Message message) {
+    private void handleLoginMessage (Message message) {
         Message handShakeMessage;
         String acknowledgementText;
 
@@ -214,19 +386,43 @@ class ClientRunnableHelper {
     }
 
     private void handleGroupMessages(Message message) {
-        if (isGroupPresent(message.getMsgReceiver())) {
+        String groupName = message.getMsgReceiver();
+        if (isGroupPresent(groupName)) {
             long messageId = queryHandler.storeMessage(message.getName(), message.getMsgReceiver(),
                     message.getMessageType(),
                     message.getText());
 
             message.setText(getPrependedMessageText(message.getText(), messageId));
-            Prattle.sendGroupMessage(message);
+            Set<String> groupMemberNames = queryHandler.getAllGroupMembers(groupName);
+            Prattle.sendMessageToMultipleUsers(message, groupMemberNames);
         }
         else {
             Message errorMessage = Message.makeErrorMessage(message.getName(),
                     MessageConstants.INVALID_GROUP_RECEIVER_MSG);
             Prattle.sendErrorMessage(errorMessage);
         }
+    }
+
+    private void handleForwardMessages(Message message) {
+        if (isUserPresent(message.getMsgReceiver())) {
+            long messageId = queryHandler.storeMessage(message.getName(), message.getMsgReceiver(),
+                    message.getMessageType(),
+                    getForwardMessageText(message));
+
+            message.setText(getPrependedMessageText(message.getText(), messageId));
+            Prattle.sendDirectMessage(message);
+        }
+        else {
+            Message errorMessage = Message.makeErrorMessage(message.getName(),
+                    MessageConstants.INVALID_DIRECT_RECEIVER_MSG);
+            Prattle.sendErrorMessage(errorMessage);
+        }
+    }
+
+    private String getForwardMessageText(Message message) {
+        StringBuilder sb = new StringBuilder(message.getText());
+        sb.append(" <<< FORWARDED MESSAGE >>> ");
+        return sb.toString();
     }
 
     /**
@@ -240,7 +436,7 @@ class ClientRunnableHelper {
      * @param msgText - the message text.
      * @param messageId - id for the message returned on persistence in the database.
      */
-    protected String getPrependedMessageText(String msgText, long messageId) {
+    String getPrependedMessageText(String msgText, long messageId) {
         StringBuilder text = new StringBuilder(MessageConstants.MSG_ID_PREFIX);
         text.append(messageId);
         text.append(MessageConstants.MSG_ID_SUFFIX);
@@ -258,7 +454,7 @@ class ClientRunnableHelper {
     /**
      * Returns true if the message is a direct of group message. Otherwise false.
      */
-    private boolean isDirectOrGroupMessage(Message msg) {
+    private boolean isChatMessage(Message msg) {
         return (msg.isDirectMessage() || msg.isGroupMessage());
     }
 

@@ -2,7 +2,6 @@ package edu.northeastern.ccs.im.server;
 
 import edu.northeastern.ccs.im.constants.MessageConstants;
 import edu.northeastern.ccs.im.persistence.IQueryHandler;
-import edu.northeastern.ccs.im.persistence.QueryFactory;
 import edu.northeastern.ccs.serverim.Group;
 import edu.northeastern.ccs.serverim.Message;
 import edu.northeastern.ccs.serverim.User;
@@ -39,7 +38,12 @@ public class MessageFactory {
                 case MessageConstants.GET_INFO_IDENTIFIER:
                     message = constructCustomGetInfoMessage(restOfMessageText, queryHandler);
                     break;
-
+                case MessageConstants.FORWARD_MSG_IDENTIFIER:
+                    message = constructCustomForwardMessage(restOfMessageText, queryHandler);
+                    break;
+                case MessageConstants.ACTION_MSG_IDENTIFIER:
+                    message = constructActionMessage(type, restOfMessageText);
+                    break;
                 default:
                     message = Message.makeErrorMessage(clientMessage.getName(),
                             MessageConstants.UNKNOWN_MESSAGE_TYPE_ERR);
@@ -51,6 +55,16 @@ public class MessageFactory {
                     MessageConstants.EMPTY_MESSAGE_ERR);
         }
         return  message;
+    }
+
+    private static Message constructActionMessage(String type, String restOfMessageText) {
+
+        String[] contents = restOfMessageText.split(" ");
+        String sender = contents[contents.length-1];
+
+        String actionContent = restOfMessageText.substring(0,
+                restOfMessageText.length()-(sender.length()+1));
+        return Message.makeActionMessage(sender, actionContent);
     }
 
     private static Message constructCustomDeleteMessage(String restOfMessageText) {
@@ -126,6 +140,21 @@ public class MessageFactory {
         String result = getInfo(sender, commandType, queryHandler);
 
         return Message.makeGetInfoMessage(sender, sender, result);
+    }
+
+    private static Message constructCustomForwardMessage (String restOfMessagetext, IQueryHandler queryHandler) {
+        String[] content = restOfMessagetext.split(" ");
+        String sender = content[0];
+        String receiver = content[1];
+        long messageId = Long.parseLong(content[content.length-1]);
+
+        Message actualMessage = queryHandler.getMessage(messageId);
+        String messageOriginator = actualMessage.getName();
+
+        String text = actualMessage.getText() + " <<< FORWARDED MESSAGE FROM  " + messageOriginator
+                + " >>>";
+
+        return Message.makeDirectMessage(sender, receiver, text);
     }
 
     private static String getInfo(String senderName, String commandType, IQueryHandler queryHandler) {
