@@ -316,7 +316,7 @@ public class ClientRunnableHelperTest {
 
         List<User> list = new ArrayList();
         list.add(new User(1L, DBConstants.USER_USERNAME, DBConstants.USER_USERNAME,
-                System.currentTimeMillis()));
+                System.currentTimeMillis(), 0));
         when(iQueryHandler.getAllUsers()).thenReturn(list);
 
         Message getUsersMessage = clientRunnableHelper.getCustomConstructedMessage(message);

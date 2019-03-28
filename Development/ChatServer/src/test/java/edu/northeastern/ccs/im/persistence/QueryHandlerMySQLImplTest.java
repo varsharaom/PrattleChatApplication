@@ -12,10 +12,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
 import edu.northeastern.ccs.im.constants.QueryConstants;
+import edu.northeastern.ccs.serverim.Group;
 import edu.northeastern.ccs.serverim.Message;
 import edu.northeastern.ccs.serverim.MessageType;
 import edu.northeastern.ccs.serverim.User;
@@ -64,7 +66,7 @@ public class QueryHandlerMySQLImplTest {
 		try {
 	        User res = handler.createUser(QueryConstants.USERNAME, QueryConstants.PASS, QueryConstants.NICKNAME);
 	        userId = res.getUserID();
-	        User invalidUser = new User(-1L, res.getUserName(), res.getNickName(), res.getLastSeen());
+	        User invalidUser = new User(-1L, res.getUserName(), res.getNickName(), res.getLastSeen(), 0);
 	        int id = handler.updateUserLastLogin(invalidUser.getUserID());
 	        assertNotNull(id);
 		} finally {
@@ -468,4 +470,202 @@ public class QueryHandlerMySQLImplTest {
 	        handler.doUpdateQuery(query);
 	    }
     }
+
+    @Test
+    public void testCheckGroupNameExists() {
+    		try {
+	    		handler.createGroup(QueryConstants.GROUP_NAME);
+	    		
+	    		boolean exists = handler.checkGroupNameExists(QueryConstants.GROUP_NAME);
+	    		
+	        assertTrue(exists);
+    		} finally {
+	        // Tear down
+	        handler.deleteGroup(QueryConstants.GROUP_NAME);
+    		}
+    }
+    
+    @Test
+    public void testGetAllGroups() {
+    		try {
+	    		handler.createGroup(QueryConstants.GROUP_NAME);
+	    		
+	    		List<Group> groups = handler.getAllGroups();
+	    		
+	    		for(Group group : groups) {
+	    			if (group.getName().equals(QueryConstants.GROUP_NAME)) {
+	    				assertTrue(group.getName().equals(QueryConstants.GROUP_NAME));
+	    			} else {
+	    				assertFalse(group.getName().equals(QueryConstants.GROUP_NAME));
+	    			}
+	    		}
+    		} finally {
+	        // Tear down
+	        handler.deleteGroup(QueryConstants.GROUP_NAME);
+    		}
+    }
+    
+    @Test
+    public void testGetMyGroups() {
+    		long userId = -1L;
+    		try {
+    			User user = handler.createUser(QueryConstants.USERNAME, QueryConstants.PASS, QueryConstants.NICKNAME);
+    			userId = user.getUserID();
+	    		handler.createGroup(QueryConstants.USERNAME, QueryConstants.GROUP_NAME);
+	    		handler.createGroup(QueryConstants.INVALID_USERNAME, QueryConstants.GROUP_2_NAME);
+	    		
+	    		List<Group> groups = handler.getMyGroups(QueryConstants.USERNAME);
+	    		
+	    		for(Group group : groups) {
+	    			if (group.getName().equals(QueryConstants.GROUP_NAME)) {
+	    				assertTrue(group.getName().equals(QueryConstants.GROUP_NAME));
+	    			} else {
+	    				assertFalse(true);
+	    			}
+	    		}
+    		} finally {
+	        // Tear down
+    			String query = String.format(QueryConstants.TEARDOWN_DELETE, DBConstants.USER_TABLE, DBConstants.USER_ID, userId);
+    	        handler.doUpdateQuery(query);
+    			handler.removeGroupMember(QueryConstants.INVALID_USERNAME, QueryConstants.GROUP_2_NAME);
+    			handler.deleteGroup(QueryConstants.GROUP_2_NAME);
+    	        handler.removeGroupMember(QueryConstants.USERNAME, QueryConstants.GROUP_NAME);
+	        handler.deleteGroup(QueryConstants.GROUP_NAME);
+    		}
+    }
+    
+    @Test
+    public void testIsModeratorSuccess() {
+    		long userId = -1L;
+    		try {
+    			User user = handler.createUser(QueryConstants.USERNAME, QueryConstants.PASS, QueryConstants.NICKNAME);
+    			userId = user.getUserID();
+	    		handler.createGroup(QueryConstants.USERNAME, QueryConstants.GROUP_NAME);
+	    		boolean isModerator = handler.isModerator(QueryConstants.USERNAME, QueryConstants.GROUP_NAME);
+	    		assertTrue(isModerator);
+    		} finally {
+	        // Tear down
+    			String query = String.format(QueryConstants.TEARDOWN_DELETE, DBConstants.USER_TABLE, DBConstants.USER_ID, userId);
+    	        handler.doUpdateQuery(query);
+    	        handler.removeGroupMember(QueryConstants.USERNAME, QueryConstants.GROUP_NAME);
+	        handler.deleteGroup(QueryConstants.GROUP_NAME);
+    		}
+    }
+    
+    @Test
+    public void testIsGroupMemberSuccess() {
+    		long userId = -1L;
+    		try {
+    			User user = handler.createUser(QueryConstants.USERNAME, QueryConstants.PASS, QueryConstants.NICKNAME);
+    			userId = user.getUserID();
+	    		handler.createGroup(QueryConstants.USERNAME, QueryConstants.GROUP_NAME);
+	    		boolean isMember = handler.isGroupMember(QueryConstants.GROUP_NAME, QueryConstants.USERNAME);
+	    		assertTrue(isMember);
+    		} finally {
+	        // Tear down
+    			String query = String.format(QueryConstants.TEARDOWN_DELETE, DBConstants.USER_TABLE, DBConstants.USER_ID, userId);
+    	        handler.doUpdateQuery(query);
+    	        handler.removeGroupMember(QueryConstants.USERNAME, QueryConstants.GROUP_NAME);
+	        handler.deleteGroup(QueryConstants.GROUP_NAME);
+    		}
+    }
+    
+    @Test
+    public void testMakeModeratorSuccess() {
+    		long userId = -1L;
+    		long userTwoId = -1L;
+    		try {
+    			User user = handler.createUser(QueryConstants.USERNAME, QueryConstants.PASS, QueryConstants.NICKNAME);
+    			User userTwo = handler.createUser(QueryConstants.INVALID_USERNAME, QueryConstants.PASS, QueryConstants.NICKNAME);
+    			userId = user.getUserID();
+    			userTwoId = userTwo.getUserID();
+	    		handler.createGroup(QueryConstants.USERNAME, QueryConstants.GROUP_NAME);
+	    		handler.addGroupMember(QueryConstants.INVALID_USERNAME, QueryConstants.GROUP_NAME, 1);
+	    		handler.makeModerator(QueryConstants.GROUP_NAME, QueryConstants.INVALID_USERNAME);
+	    		boolean isMember = handler.isModerator(QueryConstants.INVALID_USERNAME, QueryConstants.GROUP_NAME);
+	    		assertTrue(isMember);
+    		} finally {
+	        // Tear down
+    			String query = String.format(QueryConstants.TEARDOWN_DELETE, DBConstants.USER_TABLE, DBConstants.USER_ID, userId);
+    	        handler.doUpdateQuery(query);
+    	        query = String.format(QueryConstants.TEARDOWN_DELETE, DBConstants.USER_TABLE, DBConstants.USER_ID, userTwoId);
+    	        handler.doUpdateQuery(query);
+    	        handler.removeGroupMember(QueryConstants.USERNAME, QueryConstants.GROUP_NAME);
+    	        handler.removeGroupMember(QueryConstants.INVALID_USERNAME, QueryConstants.GROUP_NAME);
+	        handler.deleteGroup(QueryConstants.GROUP_NAME);
+    		}
+    }
+    
+    @Test
+    public void testRemoveGroupMemberSuccess() {
+    		long userId = -1L;
+    		try {
+    			User user = handler.createUser(QueryConstants.USERNAME, QueryConstants.PASS, QueryConstants.NICKNAME);
+    			userId = user.getUserID();
+	    		handler.createGroup(QueryConstants.USERNAME, QueryConstants.GROUP_NAME);
+	    		handler.removeMember(QueryConstants.GROUP_NAME, QueryConstants.USERNAME);
+	    		boolean isMember = handler.isGroupMember(QueryConstants.GROUP_NAME, QueryConstants.USERNAME);
+	    		assertFalse(isMember);
+    		} finally {
+	        // Tear down
+    			String query = String.format(QueryConstants.TEARDOWN_DELETE, DBConstants.USER_TABLE, DBConstants.USER_ID, userId);
+    	        handler.doUpdateQuery(query);
+	        handler.deleteGroup(QueryConstants.GROUP_NAME);
+    		}
+    }
+    
+    @Test
+    public void testGetAllGroupMembersSuccess() {
+    		long userId = -1L;
+    		long userTwoId = -1L;
+    		try {
+    			User user = handler.createUser(QueryConstants.USERNAME, QueryConstants.PASS, QueryConstants.NICKNAME);
+    			User userTwo = handler.createUser(QueryConstants.INVALID_USERNAME, QueryConstants.PASS, QueryConstants.NICKNAME);
+    			userId = user.getUserID();
+    			userTwoId = userTwo.getUserID();
+	    		handler.createGroup(QueryConstants.USERNAME, QueryConstants.GROUP_NAME);
+	    		handler.addGroupMember(QueryConstants.INVALID_USERNAME, QueryConstants.GROUP_NAME, QueryConstants.MEMBER_ROLE_ID);
+	    		Set<String> memberList = handler.getAllGroupMembers(QueryConstants.GROUP_NAME);
+	    		assertEquals(memberList.size(), 2);
+	    		assertTrue(memberList.contains(user.getUserName()));
+	    		assertTrue(memberList.contains(userTwo.getUserName()));
+    		} finally {
+	        // Tear down
+    			String query = String.format(QueryConstants.TEARDOWN_DELETE, DBConstants.USER_TABLE, DBConstants.USER_ID, userId);
+    	        handler.doUpdateQuery(query);
+    	        query = String.format(QueryConstants.TEARDOWN_DELETE, DBConstants.USER_TABLE, DBConstants.USER_ID, userTwoId);
+    	        handler.doUpdateQuery(query);
+    	        handler.removeMember(QueryConstants.GROUP_NAME, QueryConstants.USERNAME);
+    	        handler.removeMember(QueryConstants.GROUP_NAME, QueryConstants.INVALID_USERNAME);
+	        handler.deleteGroup(QueryConstants.GROUP_NAME);
+    		}
+    }
+    
+    @Test
+    public void testGetMyUsersSuccess() {
+    		long userId = -1L;
+    		long userTwoId = -1L;
+    		long circleId = -1L;
+    		try {
+    			User user = handler.createUser(QueryConstants.USERNAME, QueryConstants.PASS, QueryConstants.NICKNAME);
+    			User userTwo = handler.createUser(QueryConstants.INVALID_USERNAME, QueryConstants.PASS, QueryConstants.NICKNAME);
+    			userId = user.getUserID();
+    			userTwoId = userTwo.getUserID();
+
+    			circleId = handler.addUserToCircle(user.getUserName(), userTwo.getUserName());
+    			
+    			List<User> usersList = handler.getMyUsers(user.getUserName());
+    			assertEquals(1, usersList.size());
+    			assertEquals(usersList.get(0).getUserName(), userTwo.getUserName());
+    		} finally {
+	        // Tear down
+    			String query = String.format(QueryConstants.TEARDOWN_DELETE, DBConstants.USER_TABLE, DBConstants.USER_ID, userId);
+    	        handler.doUpdateQuery(query);
+    	        query = String.format(QueryConstants.TEARDOWN_DELETE, DBConstants.USER_TABLE, DBConstants.USER_ID, userTwoId);
+    	        handler.doUpdateQuery(query);
+    	        query = String.format(QueryConstants.TEARDOWN_DELETE, DBConstants.CIRCLES_TABLE, DBConstants.CIRCLE_ID, circleId);
+    	        handler.doUpdateQuery(query);
+    		}
+    }
+    
 }

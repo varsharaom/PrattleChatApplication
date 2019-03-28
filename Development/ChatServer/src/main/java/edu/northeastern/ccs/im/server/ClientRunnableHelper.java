@@ -7,6 +7,7 @@ import edu.northeastern.ccs.im.constants.MessageConstants;
 import edu.northeastern.ccs.im.persistence.IQueryHandler;
 import edu.northeastern.ccs.im.persistence.QueryFactory;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -184,12 +185,13 @@ class ClientRunnableHelper {
     }
 
     private void publishRequestToModerators(String groupName, String senderName, String toBeMember) {
-        Set<String> moderators = queryHandler.getAllModerators(groupName);
+        List<String> moderators = queryHandler.getGroupModerators(groupName);
+        Set<String> moderatorSet = new HashSet<>(moderators);
         String content = String.format("%s has requested to add %s to the group %s"
                 , senderName, toBeMember , groupName);
 
         Message message = Message.makeBroadcastMessage(senderName, content);
-        Prattle.sendMessageToMultipleUsers(message, moderators);
+        Prattle.sendMessageToMultipleUsers(message, moderatorSet);
     }
 
     private void handleLeaveGroup(String sender, String[] contents) {
@@ -214,7 +216,7 @@ class ClientRunnableHelper {
 
         if (queryHandler.isModerator(sender, groupName)) {
             if (queryHandler.checkUserNameExists(member)) {
-                queryHandler.addMember(groupName, member);
+                queryHandler.addGroupMember(groupName, member, 1);
                 ackMessage = MessageConstants.ADD_MMBR_SUCCESS_MSG;
             }
             else {

@@ -27,6 +27,7 @@ public class DBConstants {
     public static final String USER_PASS = "password";
     public static final String USER_NICKNAME = "nickname";
     public static final String USER_LAST_SEEN = "last_seen";
+    public static final String USER_INVISIBLE = "invisible";
 
     //GROUP
     public static final String GROUP_ID = "id";
@@ -37,6 +38,7 @@ public class DBConstants {
     public static final String GROUP_INFO_GROUP_ID = "group_id";
     public static final String GROUP_INFO_USER_ID = "uid";
     public static final String GROUP_INFO_USER_ROLE = "role";
+    public static final int GROUP_INFO_ADMIN_ROLE_ID = 2;
 
     //CIRCLES
     public static final String CIRCLE_ID = "id";

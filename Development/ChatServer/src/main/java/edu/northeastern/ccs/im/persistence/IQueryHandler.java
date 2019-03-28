@@ -35,14 +35,40 @@ public interface IQueryHandler {
     public String getUserName(long userID);
 
     public long getUserID(String userName);
-
+    
+    //Group Queries
     public boolean checkGroupNameExists(String groupName);
 
     public List<Group> getAllGroups();
 
     public  List<Group> getMyGroups(String senderName);
+    
+    public List<String> getGroupMembers(String name);
+    
+    public List<String> getGroupModerators(String name);
+    
+    public long createGroup(String name);
+    
+    public long deleteGroup(String name);
+    
+    public long addGroupMember(String userName, String groupName, int role);
+    
+    public long removeGroupMember(String userName, String groupName);
+    
+    public void changeMemberRole(long userId, long groupId, int role);
+    
+    public long getGroupID(String groupName);
+    
+    public String getGroupName(long groupID);
+    
+    //Message Log Queries
+    public List<Message> getMessagesSentByUser(long id, MessageType type);
+    
+    public List<Message> getMessagesSentToUser(long id, MessageType type);
+    
+    public List<Message> getMessagesFromUserChat(long senderId, long receiverId);
 
-    void createGroup(String sender, String groupName);
+    long createGroup(String sender, String groupName);
 
     void deleteGroup(String sender, String groupName);
 
@@ -56,7 +82,6 @@ public interface IQueryHandler {
 
     Set<String> getAllGroupMembers(String groupName);
 
-    void addMember(String groupName, String member);
-
-    Set<String> getAllModerators(String groupName);
+    // Circles
+    public long addUserToCircle(String senderName, String receiverName);
 }
