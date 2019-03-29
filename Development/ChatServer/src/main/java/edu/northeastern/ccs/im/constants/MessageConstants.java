@@ -185,6 +185,7 @@ public final class MessageConstants {
     /** The Constant INVALID_MODERATOR_ERR. */
     public static final String INVALID_MODERATOR_ERR = OPERATION_UNSUCCESSFUL_ERR +
             "Only moderators are permitted to perform this action.";
+    public static final String REQUEST_PREFIX = "[REQUEST] ";
 
     /**
      * Private constructor for class with static methods.

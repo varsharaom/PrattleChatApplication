@@ -205,7 +205,9 @@ class ClientRunnableHelper {
         String ackMessage;
 
         if (queryHandler.isGroupMember(groupName, senderName)) {
-            ackMessage = requestGroupAddByGroupMember(groupName, senderName, toBeMember);
+            ackMessage = MessageConstants.REQUEST_PREFIX +
+                    requestGroupAddByGroupMember(groupName, senderName, toBeMember);
+            queryHandler.storeMessage(senderName, groupName, MessageType.GROUP, ackMessage);
         }
         else {
             ackMessage = MessageConstants.INVALID_GROUP_MEMBER_ERR;
