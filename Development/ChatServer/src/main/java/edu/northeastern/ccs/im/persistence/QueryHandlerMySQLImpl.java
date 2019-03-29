@@ -281,15 +281,29 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
         } catch (SQLException e) {
             logger.log(Level.INFO, SQL_EXCEPTION_MSG + ": " + e.getMessage());
         }
-        List<User> userList = getAllUsers();
         List<User> circleList = new ArrayList<>();
-        for (User user : userList) {
-            if (circleIDs.contains(user.getUserID())) {
-                circleList.add(user);
-            }
+        
+        for(long userId : circleIDs) {
+	        query = String.format("SELECT u.* FROM %s as u WHERE %s = %d;",
+	        		DBConstants.USER_TABLE, DBConstants.USER_ID, userId);
+	        try {
+	            PreparedStatement statement = connection.prepareStatement(query);
+	            ResultSet rs = statement.executeQuery();
+	
+	            Date date = new Date(System.currentTimeMillis());
+	            while (rs.next()) {
+	                User user = new User(rs.getLong(1),
+	                        rs.getString(2), rs.getString(4), date.getTime(), rs.getInt(6));
+	                circleList.add(user);
+	            }
+	            rs.close();
+	            statement.close();
+	        } catch (SQLException e) {
+	            logger.log(Level.INFO, SQL_EXCEPTION_MSG + ": " + e.getMessage());
+	        }
         }
+        
         return circleList;
-
     }
 
     /* (non-Javadoc)
