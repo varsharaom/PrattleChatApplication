@@ -147,6 +147,43 @@ public class QueryHandlerMySQLImplTest {
     }
 
     @Test
+    public void testMessageSinceLastLoginForGroups() {
+
+        User sender = null;
+        User receiver = null;
+        long msgId = 0;
+        long senderId = 0;
+        long receiverId = 0;
+        try {
+            sender = handler.createUser(QueryConstants.SENDER_USERNAME, QueryConstants.PASS, QueryConstants.SENDER_USERNAME);
+            receiver = handler.createUser(QueryConstants.RECEIVER_USERNAME, QueryConstants.PASS, QueryConstants.RECEIVER_USERNAME);
+            handler.updateUserLastLogin(receiver.getUserID());
+            long msgGrpID = handler.createGroup(sender.getUserName(), QueryConstants.GROUP_2_NAME);
+            handler.addGroupMember(receiver.getUserName(), QueryConstants.GROUP_2_NAME, DBConstants.GROUP_INFO_USER_ROLE_MEMBER);
+            assertEquals(2, handler.getAllGroupMembers(QueryConstants.GROUP_2_NAME).size());
+            msgId = handler.storeMessage(sender.getUserName(), QueryConstants.GROUP_2_NAME, MessageType.GROUP, QueryConstants.MESSAGE_TEXT);
+
+            receiverId = receiver.getUserID();
+            senderId = sender.getUserID();
+            List<Message> messages = handler.getMessagesSinceLastLogin(receiver.getUserID());
+            assertEquals(QueryConstants.MESSAGE_TEXT, messages.get(0).getText());
+        } finally {
+            // Tear down
+
+            handler.deleteGroup(sender.getUserName(), QueryConstants.GROUP_2_NAME);
+
+            String query = String.format(QueryConstants.TEARDOWN_DELETE, DBConstants.USER_TABLE, DBConstants.USER_ID, receiverId);
+            handler.doUpdateQuery(query);
+
+            query = String.format(QueryConstants.TEARDOWN_DELETE, DBConstants.USER_TABLE, DBConstants.USER_ID, senderId);
+            handler.doUpdateQuery(query);
+
+            query = String.format(QueryConstants.TEARDOWN_DELETE, DBConstants.MESSAGE_TABLE, DBConstants.MESSAGE_ID, msgId);
+            handler.doUpdateQuery(query);
+        }
+    }
+
+    @Test
     public void checkUserNameExistsSuccess() {
         long userId = 0;
         try {
@@ -372,7 +409,6 @@ public class QueryHandlerMySQLImplTest {
             assertEquals("", handler.getUserName(user1.getUserID()));
         }
     }
-
 
     @Test
     public void testGetMessagesSentByUser() {

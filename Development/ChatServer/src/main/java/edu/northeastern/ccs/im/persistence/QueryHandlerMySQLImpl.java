@@ -97,7 +97,7 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
         Date date = new Date(System.currentTimeMillis());
         SimpleDateFormat format = new SimpleDateFormat(DBConstants.DATE_FORMAT);
         long senderID = getUserID(senderName);
-        long receiverID = getUserID(receiverName);
+        long receiverID = type.equals(MessageType.GROUP) ? getGroupID(receiverName) : getUserID(receiverName);
         String query = String.format("INSERT INTO %s (%s,%s,%s,%s,%s) VALUES(%d,%d,'%s','%s','%s');",
                 DBConstants.MESSAGE_TABLE, DBConstants.MESSAGE_SENDER_ID, DBConstants.MESSAGE_RECEIVER_ID,
                 DBConstants.MESSAGE_TYPE, DBConstants.MESSAGE_BODY, DBConstants.MESSAGE_TIME,
@@ -782,6 +782,29 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
         return getMessages(query);
     }
 
+    private String getUserLastSeen(long userID){
+        String query = String.format("SELECT %s from %s WHERE %s=%s",
+                DBConstants.USER_LAST_SEEN, DBConstants.USER_TABLE,
+                DBConstants.USER_ID, userID);
+        String time = new Date().toString();
+        try {
+            PreparedStatement statement = connection.prepareStatement(query);
+            ResultSet rs = statement.executeQuery();
+            if (rs.next()) {
+                java.sql.Timestamp dbSqlTimestamp = rs.getTimestamp(1);
+                Date date = new Date(dbSqlTimestamp.getTime());
+                SimpleDateFormat format = new SimpleDateFormat(DBConstants.DATE_FORMAT);
+                time = format.format(date);
+            }
+            rs.close();
+            statement.close();
+        } catch (SQLException e) {
+            logger.log(Level.INFO, SQL_EXCEPTION_MSG);
+        }
+
+        return time;
+    }
+
     /**
      * Gets the group messages since login.
      *
@@ -789,32 +812,33 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
      * @return the group messages since login
      */
     private List<Message> getGroupMessagesSinceLogin(long userID) {
+        String last_seen = getUserLastSeen(userID);
         String query = String.format(
-                "SELECT %s, %s, %s, %s , %s.%s from %s "
-                        + "inner join %s on %s.%s = %s.%s"
-                        + "inner join %s on %s.%s = %s.%s"
-                        + " WHERE (%s >= %s) AND %s = %s;",
+                "SELECT %s, %s, %s , %s.%s from %s "
+                        + "inner join %s on %s.%s = %s.%s "
+                        + "inner join %s on %s.%s = %s.%s "
+                        + "WHERE (%s >= '%s') AND %s = %s.%s",
                 //select columns
-                DBConstants.MESSAGE_BODY, DBConstants.USER_LAST_SEEN,
+                DBConstants.MESSAGE_BODY,
                 DBConstants.MESSAGE_SENDER_ID, DBConstants.MESSAGE_RECEIVER_ID,
                 DBConstants.GROUP_TABLE, DBConstants.GROUP_NAME,
                 //join table one
-                DBConstants.MESSAGE_TABLE, DBConstants.GROUP_INFO_TABLE,
+                DBConstants.MESSAGE_TABLE, DBConstants.GROUP_TABLE,
                 //join column one
-                DBConstants.GROUP_INFO_TABLE, DBConstants.GROUP_INFO_USER_ID,
+                DBConstants.GROUP_TABLE, DBConstants.GROUP_ID,
                 //join column two
-                DBConstants.USER_TABLE, DBConstants.USER_ID,
+                DBConstants.MESSAGE_TABLE, DBConstants.MESSAGE_RECEIVER_ID,
                 //join table two
-                DBConstants.GROUP_TABLE,
+                DBConstants.GROUP_INFO_TABLE,
                 //Join column one
                 DBConstants.GROUP_TABLE, DBConstants.GROUP_ID,
                 //Join column two
                 DBConstants.GROUP_INFO_TABLE, DBConstants.GROUP_INFO_GROUP_ID,
                 //Filters
                 //Date greater than last seen time
-                DBConstants.MESSAGE_TIME, DBConstants.USER_LAST_SEEN,
+                DBConstants.MESSAGE_TIME, last_seen,
                 //Receiver id is a group that has this user as one of its member
-                DBConstants.MESSAGE_RECEIVER_ID, userID);
+                DBConstants.MESSAGE_RECEIVER_ID, DBConstants.GROUP_INFO_TABLE, DBConstants.GROUP_INFO_GROUP_ID);
         return getMessages(query);
     }
     
@@ -830,7 +854,7 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
             PreparedStatement statement = connection.prepareStatement(query);
             ResultSet rs = statement.executeQuery();
             while (rs.next()) {
-                Message m = Message.makeDirectMessage(getUserName(rs.getLong(3)), rs.getString(5), rs.getString(1));
+                Message m = Message.makeDirectMessage(getUserName(rs.getLong(2)), rs.getString(4), rs.getString(1));
                 messages.add(m);
             }
             rs.close();
