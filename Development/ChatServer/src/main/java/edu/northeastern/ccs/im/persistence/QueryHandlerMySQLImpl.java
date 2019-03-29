@@ -787,7 +787,7 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
      */
     private List<Message> getPrivateMessagesSinceLogin(long userID) {
         String query = String.format(
-                "SELECT %s, %s, %s, %s, %s from %s inner join %s on %s.%s = %s.%s WHERE %s >= %s AND %s = %s;",
+                "SELECT %s, %s, %s, %s, %s from %s inner join %s on %s.%s = %s.%s WHERE %s >= %s AND %s = %s AND %s != %d;",
                 //select columns
                 DBConstants.MESSAGE_BODY, DBConstants.USER_LAST_SEEN,
                 DBConstants.MESSAGE_SENDER_ID, DBConstants.MESSAGE_RECEIVER_ID,
@@ -799,7 +799,8 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
                 ////join column two
                 DBConstants.USER_TABLE, DBConstants.USER_ID,
                 //Filters
-                DBConstants.MESSAGE_TIME, DBConstants.USER_LAST_SEEN, DBConstants.MESSAGE_RECEIVER_ID, userID);
+                DBConstants.MESSAGE_TIME, DBConstants.USER_LAST_SEEN, DBConstants.MESSAGE_RECEIVER_ID, userID,
+                DBConstants.IS_DELETED, DBConstants.IS_DELETED_TRUE);
         return getMessages(query);
     }
 
@@ -838,7 +839,7 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
                 "SELECT %s, %s, %s , %s.%s from %s "
                         + "inner join %s on %s.%s = %s.%s "
                         + "inner join %s on %s.%s = %s.%s "
-                        + "WHERE (%s >= '%s') AND %s = %s.%s",
+                        + "WHERE (%s >= '%s') AND %s = %s.%s AND %s != %d;",
                 //select columns
                 DBConstants.MESSAGE_BODY,
                 DBConstants.MESSAGE_SENDER_ID, DBConstants.MESSAGE_RECEIVER_ID,
@@ -859,7 +860,8 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
                 //Date greater than last seen time
                 DBConstants.MESSAGE_TIME, last_seen,
                 //Receiver id is a group that has this user as one of its member
-                DBConstants.MESSAGE_RECEIVER_ID, DBConstants.GROUP_INFO_TABLE, DBConstants.GROUP_INFO_GROUP_ID);
+                DBConstants.MESSAGE_RECEIVER_ID, DBConstants.GROUP_INFO_TABLE, DBConstants.GROUP_INFO_GROUP_ID,
+                DBConstants.IS_DELETED, DBConstants.IS_DELETED_TRUE);
         return getMessages(query);
     }
     
