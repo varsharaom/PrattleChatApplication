@@ -1,11 +1,13 @@
 package edu.northeastern.ccs.serverim;
 
 import java.io.IOException;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.FileHandler;
+import java.util.logging.Formatter;
+import java.util.logging.Handler;
 import java.util.logging.Level;
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
-import org.apache.log4j.RollingFileAppender;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 
 /**
  * Logger class that handles logging of all levels of messages.
@@ -22,19 +24,7 @@ public class ChatLogger {
   private static final String DIR = System.getProperty("user.dir");
   /** The path for the directory. */
   private static final String PATH = String.format("%s/%s.log", DIR, LOGNAME);
-  
-  private static final  PatternLayout layout = new PatternLayout("%d{ISO8601} [%t] %-5p %c %x - %m%n");
 
-  
-  /**
-	 * This method returns the logger instance created for the client
-	 * 
-	 * @return the logger instance that belongs to the client.
-	 */
-	public static Logger getLogger() {
-		return LOGGER;
-	}
-  
   /**
    * Static initializations for this class.
    */
@@ -58,16 +48,6 @@ public class ChatLogger {
     write(Level.SEVERE, msg);
   }
 
-  /**
-   * Logs the debug messages.
-   *
-   * @param msg warning to be logged
-   */
-  public static final void debug(String msg) {
-    write(Level.FINE, msg);
-  }
-
-  
   /**
    * Logs the warnings.
    *
@@ -106,7 +86,8 @@ public class ChatLogger {
       default:
         throw new IllegalArgumentException("Invalid handler type.");
     }
-
+    LOGGER.setLevel(Level.ALL);
+    LOGGER.setUseParentHandlers(false);
   }
 
   /**
@@ -119,20 +100,7 @@ public class ChatLogger {
   private static final boolean write(Level lvl, String msg) {
     boolean done = true;
     try {
-      if(lvl==Level.SEVERE) {
-    	  LOGGER.fatal(msg);
-      }
-      else if(lvl==Level.INFO) {
-    	  LOGGER.info(msg);
-    	  
-      }
-      else if(lvl==Level.WARNING) {
-    	  LOGGER.warn(msg);
-      }
-      else {
-    	  LOGGER.debug(msg);
-      }
-     
+      LOGGER.log(lvl, msg);
     } catch (SecurityException ex) {
       done = false;
     }
@@ -144,10 +112,12 @@ public class ChatLogger {
    */
   private static void switchToFile() {
     try {
-	  RollingFileAppender fileAppender = new RollingFileAppender(layout, PATH);	
-	  LOGGER.addAppender(fileAppender);
-    } 
-    catch (IOException e) {
+      Formatter simpleFormatter = new SimpleFormatter();
+      Handler fileHandler = new FileHandler(PATH);
+      fileHandler.setFormatter(simpleFormatter);
+      fileHandler.setLevel(Level.ALL);
+      LOGGER.addHandler(fileHandler);
+    } catch (IOException e) {
       throw new IllegalStateException(e.getMessage());
     }
   }
@@ -156,7 +126,11 @@ public class ChatLogger {
    * Creates console Handler for the logger to use.
    */
   private static void switchToConsole() {
-	  LOGGER.addAppender(new ConsoleAppender(layout));
+    Formatter simpleFormatter = new SimpleFormatter();
+    Handler consoleHandler = new ConsoleHandler();
+    consoleHandler.setFormatter(simpleFormatter);
+    consoleHandler.setLevel(Level.ALL);
+    LOGGER.addHandler(consoleHandler);
   }
 
   /**
