@@ -1,10 +1,10 @@
 package edu.northeastern.ccs.im.utils;
 
-import edu.northeastern.ccs.im.constants.MessageConstants;
 import edu.northeastern.ccs.serverim.Message;
 
-import static edu.northeastern.ccs.im.constants.ClientRunnableConstants.*;
-import static edu.northeastern.ccs.im.constants.MessageConstants.SIMPLE_USER;
+import static edu.northeastern.ccs.im.constants.MessageConstants.*;
+import static edu.northeastern.ccs.im.constants.MessageTestConstants.SECOND_USER;
+import static edu.northeastern.ccs.im.constants.MessageTestConstants.SIMPLE_USER;
 
 public final class MessageUtil {
 
@@ -19,23 +19,40 @@ public final class MessageUtil {
     }
     
     public static Message getValidLoginBroadcastMessageWithDifferentUser() {
-        return Message.makeBroadcastMessage(MessageConstants.SECOND_USER,
-                getValidLoginMessageText());
+        return Message.makeBroadcastMessage(SECOND_USER, getValidLoginMessageText());
     }
 
     public static Message getValidDirectBroadcastMessage() {
-        return Message.makeBroadcastMessage(SIMPLE_USER,
-                getValidDirectMessageText());
+        return Message.makeBroadcastMessage(SIMPLE_USER, getValidDirectMessageText());
     }
     
     public static Message getValidGetUsersMessage() {
-        return Message.makeBroadcastMessage(SIMPLE_USER,
-        		getValidGetUsersMessageText());
+        return Message.makeBroadcastMessage(SIMPLE_USER, getValidGetUsersMessageText());
     }
-    
+
+    public static Message getValidGetMyUsersMessage() {
+        return Message.makeBroadcastMessage(SIMPLE_USER, getValidGetMyUsersMessageText());
+    }
+
+    public static Message getValidGetGroupsMessage() {
+        return Message.makeBroadcastMessage(SIMPLE_USER, getValidGetGroupsMessageText());
+    }
+
+    public static Message getValidGetMyGroupsMessage() {
+        return Message.makeBroadcastMessage(SIMPLE_USER, getValidGetMyGroupsMessageText());
+    }
+    public static Message getInvalidGetInfoMessage() {
+        return Message.makeBroadcastMessage(SIMPLE_USER, getInvalidGetInfoMessageText());
+    }
+
+    private static String getInvalidGetInfoMessageText() {
+        return CUSTOM_COMMAND_PREFIX + GET_INFO_IDENTIFIER
+                + CUSTOM_COMMAND_SUFFIX + " " + " INVALID_IDENTIFIER "
+                + " senderName";
+    }
+
     public static Message getValidDirectBroadcastMessageDifferentUser() {
-        return Message.makeBroadcastMessage(MessageConstants.SECOND_USER,
-                getValidDirectMessageText());
+        return Message.makeBroadcastMessage(SECOND_USER, getValidDirectMessageText());
     }
 
     public static Message getValidGroupBroadcastMessage() {
@@ -61,6 +78,107 @@ public final class MessageUtil {
     public static Message getInvalidMessageWithInvalidType() {
         return Message.makeBroadcastMessage(SIMPLE_USER,
                 getInvalidTypeMessageText());
+    }
+
+    public static Message getValidForwardMessage() {
+        return Message.makeBroadcastMessage(SIMPLE_USER,
+                getValidForwardMessageText());
+    }
+
+    public static Message getValidGroupCreateMessage() {
+        return Message.makeBroadcastMessage(SIMPLE_USER, getValidGroupCreateMessageText());
+    }
+
+    public static Message getValidGroupDeleteMessage() {
+        return Message.makeBroadcastMessage(SIMPLE_USER, getValidGroupDeleteMessageText());
+    }
+
+    public static Message getValidAddModeratorMessage() {
+        return Message.makeBroadcastMessage(SIMPLE_USER, getValidAddModeratorMessageText());
+    }
+
+    public static Message getValidRemoveMemberMessage() {
+        return Message.makeBroadcastMessage(SIMPLE_USER, getValidRemoveMemberMessageText());
+    }
+
+    public static Message getValidAddMemberMessage() {
+        return Message.makeBroadcastMessage(SIMPLE_USER, getValidAddMemberMessageText());
+    }
+
+    public static Message getValidLeaveGroupMessage() {
+        return Message.makeBroadcastMessage(SIMPLE_USER, getValidLeaveGroupMessageText());
+    }
+
+    public static Message getValidRequestGroupAddMessage() {
+        return Message.makeBroadcastMessage(SIMPLE_USER, getValidRequestGroupAddMessageText());
+    }
+
+    public static Message getValidMessage() {
+        return Message.makeBroadcastMessage(SIMPLE_USER, getValidMessageText());
+    }
+
+    public static Message getInvalidActionTypeMessage() {
+        return Message.makeBroadcastMessage(SIMPLE_USER, getInvalidActionMessageText());
+    }
+
+    public static Message getValidGetGroupMembersMessage() {
+        return Message.makeBroadcastMessage(SIMPLE_USER, getValidGetGroupMembersMessageText());
+    }
+
+    private static String getValidGetGroupMembersMessageText() {
+        return CUSTOM_COMMAND_PREFIX + GET_INFO_IDENTIFIER
+                + CUSTOM_COMMAND_SUFFIX + " " + GET_GRP_MEMBERS_IDENTIFIER
+                + " senderName groupName";
+    }
+
+    private static String getInvalidActionMessageText() {
+        return CUSTOM_COMMAND_PREFIX + ACTION_MSG_IDENTIFIER + CUSTOM_COMMAND_SUFFIX
+                + " " + "INVALID_ACTION_TYPE" + " groupName toBeMember senderName";
+    }
+
+    private static String getValidMessageText() {
+        return "This is a plain valid message";
+    }
+
+
+    private static String getValidRequestGroupAddMessageText() {
+        return CUSTOM_COMMAND_PREFIX + ACTION_MSG_IDENTIFIER + CUSTOM_COMMAND_SUFFIX
+                + " " + REQUEST_GROUP_ADD_IDENTIFIER + " groupName toBeMember senderName";
+    }
+
+    private static String getValidLeaveGroupMessageText() {
+        return CUSTOM_COMMAND_PREFIX + ACTION_MSG_IDENTIFIER + CUSTOM_COMMAND_SUFFIX
+                + " " + LEAVE_GROUP_IDENTIFIER + " groupName senderName";
+    }
+
+    private static String getValidAddMemberMessageText() {
+        return CUSTOM_COMMAND_PREFIX + ACTION_MSG_IDENTIFIER + CUSTOM_COMMAND_SUFFIX
+                + " " + GROUP_ADD_MEMBER_IDENTIFIER + " newMember groupName senderName";
+    }
+
+    private static String getValidRemoveMemberMessageText() {
+        return CUSTOM_COMMAND_PREFIX + ACTION_MSG_IDENTIFIER + CUSTOM_COMMAND_SUFFIX
+                + " " + GROUP_REMOVE_MEMBER_IDENTIFIER + " groupMember groupName senderName";
+    }
+
+    private static String getValidAddModeratorMessageText() {
+        return CUSTOM_COMMAND_PREFIX + ACTION_MSG_IDENTIFIER + CUSTOM_COMMAND_SUFFIX
+                + " " + GROUP_ADD_MODERATOR + " toBeModerator groupName senderName";
+    }
+
+    private static String getValidGroupDeleteMessageText() {
+        return CUSTOM_COMMAND_PREFIX + ACTION_MSG_IDENTIFIER + CUSTOM_COMMAND_SUFFIX
+                + " " + GROUP_DELETE_IDENTIFIER + " groupName senderName";
+    }
+
+    private static String getValidGroupCreateMessageText() {
+        return CUSTOM_COMMAND_PREFIX + ACTION_MSG_IDENTIFIER + CUSTOM_COMMAND_SUFFIX
+                + " " + GROUP_CREATE_IDENTIFIER + " newGroupName creatorName";
+    }
+
+    private static String getValidForwardMessageText() {
+        return CUSTOM_COMMAND_PREFIX + FORWARD_MSG_IDENTIFIER + CUSTOM_COMMAND_SUFFIX
+                + " receiver 123 sender";
     }
 
     private static String getInvalidTypeMessageText() {
@@ -97,8 +215,27 @@ public final class MessageUtil {
     }
     
     private static String getValidGetUsersMessageText() {
-        return CUSTOM_COMMAND_PREFIX + GET_USER_IDENTIFIER
-                + CUSTOM_COMMAND_SUFFIX + " senderName";
+        return CUSTOM_COMMAND_PREFIX + GET_INFO_IDENTIFIER
+                + CUSTOM_COMMAND_SUFFIX + " " + GET_USERS_IDENTIFIER
+                + " senderName";
+    }
+
+    private static String getValidGetGroupsMessageText() {
+        return CUSTOM_COMMAND_PREFIX + GET_INFO_IDENTIFIER
+                + CUSTOM_COMMAND_SUFFIX + " " + GET_GROUPS_IDENTIFIER
+                + " senderName";
+    }
+
+    private static String getValidGetMyGroupsMessageText() {
+        return CUSTOM_COMMAND_PREFIX + GET_INFO_IDENTIFIER
+                + CUSTOM_COMMAND_SUFFIX + " " + GET_MY_GROUPS_IDENTIFIER
+                + " senderName";
+    }
+
+    private static String getValidGetMyUsersMessageText() {
+        return CUSTOM_COMMAND_PREFIX + GET_INFO_IDENTIFIER
+                + CUSTOM_COMMAND_SUFFIX + " " + GET_MY_USERS_IDENTIFIER
+                + " senderName";
     }
 
     private static String getValidRegisterMessageText() {

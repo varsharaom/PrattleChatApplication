@@ -1,23 +1,34 @@
 package edu.northeastern.ccs.im.server;
 
 
+import com.sun.org.apache.bcel.internal.generic.MULTIANEWARRAY;
 import edu.northeastern.ccs.im.constants.MessageConstants;
+import edu.northeastern.ccs.im.persistence.IQueryHandler;
 import edu.northeastern.ccs.im.utils.ClientRunnableHelperUtil;
 import edu.northeastern.ccs.im.utils.MessageUtil;
+import edu.northeastern.ccs.im.utils.QueryHandlerUtil;
 import edu.northeastern.ccs.serverim.Message;
-import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static org.junit.Assert.*;
+import static org.mockito.Matchers.anyLong;
+import static org.mockito.Mockito.when;
 
+@RunWith(MockitoJUnitRunner.class)
 public class MessageParserTest {
 
+    @InjectMocks
     private ClientRunnableHelper clientRunnableHelper;
 
-    @Before
-    public void beforeEach() {
-        clientRunnableHelper = new ClientRunnableHelper(null);
-    }
+    @Mock
+    private IQueryHandler queryHandler;
 
     @Test
     public void testParseValidRegisterMessage() {
@@ -108,4 +119,143 @@ public class MessageParserTest {
         assertEquals(constructedMessage.getId(), Long.parseLong(content[3]));
     }
 
+    @Test
+    public void testValidGetAllUsersMessage() {
+        Message message = MessageUtil.getValidGetUsersMessage();
+
+        when(queryHandler.getAllUsers()).thenReturn(QueryHandlerUtil.getUsers());
+        Message constructedMessage = clientRunnableHelper.getCustomConstructedMessage(message);
+        assertTrue(constructedMessage.isGetInfoMessage());
+        assertTrue(constructedMessage.getText().startsWith(MessageConstants.GET_USERS_CONSOLE_INFO));
+    }
+
+    @Test
+    public void testValidGetAllGroupsMessage() {
+        Message message = MessageUtil.getValidGetGroupsMessage();
+
+        when(queryHandler.getAllGroups()).thenReturn(QueryHandlerUtil.getGroups());
+        Message constructedMessage = clientRunnableHelper.getCustomConstructedMessage(message);
+        assertTrue(constructedMessage.isGetInfoMessage());
+        assertTrue(constructedMessage.getText().startsWith(MessageConstants.GET_GROUPS_CONSOLE_INFO));
+    }
+
+    @Test
+    public void testValidGetMyMessages() {
+        Message message = MessageUtil.getValidGetMyUsersMessage();
+
+        when(queryHandler.getMyUsers(message.getName())).thenReturn(QueryHandlerUtil.getUsers());
+        Message constructedMessage = clientRunnableHelper.getCustomConstructedMessage(message);
+        assertTrue(constructedMessage.isGetInfoMessage());
+        assertTrue(constructedMessage.getText().startsWith(MessageConstants.GET_MY_USERS_CONSOLE_INFO));
+    }
+
+    @Test
+    public void testValidGetMyGroupsMessage() {
+        Message message = MessageUtil.getValidGetMyGroupsMessage();
+
+        when(queryHandler.getMyGroups(message.getName())).thenReturn(QueryHandlerUtil.getGroups());
+        Message constructedMessage = clientRunnableHelper.getCustomConstructedMessage(message);
+        assertTrue(constructedMessage.isGetInfoMessage());
+        assertTrue(constructedMessage.getText().startsWith(MessageConstants.GET_MY_GROUPS_CONSOLE_INFO));
+    }
+
+    @Test
+    public void testValidForwardMessage() {
+        Message message = MessageUtil.getValidForwardMessage();
+
+        when(queryHandler.getMessage(anyLong())).thenReturn(QueryHandlerUtil.getValidMessage());
+        Message constuctedMessage = clientRunnableHelper.getCustomConstructedMessage(message);
+
+        String expectedPattern = ".*<<< FORWARDED MESSAGE FROM * ";
+        Pattern pattern = Pattern.compile(expectedPattern);
+        Matcher matcher = pattern.matcher(constuctedMessage.getText());
+
+        assertTrue(constuctedMessage.isDirectMessage());
+        assertTrue("Constrcuted message does not have forwarded message info.", matcher.find());
+    }
+
+    @Test
+    public void testGroupCreateMessage() {
+        Message message = MessageUtil.getValidGroupCreateMessage();
+
+        Message constructedMessage = clientRunnableHelper.getCustomConstructedMessage(message);
+        String[] contents = constructedMessage.getText().split(" ");
+
+        assertTrue(constructedMessage.isActionMessage());
+        assertEquals(MessageConstants.GROUP_CREATE_IDENTIFIER, contents[0]);
+    }
+
+    @Test
+    public void testGroupDeleteMessage() {
+        Message message = MessageUtil.getValidGroupDeleteMessage();
+
+        Message constructedMessage = clientRunnableHelper.getCustomConstructedMessage(message);
+        String[] contents = constructedMessage.getText().split(" ");
+
+        assertTrue(constructedMessage.isActionMessage());
+        assertEquals(MessageConstants.GROUP_DELETE_IDENTIFIER, contents[0]);
+    }
+
+    @Test
+    public void testAddModeratorMessage() {
+        Message message = MessageUtil.getValidAddModeratorMessage();
+
+        Message constructedMessage = clientRunnableHelper.getCustomConstructedMessage(message);
+        String[] contents = constructedMessage.getText().split(" ");
+
+        assertTrue(constructedMessage.isActionMessage());
+        assertEquals(MessageConstants.GROUP_ADD_MODERATOR, contents[0]);
+    }
+
+    @Test
+    public void testRemoveGroupMemberMessage() {
+        Message message = MessageUtil.getValidRemoveMemberMessage();
+
+        Message constructedMessage = clientRunnableHelper.getCustomConstructedMessage(message);
+        String[] contents = constructedMessage.getText().split(" ");
+
+        assertTrue(constructedMessage.isActionMessage());
+        assertEquals(MessageConstants.GROUP_REMOVE_MEMBER_IDENTIFIER, contents[0]);
+    }
+
+    @Test
+    public void testAddGroupMemberMessage() {
+        Message message = MessageUtil.getValidAddMemberMessage();
+
+        Message constructedMessage = clientRunnableHelper.getCustomConstructedMessage(message);
+        String[] contents = constructedMessage.getText().split(" ");
+
+        assertTrue(constructedMessage.isActionMessage());
+        assertEquals(MessageConstants.GROUP_ADD_MEMBER_IDENTIFIER, contents[0]);
+    }
+
+    @Test
+    public void testLeaveGroupMessage() {
+        Message message = MessageUtil.getValidLeaveGroupMessage();
+
+        Message constructedMessage = clientRunnableHelper.getCustomConstructedMessage(message);
+        String[] contents = constructedMessage.getText().split(" ");
+
+        assertTrue(constructedMessage.isActionMessage());
+        assertEquals(MessageConstants.LEAVE_GROUP_IDENTIFIER, contents[0]);
+    }
+
+    @Test
+    public void testRequestGroupAddMessage() {
+        Message message = MessageUtil.getValidRequestGroupAddMessage();
+
+        Message constructedMessage = clientRunnableHelper.getCustomConstructedMessage(message);
+        String[] contents = constructedMessage.getText().split(" ");
+
+        assertTrue(constructedMessage.isActionMessage());
+        assertEquals(MessageConstants.REQUEST_GROUP_ADD_IDENTIFIER, contents[0]);
+    }
+
+    @Test
+    public void testInvalidGetInfoMessage() {
+        Message message = MessageUtil.getInvalidGetInfoMessage();
+
+        Message constructedMessage = clientRunnableHelper.getCustomConstructedMessage(message);
+        assertTrue(constructedMessage.getText().endsWith(MessageConstants.INVALID_GROUP_INFO_ERR));
+    }
 }

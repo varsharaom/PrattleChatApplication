@@ -6,7 +6,8 @@ create table users (
 	name VARCHAR(50) NOT NULL,
     password VARCHAR(50),
     nickname VARCHAR(50),
-    last_seen DATETIME
+    last_seen DATETIME,
+    invisible INTEGER DEFAULT 0
 );
 
 create table circles (
@@ -17,10 +18,12 @@ create table circles (
 
 create table groups (
 	id INTEGER PRIMARY KEY NOT NULL auto_increment,
-    name VARCHAR(40)
+    name VARCHAR(40),
+    isPrivate INTEGER DEFAULT 0
 );
 
 create table group_info (
+	id INTEGER PRIMARY KEY auto_increment,
 	group_id INTEGER REFERENCES groups(id),
     uid INTEGER REFERENCES users(id),
     role INTEGER

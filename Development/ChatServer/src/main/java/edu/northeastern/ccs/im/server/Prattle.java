@@ -14,10 +14,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import edu.northeastern.ccs.serverim.ChatLogger;
-import edu.northeastern.ccs.serverim.Message;
-import edu.northeastern.ccs.serverim.MessageType;
-import edu.northeastern.ccs.serverim.NetworkConnection;
+import edu.northeastern.ccs.serverim.*;
 
 /**
  * A network server that communicates with IM clients that connect to it. This
@@ -47,7 +44,7 @@ public abstract class Prattle {
 		active = new ConcurrentLinkedQueue<>();
 	}
 
-	static void registerOrLoginUser(Message msg) {
+	static void sendAckMessage(Message msg) {
 		msg.setMessageType(MessageType.BROADCAST);
 		for (ClientRunnable tt : active) {
 			if ((tt.isInitialized()) && tt.getName().equals(msg.getName())) {
@@ -73,6 +70,11 @@ public abstract class Prattle {
 		}
 	}
 
+	/**
+	 * Enqueue direct message for the receiving user.
+	 *
+	 * @param message the message
+	 */
 	static void sendDirectMessage(Message message) {
 		message.setMessageType(MessageType.BROADCAST);
 		for (ClientRunnable tt : active) {
@@ -82,6 +84,11 @@ public abstract class Prattle {
 		}
 	}
 
+	/**
+	 * Enqueue error message for the receiving user.
+	 *
+	 * @param message the message
+	 */
 	static void sendErrorMessage(Message message) {
 		message.setMessageType(MessageType.BROADCAST);
 		for (ClientRunnable tt : active) {
@@ -91,8 +98,19 @@ public abstract class Prattle {
 		}
 	}
 
-	static void sendGroupMessage(Message message) {
-
+	/**
+	 * Enqueue group message for the receiving users.
+	 *
+	 * @param message the message
+	 * @param groupMemebers the group members
+	 */
+	static void sendMessageToMultipleUsers(Message message, Set<String> userNames) {
+		message.setMessageType(MessageType.BROADCAST);
+		for (ClientRunnable tt : active) {
+			if (tt.isInitialized() && (userNames.contains(tt.getName()))) {
+				tt.enqueueMessage(message);
+			}
+		}
 	}
 
 	/**

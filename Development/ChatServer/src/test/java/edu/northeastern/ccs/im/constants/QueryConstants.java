@@ -18,6 +18,14 @@ public class QueryConstants {
 	public static final long SENDER_ID = 1;
 	public static final long RECEIVER_ID = 2;
 	public static final String MESSAGE_TEXT = "text";
+	public static final String MESSAGE_SECOND_TEXT = "second text";
+	public static final long MESSAGE_ID = 1;
+	
+	// Groups
+	public static final String GROUP_NAME = "GROUP";
+	public static final String GROUP_2_NAME = "GROUP_2";
+	public static final int MEMBER_ROLE_ID = 1;
+	public static final int MODERATOR_ROLE_ID = 2;
 	
 	// Queries
 	public static final String TEARDOWN_DELETE = "DELETE FROM %s where %s = %s;";

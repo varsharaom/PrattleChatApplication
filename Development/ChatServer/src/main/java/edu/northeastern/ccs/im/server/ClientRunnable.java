@@ -71,6 +71,7 @@ public class ClientRunnable implements Runnable {
      */
     private Queue<Message> waitingList;
 
+    /** The client runnable helper instance. */
     private ClientRunnableHelper clientRunnableHelper;
 
     /**
@@ -109,21 +110,12 @@ public class ClientRunnable implements Runnable {
                     timer.updateAfterInitialization();
                     // Set that the client is initialized.
                     initialized = true;
-                    loadPendingMessages();
                 } else {
                     initialized = false;
                 }
             }
         }
     }
-
-    private void loadPendingMessages() {
-        List<Message> messageList = QueryFactory.getQueryHandler().getMessagesSinceLastLogin(userId);
-        for(Message message : messageList) {
-        		enqueueMessage(message);
-        }
-    }
-
 
     /**
      * Immediately send this message to the client. This returns if we were
@@ -149,7 +141,7 @@ public class ClientRunnable implements Runnable {
         if (userName != null) {
             // Optimistically set this users ID number.
             setName(userName);
-            userId = hashCode();
+            userId = QueryFactory.getQueryHandler().getUserID(userName);
             result = true;
         } else {
             // Clear this name; we cannot use it. *sigh*
@@ -293,6 +285,7 @@ public class ClientRunnable implements Runnable {
 
     /**
      * Terminate a client that we wish to remove. This termination could happen at
+     * the client's request or due to system need.
      * the client's request or due to system need.
      */
     public void terminateClient() {

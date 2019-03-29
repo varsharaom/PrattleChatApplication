@@ -1,45 +1,65 @@
 package edu.northeastern.ccs.serverim;
 
+import edu.northeastern.ccs.im.constants.MessageConstants;
+
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * Enumeration for the different types of messages.
- * 
- * @author Maria Jump
  *
+ * @author Maria Jump
  */
-public enum  MessageType {
-	/**
-	 * Message sent by the user attempting to login using a specified username.
-	 */
-	HELLO("HLO"),
+public enum MessageType {
+    /**
+     * Message sent by the user attempting to login using a specified username.
+     */
+    HELLO("HLO"),
 
-	/** Message whose contents is broadcast to all connected users. */
-	BROADCAST("BCT"),
+    /**
+     * Message whose contents is broadcast to all connected users.
+     */
+    BROADCAST("BCT"),
 
-	REGISTER("RGSTR"),
+    /**
+     * The register.
+     */
+    REGISTER(MessageConstants.REGISTER_MSG_IDENTIFIER),
 
-	REGISTER_SUCCESS("RGSTR_SCCSS"),
+    /**
+     * The login.
+     */
+    LOGIN(MessageConstants.LOGIN_MSG_IDENTIFIER),
 
-	REGISTER_FAILURE("RGSTR_FLR"),
+    /**
+     * The direct.
+     */
+    DIRECT(MessageConstants.DIRECT_MSG_IDENTIFIER),
 
-	LOGIN("LGN"),
+    /**
+     * The group.
+     */
+    GROUP(MessageConstants.GROUP_MSG_IDENTIFIER),
 
-	LOGIN_SUCCESS("LGN_SCCSS"),
+    /**
+     * The delete.
+     */
+    DELETE(MessageConstants.DELETE_MESSAGE_IDENTIFIER),
 
-	LOGIN_FAILURE("LGN_FLR"),
+    /**
+     * The error.
+     */
+    ERROR(MessageConstants.ERROR_MSG_IDENTIFIER),
 
-	DIRECT("DRCT"),
+    /**
+     * The get info.
+     */
+    GET_INFO(MessageConstants.GET_INFO_IDENTIFIER),
 
-	GROUP("GRP"),
-
-	DELETE("DLT"),
-
-	ERROR("ERR"),
-
-	GET_USERS("GT_USRS"),
-
+    /**
+     * The action.
+     */
+    ACTION(MessageConstants.ACTION_MSG_IDENTIFIER),
     /**
      * Message sent by the user to start the logging out process and sent by the
      * server once the logout process completes.
@@ -56,7 +76,14 @@ public enum  MessageType {
      */
     private int index;
 
+    /**
+     * The Constant lookup.
+     */
     private static final Map<Integer, MessageType> lookup = new HashMap<>();
+
+    /**
+     * The Constant strLookup to lookup type from the enum value.
+     */
     private static final Map<String, MessageType> strLookup = new HashMap<>();
 
     static {
@@ -67,18 +94,40 @@ public enum  MessageType {
         }
     }
 
+    /**
+     * Gets the message type abbreviation.
+     *
+     * @param messageType the message type
+     * @return the message type
+     */
     public static MessageType get(int messageType) {
         return lookup.get(messageType);
     }
 
+    /**
+     * Gets the message type value.
+     *
+     * @return the message type value
+     */
     public int getMessageTypeValue() {
         return index;
     }
 
+    /**
+     * Gets the message type from the abbreviation.
+     *
+     * @param abbreviation the abbreviation
+     * @return the message type
+     */
     public static MessageType get(String abbreviation) {
         return strLookup.get(abbreviation);
     }
 
+    /**
+     * Instantiates a new message type.
+     *
+     * @param abbrev the abbreviation
+     */
     MessageType(String abbrev) {
         abbreviation = abbrev;
     }

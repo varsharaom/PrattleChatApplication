@@ -1,7 +1,6 @@
 package edu.northeastern.ccs.im.server;
 
 import edu.northeastern.ccs.im.constants.ConnectionConstants;
-import edu.northeastern.ccs.im.constants.MessageConstants;
 import edu.northeastern.ccs.im.utils.NetworkConnectionTestUtil;
 import edu.northeastern.ccs.serverim.Message;
 import edu.northeastern.ccs.serverim.NetworkConnection;
@@ -14,6 +13,8 @@ import org.mockito.runners.MockitoJUnitRunner;
 import java.util.Iterator;
 import java.util.concurrent.*;
 
+import static edu.northeastern.ccs.im.constants.MessageTestConstants.BROADCAST_TEXT_MESSAGE;
+import static edu.northeastern.ccs.im.constants.MessageTestConstants.SIMPLE_USER;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import java.util.logging.Level;
@@ -49,8 +50,7 @@ public class ClientRunnableTest {
         clientRunnable = new ClientRunnable(networkConnection);
         clientRunnable.run();
         assertTrue(clientRunnable.isInitialized());
-        Prattle.broadcastMessage(Message.makeBroadcastMessage(MessageConstants.SIMPLE_USER,
-                MessageConstants.BROADCAST_TEXT_MESSAGE));
+        Prattle.broadcastMessage(Message.makeBroadcastMessage(SIMPLE_USER, BROADCAST_TEXT_MESSAGE));
     }
 
     @Test

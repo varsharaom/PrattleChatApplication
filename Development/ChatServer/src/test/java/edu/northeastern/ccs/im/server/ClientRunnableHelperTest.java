@@ -1,8 +1,9 @@
 package edu.northeastern.ccs.im.server;
 
-import edu.northeastern.ccs.im.constants.ClientRunnableConstants;
+import com.sun.org.apache.bcel.internal.generic.MULTIANEWARRAY;
 import edu.northeastern.ccs.im.constants.ClientRunnableHelperConstants;
 import edu.northeastern.ccs.im.constants.MessageConstants;
+import edu.northeastern.ccs.im.constants.MessageTestConstants;
 import edu.northeastern.ccs.im.persistence.DBConstants;
 import edu.northeastern.ccs.im.persistence.IQueryHandler;
 import edu.northeastern.ccs.im.utils.MessageUtil;
@@ -19,13 +20,18 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.anyString;
+import static edu.northeastern.ccs.im.constants.MessageConstants.MSG_ID_PREFIX;
+import static edu.northeastern.ccs.im.constants.MessageConstants.MSG_ID_SUFFIX;
+import static edu.northeastern.ccs.im.constants.MessageTestConstants.BROADCAST_TEXT_MESSAGE;
+import static edu.northeastern.ccs.im.constants.MessageTestConstants.SIMPLE_USER;
+import static org.junit.Assert.*;
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.nio.channels.MulticastChannel;
 import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
 import java.util.List;
@@ -81,7 +87,7 @@ public class ClientRunnableHelperTest {
         ConcurrentLinkedQueue<ClientRunnable> queue = new ConcurrentLinkedQueue<>();
 
         ClientRunnable tt = new ClientRunnable(nc);
-        tt.setName(MessageConstants.SIMPLE_USER);
+        tt.setName(SIMPLE_USER);
         queue.add(tt);
         Field active = Prattle.class.getDeclaredField(ClientRunnableHelperConstants.ACTIVE_FIELD);
         active.setAccessible(true);
@@ -98,7 +104,7 @@ public class ClientRunnableHelperTest {
 
         tt.run();
 
-        when(iQueryHandler.validateLogin(anyString(), anyString())).thenReturn(true);
+        when(iQueryHandler.validateLogin(anyString(), anyString())).thenReturn(1L);
         Message loginMessage = clientRunnableHelper.getCustomConstructedMessage(message);
         clientRunnableHelper.handleMessages(loginMessage);
     }
@@ -108,7 +114,7 @@ public class ClientRunnableHelperTest {
         ConcurrentLinkedQueue<ClientRunnable> queue = new ConcurrentLinkedQueue<>();
 
         ClientRunnable tt = new ClientRunnable(nc);
-        tt.setName(MessageConstants.SIMPLE_USER);
+        tt.setName(SIMPLE_USER);
         queue.add(tt);
         Field active = Prattle.class.getDeclaredField(ClientRunnableHelperConstants.ACTIVE_FIELD);
         active.setAccessible(true);
@@ -125,7 +131,34 @@ public class ClientRunnableHelperTest {
 
         tt.run();
 
-        when(iQueryHandler.validateLogin(anyString(), anyString())).thenReturn(true);
+        when(iQueryHandler.validateLogin(anyString(), anyString())).thenReturn(1L);
+        Message loginMessage = clientRunnableHelper.getCustomConstructedMessage(message);
+        clientRunnableHelper.handleMessages(loginMessage);
+    }
+    
+    @Test
+    public void testHandleLoginAttemptFailed() throws NoSuchFieldException, IllegalAccessException {
+        ConcurrentLinkedQueue<ClientRunnable> queue = new ConcurrentLinkedQueue<>();
+
+        ClientRunnable tt = new ClientRunnable(nc);
+        tt.setName(SIMPLE_USER);
+        queue.add(tt);
+        Field active = Prattle.class.getDeclaredField(ClientRunnableHelperConstants.ACTIVE_FIELD);
+        active.setAccessible(true);
+        active.set(null, queue);
+
+        Queue<Message> messagesQueue = new ConcurrentLinkedQueue<>();
+        Message message = MessageUtil.getValidLoginBroadcastMessageWithDifferentUser();
+        messagesQueue.add(message);
+
+        Class ncClass = nc.getClass();
+        Field messages = ncClass.getDeclaredField(ClientRunnableHelperConstants.MESSAGES_FIELD);
+        messages.setAccessible(true);
+        messages.set(nc, messagesQueue);
+
+        tt.run();
+
+        when(iQueryHandler.validateLogin(anyString(), anyString())).thenReturn(-1L);
         Message loginMessage = clientRunnableHelper.getCustomConstructedMessage(message);
         clientRunnableHelper.handleMessages(loginMessage);
     }
@@ -135,7 +168,7 @@ public class ClientRunnableHelperTest {
         ConcurrentLinkedQueue<ClientRunnable> queue = new ConcurrentLinkedQueue<>();
 
         when(networkConnection.iterator()).thenReturn(NetworkConnectionTestUtil.getMessageIterator());
-        clientRunnable.setName(MessageConstants.SIMPLE_USER);
+        clientRunnable.setName(SIMPLE_USER);
         queue.add(clientRunnable);
         Field active = Prattle.class.getDeclaredField(ClientRunnableHelperConstants.ACTIVE_FIELD);
         active.setAccessible(true);
@@ -145,7 +178,7 @@ public class ClientRunnableHelperTest {
 
         clientRunnable.run();
 
-        when(iQueryHandler.validateLogin(anyString(), anyString())).thenReturn(true);
+        when(iQueryHandler.validateLogin(anyString(), anyString())).thenReturn(1L);
         Message loginMessage = clientRunnableHelper.getCustomConstructedMessage(message);
         clientRunnableHelper.handleMessages(loginMessage);
     }
@@ -177,8 +210,6 @@ public class ClientRunnableHelperTest {
         Message message = MessageUtil.getValidLoginBroadcastMessage();
         Message loginMessage = clientRunnableHelper.getCustomConstructedMessage(message);
 
-        when(iQueryHandler.validateLogin(anyString(), anyString()))
-                .thenReturn(true);
         clientRunnableHelper.handleMessages(loginMessage);
 
     }
@@ -187,7 +218,6 @@ public class ClientRunnableHelperTest {
     public void testHandleInvalidLogin() {
         Message message = MessageUtil.getValidLoginBroadcastMessage();
 //       the text is a compound string sent from client which in turn is used as invalid password
-        when(iQueryHandler.validateLogin(anyString(), anyString())).thenReturn(false);
         Message loginMessage = clientRunnableHelper.getCustomConstructedMessage(message);
         clientRunnableHelper.handleMessages(loginMessage);
     }
@@ -206,7 +236,7 @@ public class ClientRunnableHelperTest {
         ConcurrentLinkedQueue<ClientRunnable> queue = new ConcurrentLinkedQueue<>();
 
         ClientRunnable tt = new ClientRunnable(nc);
-        tt.setName(MessageConstants.SIMPLE_USER);
+        tt.setName(SIMPLE_USER);
         queue.add(tt);
         Field active = Prattle.class.getDeclaredField(ClientRunnableHelperConstants.ACTIVE_FIELD);
         active.setAccessible(true);
@@ -223,7 +253,6 @@ public class ClientRunnableHelperTest {
 
         tt.run();
 
-        when(iQueryHandler.validateLogin(anyString(), anyString())).thenReturn(true);
         Message directMessage = clientRunnableHelper.getCustomConstructedMessage(message);
         clientRunnableHelper.handleMessages(directMessage);
     }
@@ -233,7 +262,7 @@ public class ClientRunnableHelperTest {
         ConcurrentLinkedQueue<ClientRunnable> queue = new ConcurrentLinkedQueue<>();
 
         ClientRunnable tt = new ClientRunnable(nc);
-        tt.setName(MessageConstants.SIMPLE_USER);
+        tt.setName(SIMPLE_USER);
         queue.add(tt);
         Field active = Prattle.class.getDeclaredField("active");
         active.setAccessible(true);
@@ -250,7 +279,6 @@ public class ClientRunnableHelperTest {
 
         tt.run();
 
-        when(iQueryHandler.validateLogin(anyString(), anyString())).thenReturn(true);
         Message directMessage = clientRunnableHelper.getCustomConstructedMessage(message);
         clientRunnableHelper.handleMessages(directMessage);
     }
@@ -260,7 +288,7 @@ public class ClientRunnableHelperTest {
         ConcurrentLinkedQueue<ClientRunnable> queue = new ConcurrentLinkedQueue<>();
 
         when(networkConnection.iterator()).thenReturn(NetworkConnectionTestUtil.getMessageIterator());
-        clientRunnable.setName(MessageConstants.SIMPLE_USER);
+        clientRunnable.setName(SIMPLE_USER);
         queue.add(clientRunnable);
         Field active = Prattle.class.getDeclaredField("active");
         active.setAccessible(true);
@@ -270,16 +298,29 @@ public class ClientRunnableHelperTest {
 
         clientRunnable.run();
 
-        when(iQueryHandler.validateLogin(anyString(), anyString())).thenReturn(true);
         Message directMessage = clientRunnableHelper.getCustomConstructedMessage(message);
         clientRunnableHelper.handleMessages(directMessage);
     }
 
     @Test
-    public void testHandleGroupMessage() {
+    public void testHandleGroupMessageHappyPath() {
         Message message = MessageUtil.getValidGroupBroadcastMessage();
 
-        when(iQueryHandler.checkUserNameExists(anyString())).thenReturn(true);
+        when(iQueryHandler.checkGroupNameExists(anyString())).thenReturn(true);
+        when(iQueryHandler.storeMessage(anyString(), anyString(), any(), anyString()))
+                .thenReturn(1l);
+        Message groupMessage = clientRunnableHelper.getCustomConstructedMessage(message);
+        clientRunnableHelper.handleMessages(groupMessage);
+
+    }
+
+    @Test
+    public void testHandleGroupMessageToInvalidGroup() {
+        Message message = MessageUtil.getValidGroupBroadcastMessage();
+
+        when(iQueryHandler.checkGroupNameExists(anyString())).thenReturn(false);
+        when(iQueryHandler.storeMessage(anyString(), anyString(), any(), anyString()))
+                .thenReturn(1l);
         Message groupMessage = clientRunnableHelper.getCustomConstructedMessage(message);
         clientRunnableHelper.handleMessages(groupMessage);
 
@@ -290,10 +331,20 @@ public class ClientRunnableHelperTest {
         Message message = MessageUtil.getValidGetUsersMessage();
 
         List<User> list = new ArrayList();
-        list.add(new User(1L, DBConstants.USER_USERNAME, DBConstants.USER_USERNAME, System.currentTimeMillis()));
+        list.add(new User(1L, DBConstants.USER_USERNAME, DBConstants.USER_USERNAME,
+                System.currentTimeMillis(), 0));
         when(iQueryHandler.getAllUsers()).thenReturn(list);
+
         Message getUsersMessage = clientRunnableHelper.getCustomConstructedMessage(message);
         clientRunnableHelper.handleMessages(getUsersMessage);
+    }
+
+    @Test
+    public void testInvalidGetInfoMessage() {
+        Message message = MessageUtil.getInvalidGetInfoMessage();
+        Message invalidGetInfoMessage = clientRunnableHelper.getCustomConstructedMessage(message);
+
+        clientRunnableHelper.handleMessages(invalidGetInfoMessage);
     }
 
     @Test
@@ -321,10 +372,63 @@ public class ClientRunnableHelperTest {
     @Test
     public void testHandleDeleteMessage() {
         Message message = MessageUtil.getValidDeleteBroadcastMessage();
-
         Message groupMessage = clientRunnableHelper.getCustomConstructedMessage(message);
+
         clientRunnableHelper.handleMessages(groupMessage);
 
     }
 
+    @Test
+    public void testMessageIdPrepend() {
+        long randomId = (long) (Math.random() * 100000);
+        String messageText = BROADCAST_TEXT_MESSAGE;
+        String msgPrefix = MSG_ID_PREFIX + randomId + MSG_ID_SUFFIX;
+
+        assertFalse(messageText.startsWith(msgPrefix));
+
+        String prependedText =
+                clientRunnableHelper.getPrependedMessageText(messageText, randomId);
+
+        assertTrue(prependedText.startsWith(msgPrefix));
+        assertTrue(prependedText.endsWith(BROADCAST_TEXT_MESSAGE));
+    }
+
+    @Test
+    public void testForwardMessageHappyPath() {
+
+        Message message = MessageUtil.getValidForwardMessage();
+
+        when(iQueryHandler.getMessage(anyLong())).thenReturn(MessageUtil.getValidMessage());
+        Message fwdMessage = clientRunnableHelper.getCustomConstructedMessage(message);
+
+        when(iQueryHandler.checkUserNameExists(anyString())).thenReturn(true);
+        when(iQueryHandler.storeMessage(anyString(), anyString(), any(), anyString()))
+                .thenReturn(1l);
+        clientRunnableHelper.handleMessages(fwdMessage);
+    }
+
+    @Test
+    public void testForwardMessageToInvalidReceiver() {
+
+        Message message = MessageUtil.getValidForwardMessage();
+
+        when(iQueryHandler.getMessage(anyLong())).thenReturn(MessageUtil.getValidMessage());
+        Message fwdMessage = clientRunnableHelper.getCustomConstructedMessage(message);
+
+        when(iQueryHandler.checkUserNameExists(anyString())).thenReturn(false);
+        clientRunnableHelper.handleMessages(fwdMessage);
+    }
+
+    @Test
+    public void testGetMyGroupUsers() {
+        Message message = MessageUtil.getValidGetGroupMembersMessage();
+        List<String> list = new ArrayList();
+        list.add("member1");
+        list.add("member2");
+        when(iQueryHandler.getGroupMembers(anyString())).thenReturn(list);
+
+        Message getUsersMessage = clientRunnableHelper.getCustomConstructedMessage(message);
+        clientRunnableHelper.handleMessages(getUsersMessage);
+
+    }
 }
