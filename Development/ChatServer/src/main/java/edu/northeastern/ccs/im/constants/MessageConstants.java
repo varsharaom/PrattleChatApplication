@@ -187,6 +187,8 @@ public final class MessageConstants {
             "Only moderators are permitted to perform this action.";
     public static final String REQUEST_PREFIX = "[REQUEST] ";
 
+    public static final String MESSAGE_SENT_INFO = "[INFO] Message sent : ";
+    
     /**
      * Private constructor for class with static methods.
      */
