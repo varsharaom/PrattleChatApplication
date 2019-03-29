@@ -19,13 +19,19 @@ import java.util.logging.Logger;
  */
 public class QueryHandlerMySQLImpl implements IQueryHandler {
 
-    /** The logger object. */
+    /**
+     * The logger object.
+     */
     final Logger logger = Logger.getGlobal();
-    
-    /** The SQL exception error message. */
+
+    /**
+     * The SQL exception error message.
+     */
     private static final String SQL_EXCEPTION_MSG = "SQL Exception";
-    
-    /** The JDBC connection. */
+
+    /**
+     * The JDBC connection.
+     */
     private Connection connection;
 
     /**
@@ -282,27 +288,27 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
             logger.log(Level.INFO, SQL_EXCEPTION_MSG + ": " + e.getMessage());
         }
         List<User> circleList = new ArrayList<>();
-        
-        for(long userId : circleIDs) {
-	        query = String.format("SELECT u.* FROM %s as u WHERE %s = %d;",
-	        		DBConstants.USER_TABLE, DBConstants.USER_ID, userId);
-	        try {
-	            PreparedStatement statement = connection.prepareStatement(query);
-	            ResultSet rs = statement.executeQuery();
-	
-	            Date date = new Date(System.currentTimeMillis());
-	            while (rs.next()) {
-	                User user = new User(rs.getLong(1),
-	                        rs.getString(2), rs.getString(4), date.getTime(), rs.getInt(6));
-	                circleList.add(user);
-	            }
-	            rs.close();
-	            statement.close();
-	        } catch (SQLException e) {
-	            logger.log(Level.INFO, SQL_EXCEPTION_MSG + ": " + e.getMessage());
-	        }
+
+        for (long userId : circleIDs) {
+            query = String.format("SELECT u.* FROM %s as u WHERE %s = %d;",
+                    DBConstants.USER_TABLE, DBConstants.USER_ID, userId);
+            try {
+                PreparedStatement statement = connection.prepareStatement(query);
+                ResultSet rs = statement.executeQuery();
+
+                Date date = new Date(System.currentTimeMillis());
+                while (rs.next()) {
+                    User user = new User(rs.getLong(1),
+                            rs.getString(2), rs.getString(4), date.getTime(), rs.getInt(6));
+                    circleList.add(user);
+                }
+                rs.close();
+                statement.close();
+            } catch (SQLException e) {
+                logger.log(Level.INFO, SQL_EXCEPTION_MSG + ": " + e.getMessage());
+            }
         }
-        
+
         return circleList;
     }
 
@@ -787,11 +793,12 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
      */
     private List<Message> getPrivateMessagesSinceLogin(long userID) {
         String query = String.format(
-                "SELECT %s, %s, %s, %s, %s from %s inner join %s on %s.%s = %s.%s WHERE %s >= %s AND %s = %s AND %s != %d;",
+                "SELECT %s, %s, %s, %s, %s, %s.%s as %s from %s inner join %s on %s.%s = %s.%s WHERE %s >= %s AND %s = %s AND %s != %d;",
                 //select columns
                 DBConstants.MESSAGE_BODY, DBConstants.USER_LAST_SEEN,
                 DBConstants.MESSAGE_SENDER_ID, DBConstants.MESSAGE_RECEIVER_ID,
-                DBConstants.USER_USERNAME,
+                DBConstants.USER_USERNAME, DBConstants.MESSAGE_TABLE,
+                DBConstants.MESSAGE_ID, DBConstants.MESSAGE_ID_ALIAS,
                 //join tables
                 DBConstants.MESSAGE_TABLE, DBConstants.USER_TABLE,
                 //join column one
@@ -801,10 +808,10 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
                 //Filters
                 DBConstants.MESSAGE_TIME, DBConstants.USER_LAST_SEEN, DBConstants.MESSAGE_RECEIVER_ID, userID,
                 DBConstants.IS_DELETED, DBConstants.IS_DELETED_TRUE);
-        return getMessages(query);
+        return getMessages(query, true, userID);
     }
 
-    private String getUserLastSeen(long userID){
+    private String getUserLastSeen(long userID) {
         String query = String.format("SELECT %s from %s WHERE %s=%s",
                 DBConstants.USER_LAST_SEEN, DBConstants.USER_TABLE,
                 DBConstants.USER_ID, userID);
@@ -836,7 +843,7 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
     private List<Message> getGroupMessagesSinceLogin(long userID) {
         String last_seen = getUserLastSeen(userID);
         String query = String.format(
-                "SELECT %s, %s, %s , %s.%s from %s "
+                "SELECT %s, %s, %s , %s.%s, %s.%s as %s from %s "
                         + "inner join %s on %s.%s = %s.%s "
                         + "inner join %s on %s.%s = %s.%s "
                         + "WHERE (%s >= '%s') AND %s = %s.%s AND %s != %d;",
@@ -844,6 +851,8 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
                 DBConstants.MESSAGE_BODY,
                 DBConstants.MESSAGE_SENDER_ID, DBConstants.MESSAGE_RECEIVER_ID,
                 DBConstants.GROUP_TABLE, DBConstants.GROUP_NAME,
+                DBConstants.MESSAGE_TABLE,
+                DBConstants.MESSAGE_ID, DBConstants.MESSAGE_ID_ALIAS,
                 //join table one
                 DBConstants.MESSAGE_TABLE, DBConstants.GROUP_TABLE,
                 //join column one
@@ -862,23 +871,30 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
                 //Receiver id is a group that has this user as one of its member
                 DBConstants.MESSAGE_RECEIVER_ID, DBConstants.GROUP_INFO_TABLE, DBConstants.GROUP_INFO_GROUP_ID,
                 DBConstants.IS_DELETED, DBConstants.IS_DELETED_TRUE);
-        return getMessages(query);
+        return getMessages(query, false, userID);
     }
-    
+
     /**
      * Gets the messages.
      *
      * @param query the query
      * @return the messages
      */
-    private List<Message> getMessages(String query) {
+    private List<Message> getMessages(String query, boolean isPrivate, long receiverID) {
         List<Message> messages = new ArrayList<>();
+        Set<Long> visitedMessages = new HashSet<>();
         try {
             PreparedStatement statement = connection.prepareStatement(query);
             ResultSet rs = statement.executeQuery();
             while (rs.next()) {
-                Message m = Message.makeDirectMessage(getUserName(rs.getLong(2)), rs.getString(4), rs.getString(1));
-                messages.add(m);
+                long msgID = rs.getLong(DBConstants.MESSAGE_ID_ALIAS);
+
+                if (!visitedMessages.contains(msgID)) {
+                    Message m = Message.makeDirectMessage(getUserName(rs.getLong(isPrivate ? 3 : 2)), getUserName(receiverID), rs.getString(1));
+                    messages.add(m);
+                    visitedMessages.add(msgID);
+                }
+
             }
             rs.close();
             statement.close();

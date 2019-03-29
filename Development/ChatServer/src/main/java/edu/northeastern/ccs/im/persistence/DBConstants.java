@@ -116,6 +116,9 @@ public class DBConstants {
     // MESSAGE
     /** The id field in the message table. */
     public static final String MESSAGE_ID = "id";
+
+    //Alias field for the message id constant
+    public static final String MESSAGE_ID_ALIAS = "MSG_ID";
     
     /** The sender id field in the message table. */
     public static final String MESSAGE_SENDER_ID = "sender_id";
