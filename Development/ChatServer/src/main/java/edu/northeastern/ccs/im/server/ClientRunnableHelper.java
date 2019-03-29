@@ -207,7 +207,13 @@ class ClientRunnableHelper {
         if (queryHandler.isGroupMember(groupName, senderName)) {
             ackMessage = MessageConstants.REQUEST_PREFIX +
                     requestGroupAddByGroupMember(groupName, senderName, toBeMember);
-            queryHandler.storeMessage(senderName, groupName, MessageType.GROUP, ackMessage);
+
+            List<String> moderators = queryHandler.getGroupModerators(groupName);
+
+//            persist messages to publish it to offline moderators
+            moderators.forEach(moderator ->
+                    queryHandler.storeMessage(senderName, moderator, MessageType.DIRECT, ackMessage));
+
         }
         else {
             ackMessage = MessageConstants.INVALID_GROUP_MEMBER_ERR;
