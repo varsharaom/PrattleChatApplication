@@ -57,8 +57,14 @@ public class DBConstants {
     
     /** The last seen field in User table. */
     public static final String USER_LAST_SEEN = "last_seen";
+    
+    /** The Constant USER_INVISIBLE. */
     public static final String USER_INVISIBLE = "invisible";
+    
+    /** The Constant USER_INVISIBLE_TRUE. */
     public static final Integer USER_INVISIBLE_TRUE = 1;
+    
+    /** The Constant USER_INVISIBLE_FALSE. */
     public static final Integer USER_INVISIBLE_FALSE = 0;
 
     // GROUP
@@ -67,6 +73,15 @@ public class DBConstants {
     
     /** The name field in groups table. */
     public static final String GROUP_NAME = "name";
+    
+    /** The Constant GROUP_IS_PRIVATE. */
+    public static final String GROUP_IS_PRIVATE = "isPrivate";
+    
+    /** The Constant GROUP_PRIVATE_CODE. */
+    public static final int GROUP_PRIVATE_CODE = 1;
+    
+    /** The Constant GROUP_PUBLIC_CODE. */
+    public static final int GROUP_PUBLIC_CODE = 0;
 
     // GROUP_INFO
     /** The id field in group_info table. */
@@ -80,7 +95,11 @@ public class DBConstants {
     
     /** The role field in group_info table. */
     public static final String GROUP_INFO_USER_ROLE = "role";
+    
+    /** The Constant GROUP_INFO_USER_ROLE_MEMBER. */
     public static final int GROUP_INFO_USER_ROLE_MEMBER = 1;
+    
+    /** The Constant GROUP_INFO_USER_ROLE_ADMIN. */
     public static final int GROUP_INFO_USER_ROLE_ADMIN = 2;
 
 

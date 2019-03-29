@@ -251,4 +251,11 @@ public class MessageParserTest {
         assertEquals(MessageConstants.REQUEST_GROUP_ADD_IDENTIFIER, contents[0]);
     }
 
+    @Test
+    public void testInvalidGetInfoMessage() {
+        Message message = MessageUtil.getInvalidGetInfoMessage();
+
+        Message constructedMessage = clientRunnableHelper.getCustomConstructedMessage(message);
+        assertTrue(constructedMessage.getText().endsWith(MessageConstants.INVALID_GROUP_INFO_ERR));
+    }
 }

@@ -14,7 +14,6 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class QueryHandlerMySQLImpl.
  */
@@ -82,7 +81,7 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
      */
     @Override
     public void updateUserVisibility(String userName, Boolean makeInVisible) {
-        String query = String.format("UPDATE %s set %s=%d WHERE %s='%s'",
+        String query = String.format("UPDATE %s SET %s=%d WHERE %s='%s';",
                 DBConstants.USER_TABLE, DBConstants.USER_INVISIBLE,
                 makeInVisible ? DBConstants.USER_INVISIBLE_TRUE : DBConstants.USER_INVISIBLE_FALSE,
                 DBConstants.USER_USERNAME, userName);
@@ -189,11 +188,11 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
      */
     @Override
     public List<Group> getAllGroups() {
-        String query = String.format("Select %s, %s from %s;",
+        String query = String.format("Select %s, %s from %s WHERE %s = %d;",
                 //Select columns
                 DBConstants.GROUP_ID, DBConstants.GROUP_NAME,
                 //table
-                DBConstants.GROUP_TABLE);
+                DBConstants.GROUP_TABLE, DBConstants.GROUP_IS_PRIVATE, DBConstants.GROUP_PUBLIC_CODE);
 
         return getGroupsHelper(query);
     }
@@ -413,7 +412,6 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
      * @see edu.northeastern.ccs.im.persistence.IQueryHandler#getGroupModerators(java.lang.String)
      */
     public List<String> getGroupModerators(String name) {
-        // TODO: Replace constant 2 with enum value for group role
         String query = String.format("SELECT gi.%s\n" +
                         "FROM %s as gi, %s as g\n" +
                         "WHERE g.%s = '%s' AND gi.%s = g.%s AND gi.%s = %d;",
@@ -617,6 +615,15 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
                 DBConstants.GROUP_ID, groupID
         );
         return nameHelper(query);
+    }
+    
+    @Override
+    public void updateGroupVisibility(String groupName, Boolean makeInVisible) {
+        String query = String.format("UPDATE %s SET %s=%d WHERE %s='%s';",
+                DBConstants.GROUP_TABLE, DBConstants.GROUP_IS_PRIVATE,
+                makeInVisible ? DBConstants.GROUP_PRIVATE_CODE : DBConstants.GROUP_PUBLIC_CODE,
+                DBConstants.GROUP_NAME, groupName);
+        doUpdateQuery(query);
     }
 
     //-----------------DB Insert/Update Queries-------------------
