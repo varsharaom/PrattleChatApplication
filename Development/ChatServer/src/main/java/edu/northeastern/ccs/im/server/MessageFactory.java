@@ -45,7 +45,7 @@ public class MessageFactory {
             else
                 message = Message.makeErrorMessage(clientMessage.getName(),
                         MessageConstants.UNKNOWN_MESSAGE_TYPE_ERR);
-            }
+        }
         else {
             message = Message.makeErrorMessage(clientMessage.getName(),
                     MessageConstants.EMPTY_MESSAGE_ERR);
@@ -149,11 +149,11 @@ public class MessageFactory {
      * @return the message
      */
     private static Message constructCustomGetInfoMessage(String restOfMessageText, IQueryHandler queryHandler) {
-        String[] content = restOfMessageText.split(" ", 2 );
+        String[] content = restOfMessageText.split(" ");
         String commandType  = content[0];
         String sender = content[1];
-
-        String result = getInfo(sender, commandType, queryHandler);
+        String[] arr = Arrays.copyOfRange(content, 1, content.length);
+        String result = getInfo(arr, commandType, queryHandler);
 
         return Message.makeGetInfoMessage(sender, sender, result);
     }
@@ -183,34 +183,50 @@ public class MessageFactory {
     /**
      * Handle get info command query calls.
      *
-     * @param senderName the sender name
+     * @param contents the sender name and optional groupname
      * @param commandType the command type
      * @param queryHandler the query handler
      * @return the requested info results
      */
-    private static String getInfo(String senderName, String commandType, IQueryHandler queryHandler) {
+    private static String getInfo(String[] contents, String commandType, IQueryHandler queryHandler) {
 
         String info = null;
-        if(commandType.equalsIgnoreCase(MessageConstants.GET_USERS_IDENTIFIER)) {
+        String senderName = contents[0];
+        if(commandType.equals(MessageConstants.GET_USERS_IDENTIFIER)) {
             List<User> users = queryHandler.getAllUsers();
             info =  handleGetUsers(MessageConstants.GET_USERS_CONSOLE_INFO, users);
         }
-        else if (commandType.equalsIgnoreCase(MessageConstants.GET_GROUPS_IDENTIFIER)) {
+        else if (commandType.equals(MessageConstants.GET_GROUPS_IDENTIFIER)) {
             List<Group> groups = queryHandler.getAllGroups();
             info = handleGetGroups(MessageConstants.GET_GROUPS_CONSOLE_INFO, groups);
         }
-        else if (commandType.equalsIgnoreCase(MessageConstants.GET_MY_USERS_IDENTIFIER)) {
+        else if (commandType.equals(MessageConstants.GET_MY_USERS_IDENTIFIER)) {
             List<User> users = queryHandler.getMyUsers(senderName);
             info = handleGetUsers(MessageConstants.GET_MY_USERS_CONSOLE_INFO, users);
         }
-        else if (commandType.equalsIgnoreCase(MessageConstants.GET_MY_GROUPS_IDENTIFIER)) {
+        else if (commandType.equals(MessageConstants.GET_MY_GROUPS_IDENTIFIER)) {
             List<Group> groups = queryHandler.getMyGroups(senderName);
             info = handleGetGroups(MessageConstants.GET_MY_GROUPS_CONSOLE_INFO, groups);
+        }
+        else if (commandType.equals(MessageConstants.GET_GRP_MEMBERS_IDENTIFIER)) {
+            String groupName = contents[1];
+            List<String> groupMembers = queryHandler.getGroupMembers(groupName);
+            info = handleGetGroupMembers(MessageConstants.GET_GRP_USERS_CONSOLE_INFO, groupMembers);
         }
         else{
             return MessageConstants.INVALID_GROUP_INFO_ERR;
         }
         return info;
+    }
+
+    private static String handleGetGroupMembers(String consoleInfo, List<String> groupMembers) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(consoleInfo + "\n");
+
+        for(String member: groupMembers) {
+            sb.append(member + "\n");
+        }
+        return sb.toString();
     }
 
     /**

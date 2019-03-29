@@ -205,7 +205,15 @@ class ClientRunnableHelper {
         String ackMessage;
 
         if (queryHandler.isGroupMember(groupName, senderName)) {
-            ackMessage = requestGroupAddByGroupMember(groupName, senderName, toBeMember);
+            ackMessage = MessageConstants.REQUEST_PREFIX +
+                    requestGroupAddByGroupMember(groupName, senderName, toBeMember);
+
+            List<String> moderators = queryHandler.getGroupModerators(groupName);
+
+//            persist messages to publish it to offline moderators
+            moderators.forEach(moderator ->
+                    queryHandler.storeMessage(senderName, moderator, MessageType.DIRECT, ackMessage));
+
         }
         else {
             ackMessage = MessageConstants.INVALID_GROUP_MEMBER_ERR;
@@ -511,39 +519,6 @@ class ClientRunnableHelper {
                     MessageConstants.INVALID_GROUP_RECEIVER_MSG);
             Prattle.sendErrorMessage(errorMessage);
         }
-    }
-
-    /**
-     * Handle forwarded message.
-     *
-     * @param message the message
-     */
-    private void handleForwardMessages(Message message) {
-        if (isUserPresent(message.getMsgReceiver())) {
-            long messageId = queryHandler.storeMessage(message.getName(), message.getMsgReceiver(),
-                    message.getMessageType(),
-                    getForwardMessageText(message));
-
-            message.setText(getPrependedMessageText(message.getText(), messageId));
-            Prattle.sendDirectMessage(message);
-        }
-        else {
-            Message errorMessage = Message.makeErrorMessage(message.getName(),
-                    MessageConstants.INVALID_DIRECT_RECEIVER_MSG);
-            Prattle.sendErrorMessage(errorMessage);
-        }
-    }
-
-    /**
-     * Gets the forward message text.
-     *
-     * @param message the message
-     * @return the forward message text
-     */
-    private String getForwardMessageText(Message message) {
-        StringBuilder sb = new StringBuilder(message.getText());
-        sb.append(" <<< FORWARDED MESSAGE >>> ");
-        return sb.toString();
     }
 
     /**

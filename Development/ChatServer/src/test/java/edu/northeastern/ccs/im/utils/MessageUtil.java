@@ -121,6 +121,16 @@ public final class MessageUtil {
         return Message.makeBroadcastMessage(SIMPLE_USER, getInvalidActionMessageText());
     }
 
+    public static Message getValidGetGroupMembersMessage() {
+        return Message.makeBroadcastMessage(SIMPLE_USER, getValidGetGroupMembersMessageText());
+    }
+
+    private static String getValidGetGroupMembersMessageText() {
+        return CUSTOM_COMMAND_PREFIX + GET_INFO_IDENTIFIER
+                + CUSTOM_COMMAND_SUFFIX + " " + GET_GRP_MEMBERS_IDENTIFIER
+                + " senderName groupName";
+    }
+
     private static String getInvalidActionMessageText() {
         return CUSTOM_COMMAND_PREFIX + ACTION_MSG_IDENTIFIER + CUSTOM_COMMAND_SUFFIX
                 + " " + "INVALID_ACTION_TYPE" + " groupName toBeMember senderName";
@@ -259,5 +269,5 @@ public final class MessageUtil {
     private MessageUtil() {
 
     }
-    
+
 }

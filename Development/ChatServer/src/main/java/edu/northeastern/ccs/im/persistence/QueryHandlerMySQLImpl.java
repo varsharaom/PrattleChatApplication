@@ -96,7 +96,14 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
         Date date = new Date(System.currentTimeMillis());
         SimpleDateFormat format = new SimpleDateFormat(DBConstants.DATE_FORMAT);
         long senderID = getUserID(senderName);
-        long receiverID = getUserID(receiverName);
+        long receiverID;
+        if (type.equals(MessageType.DIRECT)) {
+            receiverID = getUserID(receiverName);
+        }
+        else {
+            receiverID = getGroupID(receiverName);
+        }
+
         String query = String.format("INSERT INTO %s (%s,%s,%s,%s,%s) VALUES(%d,%d,'%s','%s','%s');",
                 DBConstants.MESSAGE_TABLE, DBConstants.MESSAGE_SENDER_ID, DBConstants.MESSAGE_RECEIVER_ID,
                 DBConstants.MESSAGE_TYPE, DBConstants.MESSAGE_BODY, DBConstants.MESSAGE_TIME,
