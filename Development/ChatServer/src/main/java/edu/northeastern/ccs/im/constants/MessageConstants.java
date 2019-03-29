@@ -53,7 +53,10 @@ public final class MessageConstants {
     
     /** The command to get groups a user belongs to. */
     public static final String GET_MY_GROUPS_IDENTIFIER = "GT_MY_GRPS";
-    
+
+    /** The command to get all users in the group. */
+    public static final String GET_GRP_MEMBERS_IDENTIFIER = "GT_GRP_USRS";
+
     /** The command to get information about application entities such as users and groups. */
     public static final String GET_INFO_IDENTIFIER = "GT_INFO";
     
@@ -68,7 +71,7 @@ public final class MessageConstants {
     
     /** The command to leave a group. */
     public static final String LEAVE_GROUP_IDENTIFIER = "LV_GRP";
-    public static final String REQUEST_GROUP_ADD_IDENTIFIER = "REQ_GRP_ADD_MMBR";
+    public static final String REQUEST_GROUP_ADD_IDENTIFIER = "GRP_REQ";
 
     /** An error message code for server responses. */
     public static final String ERROR_MSG_IDENTIFIER = "ERR";
@@ -100,7 +103,8 @@ public final class MessageConstants {
     
     /** The Constant GET_MY_GROUPS_CONSOLE_INFO. */
     public static final String GET_MY_GROUPS_CONSOLE_INFO = "List of my groups : ";
-    
+
+    public static final String GET_GRP_USERS_CONSOLE_INFO = "List of all members in this group : ";
     /** The Constant GROUP_DELETE_SUCCESS_MSG. */
     public static final String GROUP_DELETE_SUCCESS_MSG = "Group successfully deleted...";
     
@@ -118,7 +122,6 @@ public final class MessageConstants {
     public static final String REQUEST_GROUP_ADD_SUCCESS_MSG = "Add request sucessfully sent to" +
             "all moderators of the group...";
 
-	//  ERROR MESSAGES
 	/** The Constant LOGIN_FAILURE_ERR. */
     public static final String LOGIN_FAILURE_ERR = "Your credentials mismatch...";
     
@@ -146,7 +149,7 @@ public final class MessageConstants {
     /** The Constant ADD_MDRTR_INVALID_ERR. */
     public static final String ADD_MDRTR_INVALID_ERR = OPERATION_UNSUCCESSFUL_ERR +
             "Only group members can be made as moderator...";
-    
+
     /** The Constant RMV_MMBR_INVALID_ERR. */
     public static final String RMV_MMBR_INVALID_ERR = OPERATION_UNSUCCESSFUL_ERR +
             "Only group members can be removed.";
@@ -162,6 +165,10 @@ public final class MessageConstants {
     /** The Constant INVALID_GROUP_MEMBER_ERR. */
     public static final String INVALID_GROUP_MEMBER_ERR = OPERATION_UNSUCCESSFUL_ERR +
             "Only group perform the requested action...";
+    public static final String INVALID_ACTION_TYPE_ERR = OPERATION_UNSUCCESSFUL_ERR +
+            "Invalid Action type. Please retry with a valid one.";
+    public static final String INVALID_GROUP_INFO_ERR = OPERATION_UNSUCCESSFUL_ERR +
+            "Invalid get info command. Please retry with a valid command... ";
 
     /** The Constant ERROR_DELETE_INVALID_MSG_ID. */
     public static final String ERROR_DELETE_INVALID_MSG_ID = "Message ID entered is invalid." +
@@ -178,6 +185,7 @@ public final class MessageConstants {
     /** The Constant INVALID_MODERATOR_ERR. */
     public static final String INVALID_MODERATOR_ERR = OPERATION_UNSUCCESSFUL_ERR +
             "Only moderators are permitted to perform this action.";
+    public static final String REQUEST_PREFIX = "[REQUEST] ";
 
     /**
      * Private constructor for class with static methods.

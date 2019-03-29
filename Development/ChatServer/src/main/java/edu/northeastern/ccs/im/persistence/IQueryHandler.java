@@ -8,7 +8,6 @@ import edu.northeastern.ccs.serverim.User;
 import java.util.List;
 import java.util.Set;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Interface IQueryHandler.
  */
@@ -295,6 +294,15 @@ public interface IQueryHandler {
      */
     Set<String> getAllGroupMembers(String groupName);
 
+    
+    /**
+     * Update group visibility.
+     *
+     * @param groupName the group name
+     * @param makeInVisible the make in visible
+     */
+    public void updateGroupVisibility(String groupName, Boolean makeInVisible);
+    
     /**
      * Adds the user to circle.
      *
