@@ -10,12 +10,14 @@ import java.util.*;
 
 public class MessageFactory {
 
+    private MessageFactory() {
+    }
 
     /**
      * Creates a new Message object.
      *
      * @param clientMessage the message received from the client
-     * @param queryHandler the query handler
+     * @param queryHandler  the query handler
      * @return the message
      */
     public static Message createMessage(Message clientMessage, IQueryHandler queryHandler) {
@@ -26,8 +28,8 @@ public class MessageFactory {
             String type = getType(arr[0]);
             String restOfMessageText = arr[1];
 
-            if(type.equals(MessageConstants.REGISTER_MSG_IDENTIFIER))
-                    message = constructCustomRegisterMessage(restOfMessageText);
+            if (type.equals(MessageConstants.REGISTER_MSG_IDENTIFIER))
+                message = constructCustomRegisterMessage(restOfMessageText);
             else if (type.equals(MessageConstants.DIRECT_MSG_IDENTIFIER))
                 message = constructCustomDirectMessage(restOfMessageText);
             else if (type.equals(MessageConstants.LOGIN_MSG_IDENTIFIER))
@@ -41,32 +43,30 @@ public class MessageFactory {
             else if (type.equals(MessageConstants.FORWARD_MSG_IDENTIFIER))
                 message = constructCustomForwardMessage(restOfMessageText, queryHandler);
             else if (type.equals(MessageConstants.ACTION_MSG_IDENTIFIER))
-                message = constructActionMessage(type, restOfMessageText);
+                message = constructActionMessage(restOfMessageText);
             else
                 message = Message.makeErrorMessage(clientMessage.getName(),
                         MessageConstants.UNKNOWN_MESSAGE_TYPE_ERR);
-        }
-        else {
+        } else {
             message = Message.makeErrorMessage(clientMessage.getName(),
                     MessageConstants.EMPTY_MESSAGE_ERR);
         }
-        return  message;
+        return message;
     }
 
     /**
      * Construct an action message.
      *
-     * @param type the type
      * @param restOfMessageText the rest of message text
      * @return the message
      */
-    private static Message constructActionMessage(String type, String restOfMessageText) {
+    private static Message constructActionMessage(String restOfMessageText) {
 
         String[] contents = restOfMessageText.split(" ");
-        String sender = contents[contents.length-1];
+        String sender = contents[contents.length - 1];
 
         String actionContent = restOfMessageText.substring(0,
-                restOfMessageText.length()-(sender.length()+1));
+                restOfMessageText.length() - (sender.length() + 1));
         return Message.makeActionMessage(sender, actionContent);
     }
 
@@ -88,7 +88,6 @@ public class MessageFactory {
 
     /**
      * Construct a login message based on the parsed input message.
-     *
      */
     private static Message constructCustomLoginMessage(String restOfMessageText) {
         String[] arr = restOfMessageText.split(" ", 2);
@@ -101,7 +100,6 @@ public class MessageFactory {
 
     /**
      * Construct a register message based on the parsed input message.
-     *
      */
     private static Message constructCustomRegisterMessage(String restOfMessageText) {
         String[] arr = restOfMessageText.split(" ", 2);
@@ -115,7 +113,6 @@ public class MessageFactory {
 
     /**
      * Construct a direct message based on the parsed input message.
-     *
      */
     private static Message constructCustomDirectMessage(String restOfMessageText) {
         String[] arr = restOfMessageText.split(" ", 3);
@@ -124,12 +121,11 @@ public class MessageFactory {
         String receiver = arr[1];
         String actualContent = arr[2];
 
-        return Message.makeDirectMessage(sender, receiver,  actualContent);
+        return Message.makeDirectMessage(sender, receiver, actualContent);
     }
 
     /**
      * Construct a group message based on the parsed input message.
-     *
      */
     private static Message constructCustomGroupMessage(String restOfMessageText) {
         String[] arr = restOfMessageText.split(" ", 3);
@@ -145,12 +141,12 @@ public class MessageFactory {
      * Construct a custom get info message.
      *
      * @param restOfMessageText the rest of message text
-     * @param queryHandler the query handler
+     * @param queryHandler      the query handler
      * @return the message
      */
     private static Message constructCustomGetInfoMessage(String restOfMessageText, IQueryHandler queryHandler) {
         String[] content = restOfMessageText.split(" ");
-        String commandType  = content[0];
+        String commandType = content[0];
         String sender = content[1];
         String[] arr = Arrays.copyOfRange(content, 1, content.length);
         String result = getInfo(arr, commandType, queryHandler);
@@ -162,10 +158,10 @@ public class MessageFactory {
      * Construct a custom forward message.
      *
      * @param restOfMessagetext the rest of messagetext
-     * @param queryHandler the query handler
+     * @param queryHandler      the query handler
      * @return the message
      */
-    private static Message constructCustomForwardMessage (String restOfMessagetext, IQueryHandler queryHandler) {
+    private static Message constructCustomForwardMessage(String restOfMessagetext, IQueryHandler queryHandler) {
         String[] content = restOfMessagetext.split(" ");
         String receiver = content[0];
         long messageId = Long.parseLong(content[1]);
@@ -183,8 +179,8 @@ public class MessageFactory {
     /**
      * Handle get info command query calls.
      *
-     * @param contents the sender name and optional groupname
-     * @param commandType the command type
+     * @param contents     the sender name and optional groupname
+     * @param commandType  the command type
      * @param queryHandler the query handler
      * @return the requested info results
      */
@@ -192,28 +188,23 @@ public class MessageFactory {
 
         String info = null;
         String senderName = contents[0];
-        if(commandType.equals(MessageConstants.GET_USERS_IDENTIFIER)) {
+        if (commandType.equals(MessageConstants.GET_USERS_IDENTIFIER)) {
             List<User> users = queryHandler.getAllUsers();
-            info =  handleGetUsers(MessageConstants.GET_USERS_CONSOLE_INFO, users);
-        }
-        else if (commandType.equals(MessageConstants.GET_GROUPS_IDENTIFIER)) {
+            info = handleGetUsers(MessageConstants.GET_USERS_CONSOLE_INFO, users);
+        } else if (commandType.equals(MessageConstants.GET_GROUPS_IDENTIFIER)) {
             List<Group> groups = queryHandler.getAllGroups();
             info = handleGetGroups(MessageConstants.GET_GROUPS_CONSOLE_INFO, groups);
-        }
-        else if (commandType.equals(MessageConstants.GET_MY_USERS_IDENTIFIER)) {
+        } else if (commandType.equals(MessageConstants.GET_MY_USERS_IDENTIFIER)) {
             List<User> users = queryHandler.getMyUsers(senderName);
             info = handleGetUsers(MessageConstants.GET_MY_USERS_CONSOLE_INFO, users);
-        }
-        else if (commandType.equals(MessageConstants.GET_MY_GROUPS_IDENTIFIER)) {
+        } else if (commandType.equals(MessageConstants.GET_MY_GROUPS_IDENTIFIER)) {
             List<Group> groups = queryHandler.getMyGroups(senderName);
             info = handleGetGroups(MessageConstants.GET_MY_GROUPS_CONSOLE_INFO, groups);
-        }
-        else if (commandType.equals(MessageConstants.GET_GRP_MEMBERS_IDENTIFIER)) {
+        } else if (commandType.equals(MessageConstants.GET_GRP_MEMBERS_IDENTIFIER)) {
             String groupName = contents[1];
             List<String> groupMembers = queryHandler.getGroupMembers(groupName);
             info = handleGetGroupMembers(MessageConstants.GET_GRP_USERS_CONSOLE_INFO, groupMembers);
-        }
-        else{
+        } else {
             return MessageConstants.INVALID_GROUP_INFO_ERR;
         }
         return info;
@@ -223,7 +214,7 @@ public class MessageFactory {
         StringBuilder sb = new StringBuilder();
         sb.append(consoleInfo + "\n");
 
-        for(String member: groupMembers) {
+        for (String member : groupMembers) {
             sb.append(member + "\n");
         }
         return sb.toString();
@@ -233,14 +224,14 @@ public class MessageFactory {
      * Handle get users.
      *
      * @param consoleInfo the console info
-     * @param users the users
+     * @param users       the users
      * @return the string with concatenated user names
      */
     private static String handleGetUsers(String consoleInfo, List<User> users) {
 
         StringBuilder sb = new StringBuilder();
         sb.append(consoleInfo + "\n");
-        for(User user: users) {
+        for (User user : users) {
             sb.append(user.getUserID() + " - " + user.getUserName() + "\n");
         }
         return sb.toString();
@@ -250,13 +241,13 @@ public class MessageFactory {
      * Handle get groups.
      *
      * @param consoleInfo the console info
-     * @param groups the groups
+     * @param groups      the groups
      * @return the string with concatenated group names
      */
     private static String handleGetGroups(String consoleInfo, List<Group> groups) {
         StringBuilder sb = new StringBuilder();
         sb.append(consoleInfo + "\n");
-        for(Group group: groups) {
+        for (Group group : groups) {
             sb.append(group.getId() + " - " + group.getName() + "\n");
         }
         return sb.toString();
@@ -264,13 +255,12 @@ public class MessageFactory {
 
     /**
      * Extracts message type from the message text which has the type prefixed in it.
-     *
      */
     private static String getType(String s) {
         String messageTypeAsString = "";
-        if(s.length() > 2) {
-        		// removing $$ at the beginning and # at the end
-            messageTypeAsString = s.substring(2, s.length()-1);
+        if (s.length() > 2) {
+            // removing $$ at the beginning and # at the end
+            messageTypeAsString = s.substring(2, s.length() - 1);
         }
         return messageTypeAsString;
     }

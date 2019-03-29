@@ -5,44 +5,60 @@ import edu.northeastern.ccs.im.constants.MessageConstants;
 import java.util.HashMap;
 import java.util.Map;
 
-// TODO: Auto-generated Javadoc
 /**
  * Enumeration for the different types of messages.
- * 
- * @author Maria Jump
  *
+ * @author Maria Jump
  */
-public enum  MessageType {
-	/**
-	 * Message sent by the user attempting to login using a specified username.
-	 */
-	HELLO("HLO"),
+public enum MessageType {
+    /**
+     * Message sent by the user attempting to login using a specified username.
+     */
+    HELLO("HLO"),
 
-	/** Message whose contents is broadcast to all connected users. */
-	BROADCAST("BCT"),
+    /**
+     * Message whose contents is broadcast to all connected users.
+     */
+    BROADCAST("BCT"),
 
-	/** The register. */
-	REGISTER(MessageConstants.REGISTER_MSG_IDENTIFIER),
+    /**
+     * The register.
+     */
+    REGISTER(MessageConstants.REGISTER_MSG_IDENTIFIER),
 
-	/** The login. */
-	LOGIN(MessageConstants.LOGIN_MSG_IDENTIFIER),
+    /**
+     * The login.
+     */
+    LOGIN(MessageConstants.LOGIN_MSG_IDENTIFIER),
 
-	/** The direct. */
-	DIRECT(MessageConstants.DIRECT_MSG_IDENTIFIER),
+    /**
+     * The direct.
+     */
+    DIRECT(MessageConstants.DIRECT_MSG_IDENTIFIER),
 
-	/** The group. */
-	GROUP(MessageConstants.GROUP_MSG_IDENTIFIER),
+    /**
+     * The group.
+     */
+    GROUP(MessageConstants.GROUP_MSG_IDENTIFIER),
 
-    /** The delete. */
+    /**
+     * The delete.
+     */
     DELETE(MessageConstants.DELETE_MESSAGE_IDENTIFIER),
 
-	/** The error. */
-	ERROR(MessageConstants.ERROR_MSG_IDENTIFIER),
+    /**
+     * The error.
+     */
+    ERROR(MessageConstants.ERROR_MSG_IDENTIFIER),
 
-	/** The get info. */
-	GET_INFO(MessageConstants.GET_INFO_IDENTIFIER),
+    /**
+     * The get info.
+     */
+    GET_INFO(MessageConstants.GET_INFO_IDENTIFIER),
 
-    /** The action. */
+    /**
+     * The action.
+     */
     ACTION(MessageConstants.ACTION_MSG_IDENTIFIER),
     /**
      * Message sent by the user to start the logging out process and sent by the
@@ -60,10 +76,14 @@ public enum  MessageType {
      */
     private int index;
 
-    /** The Constant lookup. */
+    /**
+     * The Constant lookup.
+     */
     private static final Map<Integer, MessageType> lookup = new HashMap<>();
-    
-    /** The Constant strLookup to lookup type from the enum value. */
+
+    /**
+     * The Constant strLookup to lookup type from the enum value.
+     */
     private static final Map<String, MessageType> strLookup = new HashMap<>();
 
     static {

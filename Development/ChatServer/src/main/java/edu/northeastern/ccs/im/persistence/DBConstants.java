@@ -99,8 +99,8 @@ public class DBConstants {
     /** The Constant GROUP_INFO_USER_ROLE_MEMBER. */
     public static final int GROUP_INFO_USER_ROLE_MEMBER = 1;
     
-    /** The Constant GROUP_INFO_USER_ROLE_ADMIN. */
-    public static final int GROUP_INFO_USER_ROLE_ADMIN = 2;
+    /** The Constant GROUP_INFO_USER_ROLE_MODERATOR. */
+    public static final int GROUP_INFO_USER_ROLE_MODERATOR = 2;
 
 
     // CIRCLES
