@@ -53,7 +53,10 @@ public final class MessageConstants {
     
     /** The command to get groups a user belongs to. */
     public static final String GET_MY_GROUPS_IDENTIFIER = "GT_MY_GRPS";
-    
+
+    /** The command to get all users in the group. */
+    public static final String GET_GRP_MEMBERS_IDENTIFIER = "GT_GRP_USRS";
+
     /** The command to get information about application entities such as users and groups. */
     public static final String GET_INFO_IDENTIFIER = "GT_INFO";
     
@@ -100,7 +103,8 @@ public final class MessageConstants {
     
     /** The Constant GET_MY_GROUPS_CONSOLE_INFO. */
     public static final String GET_MY_GROUPS_CONSOLE_INFO = "List of my groups : ";
-    
+
+    public static final String GET_GRP_USERS_CONSOLE_INFO = "List of all members in this group : ";
     /** The Constant GROUP_DELETE_SUCCESS_MSG. */
     public static final String GROUP_DELETE_SUCCESS_MSG = "Group successfully deleted...";
     

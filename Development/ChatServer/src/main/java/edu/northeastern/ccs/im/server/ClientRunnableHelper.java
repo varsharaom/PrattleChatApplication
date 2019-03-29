@@ -514,39 +514,6 @@ class ClientRunnableHelper {
     }
 
     /**
-     * Handle forwarded message.
-     *
-     * @param message the message
-     */
-    private void handleForwardMessages(Message message) {
-        if (isUserPresent(message.getMsgReceiver())) {
-            long messageId = queryHandler.storeMessage(message.getName(), message.getMsgReceiver(),
-                    message.getMessageType(),
-                    getForwardMessageText(message));
-
-            message.setText(getPrependedMessageText(message.getText(), messageId));
-            Prattle.sendDirectMessage(message);
-        }
-        else {
-            Message errorMessage = Message.makeErrorMessage(message.getName(),
-                    MessageConstants.INVALID_DIRECT_RECEIVER_MSG);
-            Prattle.sendErrorMessage(errorMessage);
-        }
-    }
-
-    /**
-     * Gets the forward message text.
-     *
-     * @param message the message
-     * @return the forward message text
-     */
-    private String getForwardMessageText(Message message) {
-        StringBuilder sb = new StringBuilder(message.getText());
-        sb.append(" <<< FORWARDED MESSAGE >>> ");
-        return sb.toString();
-    }
-
-    /**
      * Prepend the message text with id to parse and display in the client side.
      * This will be useful for identifying each messages uniquely from the console and client side.
      * Example:

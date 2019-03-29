@@ -418,4 +418,17 @@ public class ClientRunnableHelperTest {
         when(iQueryHandler.checkUserNameExists(anyString())).thenReturn(false);
         clientRunnableHelper.handleMessages(fwdMessage);
     }
+
+    @Test
+    public void testGetMyGroupUsers() {
+        Message message = MessageUtil.getValidGetGroupMembersMessage();
+        List<String> list = new ArrayList();
+        list.add("member1");
+        list.add("member2");
+        when(iQueryHandler.getGroupMembers(anyString())).thenReturn(list);
+
+        Message getUsersMessage = clientRunnableHelper.getCustomConstructedMessage(message);
+        clientRunnableHelper.handleMessages(getUsersMessage);
+
+    }
 }
