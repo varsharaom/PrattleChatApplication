@@ -480,10 +480,15 @@ class ClientRunnableHelper {
 	 */
 	private void handleDirectMessages(Message message) {
 		if (isUserPresent(message.getMsgReceiver())) {
+			
 			long messageId = queryHandler.storeMessage(message.getName(), message.getMsgReceiver(),
 					message.getMessageType(), message.getText());
-
 			message.setText(getPrependedMessageText(message.getText(), messageId));
+			
+			Message ackMessage = Message.makeAckMessage(MessageType.BROADCAST, message.getName(), 
+					MessageConstants.MESSAGE_SENT_INFO + messageId);
+			
+			Prattle.sendAckMessage(ackMessage);
 			Prattle.sendDirectMessage(message);
 		} else {
 			Message errorMessage = Message.makeErrorMessage(message.getName(),
