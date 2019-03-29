@@ -125,7 +125,7 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
             rs.close();
             statement.close();
         } catch (SQLException e) {
-            logger.log(Level.INFO, SQL_EXCEPTION_MSG);
+            logger.log(Level.INFO, SQL_EXCEPTION_MSG + ": " + e.getMessage());
         }
         return message;
     }
@@ -250,7 +250,7 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
             rs.close();
             statement.close();
         } catch (SQLException e) {
-            logger.log(Level.INFO, SQL_EXCEPTION_MSG);
+            logger.log(Level.INFO, SQL_EXCEPTION_MSG + ": " + e.getMessage());
         }
         return userList;
     }
@@ -279,7 +279,7 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
             rs.close();
             statement.close();
         } catch (SQLException e) {
-            logger.log(Level.INFO, SQL_EXCEPTION_MSG);
+            logger.log(Level.INFO, SQL_EXCEPTION_MSG + ": " + e.getMessage());
         }
         List<User> userList = getAllUsers();
         List<User> circleList = new ArrayList<>();
@@ -335,7 +335,7 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
             rs.close();
             statement.close();
         } catch (SQLException e) {
-            logger.log(Level.INFO, SQL_EXCEPTION_MSG);
+            logger.log(Level.INFO, SQL_EXCEPTION_MSG + ": " + e.getMessage());
         }
         return messageList;
     }
@@ -360,7 +360,7 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
             rs.close();
             statement.close();
         } catch (SQLException e) {
-            logger.log(Level.INFO, SQL_EXCEPTION_MSG);
+            logger.log(Level.INFO, SQL_EXCEPTION_MSG + ": " + e.getMessage());
         }
         return messageList;
     }
@@ -387,7 +387,7 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
             rs.close();
             statement.close();
         } catch (SQLException e) {
-            logger.log(Level.INFO, SQL_EXCEPTION_MSG);
+            logger.log(Level.INFO, SQL_EXCEPTION_MSG + ": " + e.getMessage());
         }
         return messageList;
     }
@@ -475,7 +475,7 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
             rs.close();
             statement.close();
         } catch (SQLException e) {
-            logger.log(Level.INFO, SQL_EXCEPTION_MSG);
+            logger.log(Level.INFO, SQL_EXCEPTION_MSG + ": " + e.getMessage());
         }
         return role == DBConstants.GROUP_INFO_USER_ROLE_ADMIN;
     }
@@ -497,7 +497,7 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
             rs.close();
             statement.close();
         } catch (SQLException e) {
-            logger.log(Level.INFO, SQL_EXCEPTION_MSG);
+            logger.log(Level.INFO, SQL_EXCEPTION_MSG + ": " + e.getMessage());
         }
         return isMember;
     }
@@ -545,7 +545,7 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
             rs.close();
             statement.close();
         } catch (SQLException e) {
-            logger.log(Level.INFO, SQL_EXCEPTION_MSG);
+            logger.log(Level.INFO, SQL_EXCEPTION_MSG + ": " + e.getMessage());
         }
         return groupMembers;
     }
@@ -648,7 +648,7 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
             }
             statement.close();
         } catch (SQLException e) {
-            logger.log(Level.INFO, SQL_EXCEPTION_MSG);
+            logger.log(Level.INFO, SQL_EXCEPTION_MSG + ": " + e.getMessage());
         }
         return key;
     }
@@ -667,7 +667,7 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
             updateCode = statement.executeUpdate(query);
             statement.close();
         } catch (SQLException e) {
-            logger.log(Level.INFO, SQL_EXCEPTION_MSG);
+            logger.log(Level.INFO, SQL_EXCEPTION_MSG + ": " + e.getMessage());
         }
         return updateCode;
     }
@@ -692,7 +692,7 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
             rs.close();
             statement.close();
         } catch (SQLException e) {
-            logger.log(Level.INFO, SQL_EXCEPTION_MSG);
+            logger.log(Level.INFO, SQL_EXCEPTION_MSG + ": " + e.getMessage());
         }
         return id;
     }
@@ -716,7 +716,7 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
             rs.close();
             statement.close();
         } catch (SQLException e) {
-            logger.log(Level.INFO, SQL_EXCEPTION_MSG);
+            logger.log(Level.INFO, SQL_EXCEPTION_MSG + ": " + e.getMessage());
         }
         return memberList;
     }
@@ -739,7 +739,7 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
             rs.close();
             statement.close();
         } catch (SQLException e) {
-            logger.log(Level.INFO, SQL_EXCEPTION_MSG);
+            logger.log(Level.INFO, SQL_EXCEPTION_MSG + ": " + e.getMessage());
         }
         return name;
     }
@@ -760,7 +760,7 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
             rs.close();
             statement.close();
         } catch (SQLException e) {
-            logger.log(Level.INFO, SQL_EXCEPTION_MSG);
+            logger.log(Level.INFO, SQL_EXCEPTION_MSG + ": " + e.getMessage());
         }
         return isNameFound;
     }
@@ -843,7 +843,7 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
             rs.close();
             statement.close();
         } catch (SQLException e) {
-            logger.log(Level.INFO, SQL_EXCEPTION_MSG);
+            logger.log(Level.INFO, SQL_EXCEPTION_MSG + ": " + e.getMessage());
         }
         return messages;
     }
@@ -866,10 +866,9 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
             rs.close();
             statement.close();
         } catch (SQLException e) {
-            logger.log(Level.INFO, SQL_EXCEPTION_MSG);
+            logger.log(Level.INFO, SQL_EXCEPTION_MSG + ": " + e.getMessage());
         }
         return groups;
     }
-
 
 }
