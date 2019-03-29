@@ -3,37 +3,49 @@ package edu.northeastern.ccs.serverim;
 import java.util.HashSet;
 import java.util.Set;
 
-// TODO: Auto-generated Javadoc
+
 /**
  * The Class User.
  */
 public class User {
-    
-    /** The user ID. */
+
+    /**
+     * The user ID.
+     */
     private final Long userID;
-    
-    /** The user name. */
+
+    /**
+     * The user name.
+     */
     private final String userName;
-    
-    /** The nick name. */
+
+    /**
+     * The nick name.
+     */
     private final String nickName;
-    
-    /** The connections. */
+
+    /**
+     * The connections.
+     */
     private Set<User> connections;
-    
-    /** The last seen time stamp. */
+
+    /**
+     * The last seen time stamp.
+     */
     private long lastSeen;
-    
-    /** The invisible. */
+
+    /**
+     * The invisible.
+     */
     private int invisible;
 
     /**
      * Instantiates a new user.
      *
-     * @param userID the user ID
-     * @param userName the user name
-     * @param nickName the nick name
-     * @param time the time
+     * @param userID    the user ID
+     * @param userName  the user name
+     * @param nickName  the nick name
+     * @param time      the time
      * @param invisible the invisible
      */
     public User(Long userID, String userName, String nickName, long time, int invisible) {
@@ -80,7 +92,7 @@ public class User {
     public Set<User> getConnections() {
         return connections;
     }
-    
+
     /**
      * Gets the last seen.
      *

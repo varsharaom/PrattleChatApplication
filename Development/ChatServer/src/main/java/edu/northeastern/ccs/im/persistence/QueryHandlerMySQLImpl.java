@@ -412,14 +412,13 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
      * @see edu.northeastern.ccs.im.persistence.IQueryHandler#getGroupModerators(java.lang.String)
      */
     public List<String> getGroupModerators(String name) {
-        // TODO: Replace constant 2 with enum value for group role
         String query = String.format("SELECT gi.%s\n" +
                         "FROM %s as gi, %s as g\n" +
                         "WHERE g.%s = '%s' AND gi.%s = g.%s AND gi.%s = %d;",
                 DBConstants.GROUP_INFO_USER_ID, DBConstants.GROUP_INFO_TABLE,
                 DBConstants.GROUP_TABLE, DBConstants.GROUP_NAME, name,
                 DBConstants.GROUP_INFO_GROUP_ID, DBConstants.GROUP_ID,
-                DBConstants.GROUP_INFO_USER_ROLE, 2);
+                DBConstants.GROUP_INFO_USER_ROLE, DBConstants.GROUP_INFO_USER_ROLE_MODERATOR);
         return getPeopleHelper(query);
     }
 
@@ -431,7 +430,7 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
         String query = String.format("INSERT INTO %s (%s) values ('%s');",
                 DBConstants.GROUP_TABLE, DBConstants.GROUP_NAME, groupName);
         long groupId = doInsertQuery(query);
-        addGroupMember(sender, groupName, DBConstants.GROUP_INFO_USER_ROLE_ADMIN);
+        addGroupMember(sender, groupName, DBConstants.GROUP_INFO_USER_ROLE_MODERATOR);
         return groupId;
     }
 
@@ -478,7 +477,7 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
         } catch (SQLException e) {
             logger.log(Level.INFO, SQL_EXCEPTION_MSG + ": " + e.getMessage());
         }
-        return role == DBConstants.GROUP_INFO_USER_ROLE_ADMIN;
+        return role == DBConstants.GROUP_INFO_USER_ROLE_MODERATOR;
     }
 
     /* (non-Javadoc)
@@ -510,7 +509,7 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
     public void makeModerator(String groupName, String toBeModerator) {
         String query = String.format("UPDATE %s as gi SET %s = %d\n" +
                         "where gi.%s = %d AND gi.%s = %s AND gi.%s > 0;",
-                DBConstants.GROUP_INFO_TABLE, DBConstants.GROUP_INFO_USER_ROLE, DBConstants.GROUP_INFO_USER_ROLE_ADMIN,
+                DBConstants.GROUP_INFO_TABLE, DBConstants.GROUP_INFO_USER_ROLE, DBConstants.GROUP_INFO_USER_ROLE_MODERATOR,
                 DBConstants.GROUP_INFO_GROUP_ID, getGroupID(groupName),
                 DBConstants.GROUP_INFO_USER_ID, getUserID(toBeModerator), DBConstants.GROUP_INFO_ID);
         doUpdateQuery(query);

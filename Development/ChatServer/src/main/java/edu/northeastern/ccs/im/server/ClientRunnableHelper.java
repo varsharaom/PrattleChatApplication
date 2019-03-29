@@ -20,7 +20,9 @@ import java.util.Set;
  */
 class ClientRunnableHelper {
 
-    /** The query handler. */
+    /**
+     * The query handler.
+     */
     private IQueryHandler queryHandler;
 
     /**
@@ -49,7 +51,7 @@ class ClientRunnableHelper {
     /**
      * Checks if the group with the name is already present.
      */
-    private boolean isGroupPresent (String groupName) {
+    private boolean isGroupPresent(String groupName) {
         return queryHandler.checkGroupNameExists(groupName);
     }
 
@@ -60,20 +62,15 @@ class ClientRunnableHelper {
     protected void handleMessages(Message message) {
         if (isRegisterOrLogin(message)) {
             handleRegisterLoginMessages(message);
-        }
-        else if (isChatMessage(message)){
+        } else if (isChatMessage(message)) {
             handleChatMessages(message);
-        }
-        else if (message.isDeleteMessage()) {
+        } else if (message.isDeleteMessage()) {
             handleDeleteMessages(message);
-        }
-        else if (isGetInfoMessage(message)) {
-        		handleGetInfoMessages(message);
-        }
-        else if (isActionMessage(message)) {
+        } else if (isGetInfoMessage(message)) {
+            handleGetInfoMessages(message);
+        } else if (isActionMessage(message)) {
             handleActionMessages(message);
-        }
-        else {
+        } else {
             handleErrorMessages(message);
         }
     }
@@ -101,18 +98,15 @@ class ClientRunnableHelper {
 //            ERROR: message not found
             handshakeMessage = Message.makeErrorMessage(clientMessage.getName(),
                     MessageConstants.ERROR_DELETE_INVALID_MSG_ID);
-        }
-        else if (!clientMessage.getName().equalsIgnoreCase(dbMessage.getName())) {
+        } else if (!clientMessage.getName().equalsIgnoreCase(dbMessage.getName())) {
 //            ERROR: sender invalid
             handshakeMessage = Message.makeErrorMessage(clientMessage.getName(),
                     MessageConstants.ERROR_DELETE_SENDER_MISMATCH);
-        }
-        else if (!clientMessage.getMsgReceiver().equalsIgnoreCase(dbMessage.getMsgReceiver())) {
+        } else if (!clientMessage.getMsgReceiver().equalsIgnoreCase(dbMessage.getMsgReceiver())) {
 //            ERROR: receiver invalid
             handshakeMessage = Message.makeErrorMessage(clientMessage.getName(),
                     MessageConstants.ERROR_DELETE_RECEIVER_MISMATCH);
-        }
-        else {
+        } else {
             queryHandler.deleteMessage(clientMessage.getId());
 //            Deletion successful
             handshakeMessage = Message.makeAckMessage(MessageType.DELETE,
@@ -125,10 +119,9 @@ class ClientRunnableHelper {
      * Checks if the action is register or login and performs the respective action.
      */
     private void handleRegisterLoginMessages(Message msg) {
-        if(msg.isRegisterMessage()) {
+        if (msg.isRegisterMessage()) {
             handleRegisterMessage(msg);
-        }
-        else {
+        } else {
             handleLoginMessage(msg);
         }
     }
@@ -137,10 +130,9 @@ class ClientRunnableHelper {
      * Checks the type of message and routes the control to either private or group message handler.
      */
     private void handleChatMessages(Message msg) {
-        if(msg.isDirectMessage()) {
+        if (msg.isDirectMessage()) {
             handleDirectMessages(msg);
-        }
-        else {
+        } else {
             handleGroupMessages(msg);
         }
     }
@@ -150,7 +142,7 @@ class ClientRunnableHelper {
      *
      * @param msg the msg
      */
-    private void handleGetInfoMessages (Message msg) {
+    private void handleGetInfoMessages(Message msg) {
         Prattle.sendDirectMessage(msg);
     }
 
@@ -165,27 +157,19 @@ class ClientRunnableHelper {
 
         if (actualAction.equals(MessageConstants.GROUP_CREATE_IDENTIFIER)) {
             handleCreateGroup(message.getName(), contents);
-        }
-        else if (actualAction.equals(MessageConstants.GROUP_DELETE_IDENTIFIER)) {
+        } else if (actualAction.equals(MessageConstants.GROUP_DELETE_IDENTIFIER)) {
             handleDeleteGroup(message.getName(), contents);
-        }
-        else if (actualAction.equals(MessageConstants.GROUP_ADD_MODERATOR)) {
+        } else if (actualAction.equals(MessageConstants.GROUP_ADD_MODERATOR)) {
             handleCreateModerator(message.getName(), contents);
-        }
-        else if (actualAction.equals(MessageConstants.GROUP_REMOVE_MEMBER_IDENTIFIER)) {
+        } else if (actualAction.equals(MessageConstants.GROUP_REMOVE_MEMBER_IDENTIFIER)) {
             handleRemoveMember(message.getName(), contents);
-        }
-        else if (actualAction.equals(MessageConstants.GROUP_ADD_MEMBER_IDENTIFIER)) {
+        } else if (actualAction.equals(MessageConstants.GROUP_ADD_MEMBER_IDENTIFIER)) {
             handleAddMember(message.getName(), contents);
-        }
-        else if (actualAction.equals(MessageConstants.LEAVE_GROUP_IDENTIFIER)) {
+        } else if (actualAction.equals(MessageConstants.LEAVE_GROUP_IDENTIFIER)) {
             handleLeaveGroup(message.getName(), contents);
-        }
-        else if (actualAction.equals(MessageConstants.REQUEST_GROUP_ADD_IDENTIFIER)) {
+        } else if (actualAction.equals(MessageConstants.REQUEST_GROUP_ADD_IDENTIFIER)) {
             handleRequestGroupAdd(message.getName(), contents);
-        }
-
-        else {
+        } else {
             Message errorMessage = Message.makeErrorMessage(message.getName()
                     , MessageConstants.INVALID_ACTION_TYPE_ERR);
             Prattle.sendErrorMessage(errorMessage);
@@ -197,7 +181,7 @@ class ClientRunnableHelper {
      * Handle leave group message.
      *
      * @param senderName the sender
-     * @param contents the contents
+     * @param contents   the contents
      */
     private void handleRequestGroupAdd(String senderName, String[] contents) {
         String toBeMember = contents[1];
@@ -214,8 +198,7 @@ class ClientRunnableHelper {
             moderators.forEach(moderator ->
                     queryHandler.storeMessage(senderName, moderator, MessageType.DIRECT, ackMessage));
 
-        }
-        else {
+        } else {
             ackMessage = MessageConstants.INVALID_GROUP_MEMBER_ERR;
         }
 
@@ -228,8 +211,7 @@ class ClientRunnableHelper {
         if (queryHandler.checkUserNameExists(toBeMember)) {
             ackMessage = MessageConstants.REQUEST_GROUP_ADD_SUCCESS_MSG;
             publishRequestToModerators(groupName, senderName, toBeMember);
-        }
-        else {
+        } else {
             ackMessage = MessageConstants.INVALID_USER_ERR;
         }
         return ackMessage;
@@ -238,7 +220,7 @@ class ClientRunnableHelper {
     /**
      * Publish request to moderators.
      *
-     * @param groupName the group name
+     * @param groupName  the group name
      * @param senderName the sender name
      * @param toBeMember the to be member
      */
@@ -246,7 +228,7 @@ class ClientRunnableHelper {
         List<String> moderators = queryHandler.getGroupModerators(groupName);
         Set<String> moderatorSet = new HashSet<>(moderators);
         String content = String.format("%s has requested to add %s to the group %s"
-                , senderName, toBeMember , groupName);
+                , senderName, toBeMember, groupName);
 
         Message message = Message.makeBroadcastMessage(senderName, content);
         Prattle.sendMessageToMultipleUsers(message, moderatorSet);
@@ -255,8 +237,8 @@ class ClientRunnableHelper {
     /**
      * Handle leave group.
      *
-     * @param sender the sender
-     * @param contents the contents of the leave group message 
+     * @param sender   the sender
+     * @param contents the contents of the leave group message
      */
     private void handleLeaveGroup(String sender, String[] contents) {
         String groupName = contents[1];
@@ -265,8 +247,7 @@ class ClientRunnableHelper {
         if (queryHandler.isGroupMember(groupName, sender)) {
             queryHandler.removeMember(groupName, sender);
             ackMessage = MessageConstants.LEAVE_GROUP_SUCCESS_MSG;
-        }
-        else {
+        } else {
             ackMessage = MessageConstants.INVALID_GROUP_MEMBER_ERR;
         }
         Message message = Message.makeAckMessage(MessageType.ACTION, sender, ackMessage);
@@ -276,7 +257,7 @@ class ClientRunnableHelper {
     /**
      * Handle add member message.
      *
-     * @param sender the sender
+     * @param sender   the sender
      * @param contents the contents of the add member message
      */
     private void handleAddMember(String sender, String[] contents) {
@@ -285,9 +266,8 @@ class ClientRunnableHelper {
         String ackMessage;
 
         if (queryHandler.isModerator(sender, groupName)) {
-            ackMessage = addMemberByModerator(groupName, sender, member);
-        }
-        else {
+            ackMessage = addMemberByModerator(groupName, member);
+        } else {
             ackMessage = MessageConstants.INVALID_MODERATOR_ERR;
         }
 
@@ -295,13 +275,12 @@ class ClientRunnableHelper {
         Prattle.sendAckMessage(message);
     }
 
-    private String addMemberByModerator(String groupName, String sender, String member) {
+    private String addMemberByModerator(String groupName, String member) {
         String ackMessage;
         if (queryHandler.checkUserNameExists(member)) {
             queryHandler.addGroupMember(member, groupName, 1);
             ackMessage = MessageConstants.ADD_MMBR_SUCCESS_MSG;
-        }
-        else {
+        } else {
             ackMessage = MessageConstants.INVALID_USER_ERR;
         }
         return ackMessage;
@@ -310,7 +289,7 @@ class ClientRunnableHelper {
     /**
      * Handle remove member message.
      *
-     * @param sender the sender
+     * @param sender   the sender
      * @param contents the contents
      */
     private void handleRemoveMember(String sender, String[] contents) {
@@ -320,8 +299,7 @@ class ClientRunnableHelper {
 
         if (queryHandler.isModerator(sender, groupName)) {
             ackMessage = removeMemberByModerator(groupName, sender, member);
-        }
-        else {
+        } else {
             ackMessage = MessageConstants.INVALID_MODERATOR_ERR;
         }
 
@@ -334,8 +312,7 @@ class ClientRunnableHelper {
         if (queryHandler.isGroupMember(groupName, sender)) {
             queryHandler.removeMember(groupName, member);
             ackMessage = MessageConstants.RMV_MMBR_SUCCESS_MSG;
-        }
-        else {
+        } else {
             ackMessage = MessageConstants.RMV_MMBR_INVALID_ERR;
         }
         return ackMessage;
@@ -344,7 +321,7 @@ class ClientRunnableHelper {
     /**
      * Handle create moderator message.
      *
-     * @param sender the sender
+     * @param sender   the sender
      * @param contents the contents
      */
     private void handleCreateModerator(String sender, String[] contents) {
@@ -354,8 +331,7 @@ class ClientRunnableHelper {
 
         if (queryHandler.isModerator(sender, groupName)) {
             ackMessage = createModeratorByModerator(groupName, sender, toBeModerator);
-        }
-        else {
+        } else {
             ackMessage = MessageConstants.INVALID_MODERATOR_ERR;
         }
 
@@ -368,8 +344,7 @@ class ClientRunnableHelper {
         if (queryHandler.isGroupMember(groupName, sender)) {
             queryHandler.makeModerator(groupName, toBeModerator);
             ackMessage = MessageConstants.ADD_MDRTR_SUCCESS_MSG;
-        }
-        else {
+        } else {
             ackMessage = MessageConstants.ADD_MDRTR_INVALID_ERR;
         }
         return ackMessage;
@@ -379,17 +354,16 @@ class ClientRunnableHelper {
     /**
      * Handle delete group message.
      *
-     * @param sender the sender
+     * @param sender   the sender
      * @param contents the contents
      */
-    private void handleDeleteGroup (String sender, String[] contents) {
+    private void handleDeleteGroup(String sender, String[] contents) {
         String groupName = contents[1];
         String ackMessage;
         if (queryHandler.isModerator(sender, groupName)) {
             queryHandler.deleteGroup(sender, groupName);
             ackMessage = MessageConstants.GROUP_DELETE_SUCCESS_MSG;
-        }
-        else {
+        } else {
             ackMessage = MessageConstants.INVALID_MODERATOR_ERR;
         }
         Message message = Message.makeAckMessage(MessageType.ACTION, sender, ackMessage);
@@ -399,10 +373,10 @@ class ClientRunnableHelper {
     /**
      * Handle create group message.
      *
-     * @param sender the sender
+     * @param sender   the sender
      * @param contents the contents
      */
-    private void handleCreateGroup (String sender, String[] contents) {
+    private void handleCreateGroup(String sender, String[] contents) {
         String groupName = contents[1];
         queryHandler.createGroup(sender, groupName);
     }
@@ -411,7 +385,7 @@ class ClientRunnableHelper {
     /**
      * Error messages are routed back to the sender.
      */
-    private void handleErrorMessages (Message msg) {
+    private void handleErrorMessages(Message msg) {
         Prattle.sendErrorMessage(msg);
     }
 
@@ -429,8 +403,7 @@ class ClientRunnableHelper {
                     , message.getName(), acknowledgementText);
             // Persist user details
             queryHandler.createUser(message.getName(), message.getText(), message.getName());
-        }
-        else {
+        } else {
             acknowledgementText = MessageConstants.REGISTER_FAILURE_ERR;
             handShakeMessage = Message.makeErrorMessage(message.getName(), acknowledgementText);
         }
@@ -438,9 +411,11 @@ class ClientRunnableHelper {
         Prattle.sendAckMessage(handShakeMessage);
     }
 
-    /** On a login request, this verifies user credentials and then acknowledges the user with
-     * a success / failure message */
-    private void handleLoginMessage (Message message) {
+    /**
+     * On a login request, this verifies user credentials and then acknowledges the user with
+     * a success / failure message
+     */
+    private void handleLoginMessage(Message message) {
         Message handShakeMessage;
         String acknowledgementText;
 
@@ -450,21 +425,20 @@ class ClientRunnableHelper {
             acknowledgementText = MessageConstants.LOGIN_SUCCESS_MSG;
             handShakeMessage = Message.makeLoginAckMessage(MessageType.LOGIN, message.getName(),
                     message.getName(), acknowledgementText);
-        }
-        else {
+        } else {
             acknowledgementText = MessageConstants.LOGIN_FAILURE_ERR;
             handShakeMessage = Message.makeErrorMessage(message.getName(),
                     acknowledgementText);
         }
 
         Prattle.sendAckMessage(handShakeMessage);
-        
+
         if (userId != -1) {
-        		loadPendingMessages(userId);
-        		QueryFactory.getQueryHandler().updateUserLastLogin(userId);
+            loadPendingMessages(userId);
+            QueryFactory.getQueryHandler().updateUserLastLogin(userId);
         }
     }
-    
+
     /**
      * Load pending messages received since user logged off.
      *
@@ -472,14 +446,15 @@ class ClientRunnableHelper {
      */
     private void loadPendingMessages(long userId) {
         List<Message> messageList = QueryFactory.getQueryHandler().getMessagesSinceLastLogin(userId);
-        for(Message message : messageList) {
-        		Prattle.sendDirectMessage(message);
+        for (Message message : messageList) {
+            Prattle.sendDirectMessage(message);
         }
     }
 
     /**
      * Checks if the receiver is valid. If valid, then send the direct message to the reeciver.
      * Otherwise, sends an error message to the sender.
+     *
      * @param message - custom constructed message by the parser
      */
     private void handleDirectMessages(Message message) {
@@ -490,8 +465,7 @@ class ClientRunnableHelper {
 
             message.setText(getPrependedMessageText(message.getText(), messageId));
             Prattle.sendDirectMessage(message);
-        }
-        else {
+        } else {
             Message errorMessage = Message.makeErrorMessage(message.getName(),
                     MessageConstants.INVALID_DIRECT_RECEIVER_MSG);
             Prattle.sendErrorMessage(errorMessage);
@@ -513,8 +487,7 @@ class ClientRunnableHelper {
             message.setText(getPrependedMessageText(message.getText(), messageId));
             Set<String> groupMemberNames = queryHandler.getAllGroupMembers(groupName);
             Prattle.sendMessageToMultipleUsers(message, groupMemberNames);
-        }
-        else {
+        } else {
             Message errorMessage = Message.makeErrorMessage(message.getName(),
                     MessageConstants.INVALID_GROUP_RECEIVER_MSG);
             Prattle.sendErrorMessage(errorMessage);
@@ -525,11 +498,11 @@ class ClientRunnableHelper {
      * Prepend the message text with id to parse and display in the client side.
      * This will be useful for identifying each messages uniquely from the console and client side.
      * Example:
-     *         - actual message text -> "Hi there"
-     *         - after prepending    -> "<142> Hi there"
-     *         where 142 is the message id
+     * - actual message text -> "Hi there"
+     * - after prepending    -> "<142> Hi there"
+     * where 142 is the message id
      *
-     * @param msgText - the message text.
+     * @param msgText   - the message text.
      * @param messageId - id for the message returned on persistence in the database.
      */
     String getPrependedMessageText(String msgText, long messageId) {
@@ -542,7 +515,9 @@ class ClientRunnableHelper {
     }
 
 
-    /** Checks if the message is either a login or a registration request */
+    /**
+     * Checks if the message is either a login or a registration request
+     */
     private boolean isRegisterOrLogin(Message msg) {
         return (msg.isRegisterMessage() || msg.isLoginMessage());
     }
@@ -563,7 +538,6 @@ class ClientRunnableHelper {
 
     /**
      * Parse the input message text and return a custom constructed message according to the type.
-     *
      */
     Message getCustomConstructedMessage(Message msg) {
 

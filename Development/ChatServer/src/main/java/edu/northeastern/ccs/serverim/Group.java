@@ -1,24 +1,25 @@
 package edu.northeastern.ccs.serverim;
 
-import java.util.HashSet;
-import java.util.Set;
-
 /**
  * The Class Group.
  */
 public class Group {
-    
-    /** The group id. */
+
+    /**
+     * The group id.
+     */
     private final Long id;
-    
-    /** The group name. */
+
+    /**
+     * The group name.
+     */
     private final String name;
 
     /**
      * Instantiates a new group.
      *
      * @param groupId the group id
-     * @param name the name
+     * @param name    the name
      */
     public Group(long groupId, String name) {
         this.id = groupId;
