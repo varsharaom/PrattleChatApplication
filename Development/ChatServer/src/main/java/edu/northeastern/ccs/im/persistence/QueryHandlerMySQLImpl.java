@@ -339,9 +339,15 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
      * @see edu.northeastern.ccs.im.persistence.IQueryHandler#getMessagesSentByUser(long, edu.northeastern.ccs.serverim.MessageType)
      */
     public List<Message> getMessagesSentByUser(long id, MessageType type, int start, int limit) {
-        String query = String.format("SELECT * FROM %s WHERE %s = %d AND %s = '%s' ORDER BY %s DESC LIMIT %d;",
-                DBConstants.MESSAGE_TABLE, DBConstants.MESSAGE_SENDER_ID, id, DBConstants.MESSAGE_TYPE, type, DBConstants.MESSAGE_TIME, start+limit);
+        String query = String.format("SELECT * FROM %s WHERE %s = %d AND %s = '%s' ORDER BY %s DESC",
+                DBConstants.MESSAGE_TABLE, DBConstants.MESSAGE_SENDER_ID, id, DBConstants.MESSAGE_TYPE, type, DBConstants.MESSAGE_TIME);
 
+        if(limit == -1) {
+        		query += ";";
+        } else {
+        		query += " LIMIT " + (start+limit) + ";";
+        }
+        
         List<Message> messageList = new ArrayList<>();
         try {
             PreparedStatement statement = connection.prepareStatement(query);
@@ -365,9 +371,15 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
      * @see edu.northeastern.ccs.im.persistence.IQueryHandler#getMessagesSentToUser(long, edu.northeastern.ccs.serverim.MessageType)
      */
     public List<Message> getMessagesSentToUser(long id, MessageType type, int start, int limit) {
-        String query = String.format("SELECT * FROM %s WHERE %s = %d AND %s = '%s' ORDER BY %s DESC LIMIT %d;",
-        			DBConstants.MESSAGE_TABLE, DBConstants.MESSAGE_RECEIVER_ID, id, DBConstants.MESSAGE_TYPE, type, DBConstants.MESSAGE_TIME, start+limit);
+        String query = String.format("SELECT * FROM %s WHERE %s = %d AND %s = '%s' ORDER BY %s DESC",
+        			DBConstants.MESSAGE_TABLE, DBConstants.MESSAGE_RECEIVER_ID, id, DBConstants.MESSAGE_TYPE, type, DBConstants.MESSAGE_TIME);
 
+        if(limit == -1) {
+	    		query += ";";
+	    } else {
+	    		query += " LIMIT " + (start+limit) + ";";
+	    }
+        
         List<Message> messageList = new ArrayList<>();
         try {
             PreparedStatement statement = connection.prepareStatement(query);
@@ -391,11 +403,17 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
      * @see edu.northeastern.ccs.im.persistence.IQueryHandler#getMessagesFromUserChat(long, long)
      */
     public List<Message> getMessagesFromUserChat(long senderId, long receiverId, int start, int limit) {
-        String query = String.format("SELECT * FROM %s WHERE %s = %d AND %s = %d AND %s = '%s' ORDER BY %s DESC LIMIT %d;",
+        String query = String.format("SELECT * FROM %s WHERE %s = %d AND %s = %d AND %s = '%s' ORDER BY %s DESC",
         			DBConstants.MESSAGE_TABLE, DBConstants.MESSAGE_RECEIVER_ID, receiverId,
                 DBConstants.MESSAGE_SENDER_ID, senderId,
-                DBConstants.MESSAGE_TYPE, MessageType.DIRECT, DBConstants.MESSAGE_TIME, start+limit);
+                DBConstants.MESSAGE_TYPE, MessageType.DIRECT, DBConstants.MESSAGE_TIME);
 
+        if(limit == -1) {
+	    		query += ";";
+	    } else {
+	    		query += " LIMIT " + (start+limit) + ";";
+	    }
+        
         List<Message> messageList = new ArrayList<>();
         try {
             PreparedStatement statement = connection.prepareStatement(query);
