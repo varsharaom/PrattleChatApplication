@@ -215,7 +215,7 @@ public interface IQueryHandler {
      * @return the messages sent by user
      */
     //Message Log Queries
-    public List<Message> getMessagesSentByUser(long id, MessageType type);
+    public List<Message> getMessagesSentByUser(long id, MessageType type, int start, int limit);
     
     /**
      * Gets the messages sent to user.
@@ -224,7 +224,7 @@ public interface IQueryHandler {
      * @param type the type
      * @return the messages sent to user
      */
-    public List<Message> getMessagesSentToUser(long id, MessageType type);
+    public List<Message> getMessagesSentToUser(long id, MessageType type, int start, int limit);
     
     /**
      * Gets the messages from user chat.
@@ -233,7 +233,7 @@ public interface IQueryHandler {
      * @param receiverId the receiver id
      * @return the messages from user chat
      */
-    public List<Message> getMessagesFromUserChat(long senderId, long receiverId);
+    public List<Message> getMessagesFromUserChat(long senderId, long receiverId, int start, int limit);
 
     /**
      * Creates the group.
