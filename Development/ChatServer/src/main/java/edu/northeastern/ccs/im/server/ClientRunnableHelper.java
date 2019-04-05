@@ -137,10 +137,13 @@ class ClientRunnableHelper {
 	private void handleChatMessages(Message msg) {
 		if (msg.isDirectMessage()) {
 			handleDirectMessages(msg);
-		} else {
+		} else if (msg.isGroupMessage()) {
 			handleGroupMessages(msg);
+		} else {
+			handleMultiReceiverMessages(msg);
 		}
 	}
+
 
 	/**
 	 * Delegate get info messages to the direct messages handler.
@@ -505,7 +508,8 @@ class ClientRunnableHelper {
 	 */
 	private void handleGroupMessages(Message message) {
 		String groupName = message.getMsgReceiver();
-		if (isGroupPresent(groupName)) {
+		if (isGroupPresent(groupName))
+		{
 			long messageId = queryHandler.storeMessage(message.getName(), message.getMsgReceiver(),
 					message.getMessageType(), message.getText());
 
@@ -518,6 +522,17 @@ class ClientRunnableHelper {
 			Prattle.sendErrorMessage(errorMessage);
 		}
 	}
+
+	/***
+	 *
+	 * @param msg
+	 * NOTES: GRP_SBST SENDER_NAME 'RCVRS' RCVR1 RCVR2 RCVR3 RCVR4 'RCVRS' GRP_SBST message text GROUP_NAME
+	 */
+	private void handleMultiReceiverMessages(Message msg) {
+		String groupName  = msg.getMsgReceiver();
+
+	}
+
 
 	/**
 	 * Prepend the message text with id to parse and display in the client side.
@@ -550,7 +565,7 @@ class ClientRunnableHelper {
 	 * Returns true if the message is a direct of group message. Otherwise false.
 	 */
 	private boolean isChatMessage(Message msg) {
-		return (msg.isDirectMessage() || msg.isGroupMessage());
+		return (msg.isDirectMessage() || msg.isGroupMessage() || msg.isGroupSubsetMessage());
 	}
 
 	/**

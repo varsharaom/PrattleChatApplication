@@ -60,6 +60,8 @@ public enum MessageType {
      * The action.
      */
     ACTION(MessageConstants.ACTION_MSG_IDENTIFIER),
+
+    GROUP_SUBSET(MessageConstants.GROUP_SUBSET_IDENTIFIER),
     /**
      * Message sent by the user to start the logging out process and sent by the
      * server once the logout process completes.

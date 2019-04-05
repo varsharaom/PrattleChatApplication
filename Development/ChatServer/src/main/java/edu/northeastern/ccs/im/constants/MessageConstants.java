@@ -76,6 +76,8 @@ public final class MessageConstants {
     /** An error message code for server responses. */
     public static final String ERROR_MSG_IDENTIFIER = "ERR";
 
+    public static final String GROUP_SUBSET_IDENTIFIER = "GRP_SBST";
+
     /** The prefix for message id for messages shown on the console. */
     public static final String MSG_ID_PREFIX = "<";
     
@@ -188,7 +190,7 @@ public final class MessageConstants {
     public static final String REQUEST_PREFIX = "[REQUEST] ";
 
     public static final String MESSAGE_SENT_INFO = "[INFO] Message sent : ";
-    
+
     /**
      * Private constructor for class with static methods.
      */
