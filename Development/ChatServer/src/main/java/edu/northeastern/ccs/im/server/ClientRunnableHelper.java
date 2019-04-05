@@ -7,6 +7,7 @@ import edu.northeastern.ccs.im.constants.MessageConstants;
 import edu.northeastern.ccs.im.persistence.IQueryHandler;
 import edu.northeastern.ccs.im.persistence.QueryFactory;
 
+import java.rmi.MarshalException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -180,12 +181,42 @@ class ClientRunnableHelper {
 			handleLeaveGroup(message.getName(), contents);
 		} else if (actualAction.equals(MessageConstants.REQUEST_GROUP_ADD_IDENTIFIER)) {
 			handleRequestGroupAdd(message.getName(), contents);
+		} else if (actualAction.equals(MessageConstants.CHANGE_GROUP_VISIBILITY_IDENTIFIER)) {
+			handleChangeGroupVisibility(message.getName(), contents);
 		} else {
 			Message errorMessage = Message.makeErrorMessage(message.getName(),
 					MessageConstants.INVALID_ACTION_TYPE_ERR);
 			Prattle.sendErrorMessage(errorMessage);
 		}
 
+	}
+
+	private void handleChangeGroupVisibility(String senderName, String[] contents) {
+		String toBeGroupVisibility = contents[1];
+		String groupName = contents[2];
+
+		String actualGroupVisibility = queryHandler.getGroupVisibility(groupName);
+
+		if (actualGroupVisibility.equals(toBeGroupVisibility)) {
+			Message errorMessage = Message.makeErrorMessage(senderName,
+					"[INFO] Group's visibility is already " + toBeGroupVisibility);
+			Prattle.sendErrorMessage(errorMessage);
+		}
+
+		else {
+			if (queryHandler.getGroupModerators(groupName).contains(senderName)) {
+				queryHandler.updateGroupVisibility(groupName, isVisibilityPrivate(toBeGroupVisibility));
+			}
+			else {
+				Message errorMessage = Message.makeErrorMessage(senderName,
+						MessageConstants.INVALID_MODERATOR_ERR);
+				Prattle.sendErrorMessage(errorMessage);
+			}
+		}
+	}
+
+	private Boolean isVisibilityPrivate(String toBeGroupVisibility) {
+		return false;
 	}
 
 	/**
