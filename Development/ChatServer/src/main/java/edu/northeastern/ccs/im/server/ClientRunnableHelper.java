@@ -7,6 +7,7 @@ import edu.northeastern.ccs.im.constants.MessageConstants;
 import edu.northeastern.ccs.im.persistence.IQueryHandler;
 import edu.northeastern.ccs.im.persistence.QueryFactory;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -488,7 +489,7 @@ class ClientRunnableHelper {
 					message.getMessageType(), message.getText());
 			message.setText(getPrependedMessageText(message.getText(), messageId));
 			
-			Message ackMessage = Message.makeAckMessage(MessageType.BROADCAST, message.getName(), 
+			Message ackMessage = Message.makeAckMessage(MessageType.BROADCAST, message.getName(),
 					MessageConstants.MESSAGE_SENT_INFO + messageId);
 			
 			Prattle.sendAckMessage(ackMessage);
@@ -526,11 +527,31 @@ class ClientRunnableHelper {
 	/***
 	 *
 	 * @param msg
-	 * NOTES: GRP_SBST SENDER_NAME 'RCVRS' RCVR1 RCVR2 RCVR3 RCVR4 'RCVRS' GRP_SBST message text GROUP_NAME
+	 * NOTES: GRP_SBST SENDER_NAME 'RCVRS' RCVR1 RCVR2 RCVR3 RCVR4 'RCVRS' GRP_SBST GROUP_NAME message text
 	 */
 	private void handleMultiReceiverMessages(Message msg) {
 		String groupName  = msg.getMsgReceiver();
+		List<String> actualMembers =  queryHandler.getGroupMembers(groupName);
+		Set<String> finalizedReceivers = new HashSet<>();
 
+		for (String potentialGroupMember : msg.getReceivers()) {
+			if (actualMembers.contains(potentialGroupMember)) {
+				finalizedReceivers.add(potentialGroupMember);
+				Message ackMessage = Message.makeAckMessage(MessageType.GROUP_SUBSET,
+						msg.getName(), "[INFO] Message successfully sent to "
+								+ potentialGroupMember);
+				Prattle.sendAckMessage(ackMessage);
+			}
+
+			else {
+				Message errorMessage = Message.makeErrorMessage(msg.getName(),
+						"[ERROR] : " + potentialGroupMember + " does not exist or not " +
+								"a part of the group - " + groupName );
+				Prattle.sendErrorMessage(errorMessage);
+			}
+		}
+
+		Prattle.sendMessageToMultipleUsers(msg, finalizedReceivers);
 	}
 
 

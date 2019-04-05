@@ -264,6 +264,8 @@ public class MessageParserTest {
         Message message = MessageUtil.getValidGroupSubsetMessage();
 
         Message constructedMessage = clientRunnableHelper.getCustomConstructedMessage(message);
+
+        assertTrue(constructedMessage.isGroupSubsetMessage());
         assertEquals("senderName", constructedMessage.getName());
         assertEquals("groupName", constructedMessage.getMsgReceiver());
         assertEquals(constructedMessage.getReceivers().size(), 3);
