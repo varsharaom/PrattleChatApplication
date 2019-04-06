@@ -7,8 +7,6 @@ import edu.northeastern.ccs.im.constants.MessageConstants;
 import edu.northeastern.ccs.im.persistence.IQueryHandler;
 import edu.northeastern.ccs.im.persistence.QueryFactory;
 
-import java.rmi.MarshalException;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -192,32 +190,38 @@ class ClientRunnableHelper {
 	}
 
 	private void handleChangeGroupVisibility(String senderName, String[] contents) {
-		String toBeGroupVisibility = contents[1];
+		boolean toBeGroupVisibility = isPrivateVisibility(contents[1]);
 		String groupName = contents[2];
 
-		String actualGroupVisibility = queryHandler.getGroupVisibility(groupName);
+		boolean actualGroupVisibility = false;
+//				queryHandler.getGroupVisibility(groupName);
 
-		if (actualGroupVisibility.equals(toBeGroupVisibility)) {
+		if (actualGroupVisibility == toBeGroupVisibility) {
 			Message errorMessage = Message.makeErrorMessage(senderName,
 					"[INFO] Group's visibility is already " + toBeGroupVisibility);
 			Prattle.sendErrorMessage(errorMessage);
 		}
 
 		else {
-			if (queryHandler.getGroupModerators(groupName).contains(senderName)) {
-				queryHandler.updateGroupVisibility(groupName, isVisibilityPrivate(toBeGroupVisibility));
-			}
-			else {
-				Message errorMessage = Message.makeErrorMessage(senderName,
-						MessageConstants.INVALID_MODERATOR_ERR);
-				Prattle.sendErrorMessage(errorMessage);
-			}
+			toggleGroupVisibility(groupName, senderName, toBeGroupVisibility);
 		}
 	}
 
-	private Boolean isVisibilityPrivate(String toBeGroupVisibility) {
-		return false;
+	private boolean isPrivateVisibility(String toBeGroupVisibility) {
+		return toBeGroupVisibility.equals(MessageConstants.PRIVATE_VISIBILITY_IDENTIFIER);
 	}
+
+	private void toggleGroupVisibility(String groupName, String senderName, boolean toBeGroupVisibility) {
+		if (queryHandler.getGroupModerators(groupName).contains(senderName)) {
+			queryHandler.updateGroupVisibility(groupName, toBeGroupVisibility);
+		}
+		else {
+			Message errorMessage = Message.makeErrorMessage(senderName,
+					MessageConstants.INVALID_MODERATOR_ERR);
+			Prattle.sendErrorMessage(errorMessage);
+		}
+	}
+
 
 	/**
 	 * Handle leave group message.
@@ -561,28 +565,35 @@ class ClientRunnableHelper {
 	 * NOTES: GRP_SBST SENDER_NAME 'RCVRS' RCVR1 RCVR2 RCVR3 RCVR4 'RCVRS' GRP_SBST GROUP_NAME message text
 	 */
 	private void handleMultiReceiverMessages(Message msg) {
-		String groupName  = msg.getMsgReceiver();
-		List<String> actualMembers =  queryHandler.getGroupMembers(groupName);
+		List<String> actualMembers =  queryHandler.getGroupMembers(msg.getMsgReceiver());
 		Set<String> finalizedReceivers = new HashSet<>();
 
 		for (String potentialGroupMember : msg.getReceivers()) {
 			if (actualMembers.contains(potentialGroupMember)) {
 				finalizedReceivers.add(potentialGroupMember);
-				Message ackMessage = Message.makeAckMessage(MessageType.GROUP_SUBSET,
-						msg.getName(), "[INFO] Message successfully sent to "
-								+ potentialGroupMember);
-				Prattle.sendAckMessage(ackMessage);
+				handleMessageToValidReceiver(msg, potentialGroupMember);
 			}
 
 			else {
-				Message errorMessage = Message.makeErrorMessage(msg.getName(),
-						"[ERROR] : " + potentialGroupMember + " does not exist or not " +
-								"a part of the group - " + groupName );
-				Prattle.sendErrorMessage(errorMessage);
+				handleMessageToInvalidReceiver(msg, potentialGroupMember);
 			}
 		}
 
 		Prattle.sendMessageToMultipleUsers(msg, finalizedReceivers);
+	}
+
+	private void handleMessageToInvalidReceiver(Message msg, String potentialGroupMember) {
+		Message errorMessage = Message.makeErrorMessage(msg.getName(),
+				"[ERROR] : " + potentialGroupMember + " does not exist or not " +
+						"a part of the group - " + msg.getMsgReceiver() );
+		Prattle.sendErrorMessage(errorMessage);
+	}
+
+	private void handleMessageToValidReceiver(Message msg, String potentialGroupMember) {
+		Message ackMessage = Message.makeAckMessage(MessageType.GROUP_SUBSET,
+				msg.getName(), "[INFO] Message successfully sent to "
+						+ potentialGroupMember);
+		Prattle.sendAckMessage(ackMessage);
 	}
 
 

@@ -80,6 +80,9 @@ public final class MessageConstants {
     public static final String GROUP_SUBSET_IDENTIFIER = "GRP_SBST";
 
     public static final String CHANGE_GROUP_VISIBILITY_IDENTIFIER = "CHNG_GRP_VSBLTY";
+
+    public static final String PRIVATE_VISIBILITY_IDENTIFIER = "PRIVATE";
+
     /** The prefix for message id for messages shown on the console. */
     public static final String MSG_ID_PREFIX = "<";
     
