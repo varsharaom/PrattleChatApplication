@@ -71,12 +71,17 @@ public final class MessageConstants {
     
     /** The command to leave a group. */
     public static final String LEAVE_GROUP_IDENTIFIER = "LV_GRP";
+
     public static final String REQUEST_GROUP_ADD_IDENTIFIER = "GRP_REQ";
 
     /** An error message code for server responses. */
     public static final String ERROR_MSG_IDENTIFIER = "ERR";
 
     public static final String GROUP_SUBSET_IDENTIFIER = "GRP_SBST";
+
+    public static final String CHANGE_GROUP_VISIBILITY_IDENTIFIER = "CHNG_GRP_VSBLTY";
+
+    public static final String PRIVATE_VISIBILITY_IDENTIFIER = "PRIVATE";
 
     /** The prefix for message id for messages shown on the console. */
     public static final String MSG_ID_PREFIX = "<";
@@ -190,6 +195,7 @@ public final class MessageConstants {
     public static final String REQUEST_PREFIX = "[REQUEST] ";
 
     public static final String MESSAGE_SENT_INFO = "[INFO] Message sent : ";
+
 
     /**
      * Private constructor for class with static methods.

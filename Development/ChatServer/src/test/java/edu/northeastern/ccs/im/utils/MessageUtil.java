@@ -129,6 +129,15 @@ public final class MessageUtil {
         return Message.makeBroadcastMessage(SIMPLE_USER, getValidGroupSubsetMessageText());
     }
 
+    public static Message getValidGroupVisibilityChangeMessage() {
+        return Message.makeBroadcastMessage(SIMPLE_USER, getValidGroupVisibilityChangeMessageText());
+    }
+
+    private static String getValidGroupVisibilityChangeMessageText() {
+        return CUSTOM_COMMAND_PREFIX + ACTION_MSG_IDENTIFIER + CUSTOM_COMMAND_SUFFIX
+                + " " + CHANGE_GROUP_VISIBILITY_IDENTIFIER + " PRIVATE groupName senderName";
+    }
+
     private static String getValidGroupSubsetMessageText() {
         return CUSTOM_COMMAND_PREFIX + GROUP_SUBSET_IDENTIFIER + CUSTOM_COMMAND_SUFFIX +
                 " senderName RCVRS Receiver1 Receiver2 Receiver3 RCVRS groupName message text";
@@ -277,4 +286,5 @@ public final class MessageUtil {
     private MessageUtil() {
 
     }
+
 }

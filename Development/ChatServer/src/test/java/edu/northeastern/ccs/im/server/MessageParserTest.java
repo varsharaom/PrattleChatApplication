@@ -272,4 +272,12 @@ public class MessageParserTest {
         assertNotNull(constructedMessage.getText());
 
     }
+
+    @Test
+    public void testGroupVisibilityChangeMessage() {
+        Message message = MessageUtil.getValidGroupVisibilityChangeMessage();
+
+        Message constructedMessage = clientRunnableHelper.getCustomConstructedMessage(message);
+        assertTrue(constructedMessage.isActionMessage());;
+    }
 }
