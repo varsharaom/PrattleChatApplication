@@ -2,6 +2,9 @@ package edu.northeastern.ccs.serverim;
 
 import edu.northeastern.ccs.im.constants.MessageConstants;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * Each instance of this class represents a single transmission by our IM
  * clients.
@@ -40,6 +43,9 @@ public class Message {
      * The second argument used in the message.
      */
     private String msgText;
+
+    private List<String> receivers;
+
 
     /**
      * Sets the id.
@@ -151,6 +157,10 @@ public class Message {
         return new Message(MessageType.BROADCAST, myName, text);
     }
 
+    public static Message makeGroupSubsetMessage(String msgSender, String groupName, String msgText) {
+        return new Message(MessageType.GROUP_SUBSET, msgSender, groupName, msgText);
+    }
+
     /**
      * Gets the message receiver.
      *
@@ -167,6 +177,14 @@ public class Message {
      */
     public MessageType getMessageType() {
         return msgType;
+    }
+
+    public List<String> getReceivers() {
+        return receivers;
+    }
+
+    public void setReceivers(List<String> receivers) {
+        this.receivers = receivers;
     }
 
     /**
@@ -493,4 +511,7 @@ public class Message {
         return result;
     }
 
+    public boolean isGroupSubsetMessage() {
+        return msgType == MessageType.GROUP_SUBSET;
+    }
 }

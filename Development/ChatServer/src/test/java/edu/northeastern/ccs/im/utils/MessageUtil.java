@@ -125,6 +125,15 @@ public final class MessageUtil {
         return Message.makeBroadcastMessage(SIMPLE_USER, getValidGetGroupMembersMessageText());
     }
 
+    public static Message getValidGroupSubsetMessage() {
+        return Message.makeBroadcastMessage(SIMPLE_USER, getValidGroupSubsetMessageText());
+    }
+
+    private static String getValidGroupSubsetMessageText() {
+        return CUSTOM_COMMAND_PREFIX + GROUP_SUBSET_IDENTIFIER + CUSTOM_COMMAND_SUFFIX +
+                " senderName RCVRS Receiver1 Receiver2 Receiver3 RCVRS groupName message text";
+    }
+
     private static String getValidGetGroupMembersMessageText() {
         return CUSTOM_COMMAND_PREFIX + GET_INFO_IDENTIFIER
                 + CUSTOM_COMMAND_SUFFIX + " " + GET_GRP_MEMBERS_IDENTIFIER
@@ -250,7 +259,6 @@ public final class MessageUtil {
                 + " password";
     }
 
-
     public static boolean isErrorMessage(Message message) {
         String[] parsedMessageContents = message.getText().split(" ");
         String errorMessageKeyword = CUSTOM_COMMAND_PREFIX
@@ -269,5 +277,4 @@ public final class MessageUtil {
     private MessageUtil() {
 
     }
-
 }

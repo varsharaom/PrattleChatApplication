@@ -7,6 +7,7 @@ import edu.northeastern.ccs.im.constants.MessageConstants;
 import edu.northeastern.ccs.im.persistence.IQueryHandler;
 import edu.northeastern.ccs.im.persistence.QueryFactory;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -137,10 +138,13 @@ class ClientRunnableHelper {
 	private void handleChatMessages(Message msg) {
 		if (msg.isDirectMessage()) {
 			handleDirectMessages(msg);
-		} else {
+		} else if (msg.isGroupMessage()) {
 			handleGroupMessages(msg);
+		} else {
+			handleMultiReceiverMessages(msg);
 		}
 	}
+
 
 	/**
 	 * Delegate get info messages to the direct messages handler.
@@ -485,7 +489,7 @@ class ClientRunnableHelper {
 					message.getMessageType(), message.getText());
 			message.setText(getPrependedMessageText(message.getText(), messageId));
 			
-			Message ackMessage = Message.makeAckMessage(MessageType.BROADCAST, message.getName(), 
+			Message ackMessage = Message.makeAckMessage(MessageType.BROADCAST, message.getName(),
 					MessageConstants.MESSAGE_SENT_INFO + messageId);
 			
 			Prattle.sendAckMessage(ackMessage);
@@ -505,7 +509,8 @@ class ClientRunnableHelper {
 	 */
 	private void handleGroupMessages(Message message) {
 		String groupName = message.getMsgReceiver();
-		if (isGroupPresent(groupName)) {
+		if (isGroupPresent(groupName))
+		{
 			long messageId = queryHandler.storeMessage(message.getName(), message.getMsgReceiver(),
 					message.getMessageType(), message.getText());
 
@@ -518,6 +523,37 @@ class ClientRunnableHelper {
 			Prattle.sendErrorMessage(errorMessage);
 		}
 	}
+
+	/***
+	 *
+	 * @param msg
+	 * NOTES: GRP_SBST SENDER_NAME 'RCVRS' RCVR1 RCVR2 RCVR3 RCVR4 'RCVRS' GRP_SBST GROUP_NAME message text
+	 */
+	private void handleMultiReceiverMessages(Message msg) {
+		String groupName  = msg.getMsgReceiver();
+		List<String> actualMembers =  queryHandler.getGroupMembers(groupName);
+		Set<String> finalizedReceivers = new HashSet<>();
+
+		for (String potentialGroupMember : msg.getReceivers()) {
+			if (actualMembers.contains(potentialGroupMember)) {
+				finalizedReceivers.add(potentialGroupMember);
+				Message ackMessage = Message.makeAckMessage(MessageType.GROUP_SUBSET,
+						msg.getName(), "[INFO] Message successfully sent to "
+								+ potentialGroupMember);
+				Prattle.sendAckMessage(ackMessage);
+			}
+
+			else {
+				Message errorMessage = Message.makeErrorMessage(msg.getName(),
+						"[ERROR] : " + potentialGroupMember + " does not exist or not " +
+								"a part of the group - " + groupName );
+				Prattle.sendErrorMessage(errorMessage);
+			}
+		}
+
+		Prattle.sendMessageToMultipleUsers(msg, finalizedReceivers);
+	}
+
 
 	/**
 	 * Prepend the message text with id to parse and display in the client side.
@@ -550,7 +586,7 @@ class ClientRunnableHelper {
 	 * Returns true if the message is a direct of group message. Otherwise false.
 	 */
 	private boolean isChatMessage(Message msg) {
-		return (msg.isDirectMessage() || msg.isGroupMessage());
+		return (msg.isDirectMessage() || msg.isGroupMessage() || msg.isGroupSubsetMessage());
 	}
 
 	/**

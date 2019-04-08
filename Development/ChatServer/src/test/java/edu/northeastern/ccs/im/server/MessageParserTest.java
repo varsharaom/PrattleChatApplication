@@ -258,4 +258,18 @@ public class MessageParserTest {
         Message constructedMessage = clientRunnableHelper.getCustomConstructedMessage(message);
         assertTrue(constructedMessage.getText().endsWith(MessageConstants.INVALID_GROUP_INFO_ERR));
     }
+
+    @Test
+    public void testValidGroupSubsetMessage() {
+        Message message = MessageUtil.getValidGroupSubsetMessage();
+
+        Message constructedMessage = clientRunnableHelper.getCustomConstructedMessage(message);
+
+        assertTrue(constructedMessage.isGroupSubsetMessage());
+        assertEquals("senderName", constructedMessage.getName());
+        assertEquals("groupName", constructedMessage.getMsgReceiver());
+        assertEquals(constructedMessage.getReceivers().size(), 3);
+        assertNotNull(constructedMessage.getText());
+
+    }
 }

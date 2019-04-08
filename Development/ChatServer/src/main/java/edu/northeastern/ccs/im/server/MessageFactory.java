@@ -44,6 +44,8 @@ public class MessageFactory {
                 message = constructCustomForwardMessage(restOfMessageText, queryHandler);
             else if (type.equals(MessageConstants.ACTION_MSG_IDENTIFIER))
                 message = constructActionMessage(restOfMessageText);
+            else if (type.equals(MessageConstants.GROUP_SUBSET_IDENTIFIER))
+                message = constructCustomGroupSubsetMessage(restOfMessageText, queryHandler);
             else
                 message = Message.makeErrorMessage(clientMessage.getName(),
                         MessageConstants.UNKNOWN_MESSAGE_TYPE_ERR);
@@ -53,6 +55,22 @@ public class MessageFactory {
         }
         return message;
     }
+
+    private static Message constructCustomGroupSubsetMessage(String restOfMessageText, IQueryHandler queryHandler) {
+        String[] contents = restOfMessageText.split("RCVRS");
+
+        String senderName = contents[0].trim();
+        String[] receivers = contents[1].trim().split(" ");
+        String[] groupNameAndText = contents[2].trim().split(" ", 2);
+        String groupName = groupNameAndText[0].trim();
+        String actualContent = groupNameAndText[1].trim();
+
+        Message groupSubsetMessage = Message.makeGroupSubsetMessage(senderName, groupName, actualContent);
+        groupSubsetMessage.setReceivers(Arrays.asList(receivers));
+
+        return groupSubsetMessage;
+    }
+
 
     /**
      * Construct an action message.
