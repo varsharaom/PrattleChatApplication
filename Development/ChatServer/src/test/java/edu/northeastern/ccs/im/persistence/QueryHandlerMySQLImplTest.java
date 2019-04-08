@@ -266,7 +266,7 @@ public class QueryHandlerMySQLImplTest {
         long id = handler.storeMessage(QueryConstants.SENDER_USERNAME, QueryConstants.RECEIVER_USERNAME, MessageType.DIRECT, QueryConstants.MESSAGE_TEXT);
         handler.deleteMessage(id);
         Message res = handler.getMessage(id);
-        assertEquals(res.getIsDeleted(), 1);
+        assertEquals(1, res.getIsDeleted());
     }
 
     @Test
@@ -298,7 +298,7 @@ public class QueryHandlerMySQLImplTest {
             handler.createGroup(QueryConstants.USERNAME, QueryConstants.GROUP_NAME);
 
             List<String> moderators = handler.getGroupModerators(QueryConstants.GROUP_NAME);
-            assertEquals(moderators.get(0), QueryConstants.USERNAME);
+            assertEquals(QueryConstants.USERNAME, moderators.get(0));
         } finally {
             // Tear down
             handler.removeGroupMember(QueryConstants.USERNAME, QueryConstants.GROUP_NAME);
@@ -320,7 +320,7 @@ public class QueryHandlerMySQLImplTest {
             handler.changeMemberRole(user.getUserID(), groupId, 2);
 
             List<String> moderators = handler.getGroupModerators(QueryConstants.GROUP_NAME);
-            assertEquals(moderators.get(0), QueryConstants.USERNAME);
+            assertEquals(QueryConstants.USERNAME, moderators.get(0));
         } finally {
             // Tear down
             handler.removeGroupMember(QueryConstants.USERNAME, QueryConstants.GROUP_NAME);
@@ -351,7 +351,7 @@ public class QueryHandlerMySQLImplTest {
 
             String groupName = handler.getGroupName(groupId + 1);
 
-            assertEquals(groupName, "");
+            assertEquals("", groupName);
         } finally {
             // Tear down
             handler.deleteGroup(QueryConstants.USERNAME, QueryConstants.GROUP_NAME);
@@ -365,7 +365,7 @@ public class QueryHandlerMySQLImplTest {
 
             long res = handler.getGroupID(QueryConstants.GROUP_NAME + QueryConstants.GROUP_NAME);
 
-            assertEquals(res, -1L);
+            assertEquals(-1L, res);
         } finally {
             // Tear down
             handler.deleteGroup(QueryConstants.USERNAME, QueryConstants.GROUP_NAME);
