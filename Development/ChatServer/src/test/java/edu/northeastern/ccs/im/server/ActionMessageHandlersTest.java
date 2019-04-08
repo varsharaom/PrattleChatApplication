@@ -1,6 +1,5 @@
 package edu.northeastern.ccs.im.server;
 
-import com.sun.org.apache.bcel.internal.generic.MULTIANEWARRAY;
 import edu.northeastern.ccs.im.persistence.IQueryHandler;
 import edu.northeastern.ccs.im.utils.MessageUtil;
 import edu.northeastern.ccs.serverim.Message;
@@ -10,7 +9,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import java.lang.invoke.MutableCallSite;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.doNothing;
@@ -214,6 +215,30 @@ public class ActionMessageHandlersTest {
         Message invalidActionMessage = clientRunnableHelper.getCustomConstructedMessage(message);
 
         clientRunnableHelper.handleMessages(invalidActionMessage);
+    }
+
+    @Test
+    public void testMessageGroupSubsetHappyPath() {
+        Message message = MessageUtil.getValidGroupSubsetMessage();
+        Message validGroupSubsetMessage = clientRunnableHelper.getCustomConstructedMessage(message);
+
+        List<String> users = validGroupSubsetMessage.getReceivers();
+        when(queryHandler.getGroupMembers(anyString())).thenReturn(users);
+        when(queryHandler.isGroupMember(anyString(), anyString())).thenReturn(true);
+
+        clientRunnableHelper.handleMessages(validGroupSubsetMessage);
+    }
+
+    @Test
+    public void testMessagesGroupSubsetInvalidReceivers() {
+        Message message = MessageUtil.getValidGroupSubsetMessage();
+        Message validGroupSubsetMessage = clientRunnableHelper.getCustomConstructedMessage(message);
+
+        List<String> users = Arrays.asList("user1", "user2");
+        when(queryHandler.getGroupMembers(anyString())).thenReturn(users);
+        when(queryHandler.isGroupMember(anyString(), anyString())).thenReturn(false);
+
+        clientRunnableHelper.handleMessages(validGroupSubsetMessage);
     }
 
 }
