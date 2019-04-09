@@ -1,5 +1,6 @@
 package edu.northeastern.ccs.im.persistence;
 
+import edu.northeastern.ccs.im.constants.MessageConstants;
 import edu.northeastern.ccs.serverim.Group;
 import edu.northeastern.ccs.serverim.Message;
 import edu.northeastern.ccs.serverim.MessageType;
@@ -98,16 +99,28 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
      * @see edu.northeastern.ccs.im.persistence.IQueryHandler#storeMessage(java.lang.String, java.lang.String, edu.northeastern.ccs.serverim.MessageType, java.lang.String)
      */
     //-----------------Message Queries-------------------
+
     public long storeMessage(String senderName, String receiverName, MessageType type, String msgText) {
+        return storeMessage(senderName, receiverName, type, msgText, DBConstants.MESSAGE_PARENT_ID_DEFAULT);
+    }
+
+    public long storeMessage(String senderName, String receiverName, MessageType type, String msgText, long parentMsgID) {
         Date date = new Date(System.currentTimeMillis());
         SimpleDateFormat format = new SimpleDateFormat(DBConstants.DATE_FORMAT);
         long senderID = getUserID(senderName);
         long receiverID = type.equals(MessageType.GROUP) ? getGroupID(receiverName) : getUserID(receiverName);
-        String query = String.format("INSERT INTO %s (%s,%s,%s,%s,%s) VALUES(%d,%d,'%s','%s','%s');",
+        String query = String.format("INSERT INTO %s (%s,%s,%s,%s,%s,%s) VALUES(%d, %d,'%s','%s','%s', %d);",
                 DBConstants.MESSAGE_TABLE, DBConstants.MESSAGE_SENDER_ID, DBConstants.MESSAGE_RECEIVER_ID,
-                DBConstants.MESSAGE_TYPE, DBConstants.MESSAGE_BODY, DBConstants.MESSAGE_TIME,
-                senderID, receiverID, type, msgText, format.format(date));
+                DBConstants.MESSAGE_TYPE, DBConstants.MESSAGE_BODY, DBConstants.MESSAGE_TIME, DBConstants.MESSAGE_PARENT_ID,
+                senderID, receiverID, type, msgText, format.format(date), parentMsgID);
         return doInsertQuery(query);
+    }
+
+    public Map<String, List<String>> trackMessage(long messageID) {
+        Map<String, List<String>> trackedMap = new HashMap<>();
+        trackedMap.put(MessageConstants.TRACKER_PRIVATE, trackMessagesFromPrivate(messageID));
+        trackedMap.put(MessageConstants.TRACKER_GROUP, trackMessagesFromGroups(messageID));
+        return trackedMap;
     }
 
     /* (non-Javadoc)
@@ -413,6 +426,27 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
     }
 
     //-----------------Group Queries----------------------------------
+
+
+    @Override
+    public boolean isGroupVisible(String groupName) {
+        String query = String.format("SELECT %s from %s WHERE %s=\'%s\'",
+                DBConstants.GROUP_IS_PRIVATE, DBConstants.GROUP_TABLE,
+                DBConstants.GROUP_NAME, groupName);
+        boolean isVisible = false;
+        try {
+            PreparedStatement statement = connection.prepareStatement(query);
+            ResultSet rs = statement.executeQuery();
+            if (rs.next()) {
+                isVisible = rs.getInt(DBConstants.GROUP_IS_PRIVATE) == DBConstants.GROUP_PUBLIC_CODE;
+            }
+            rs.close();
+            statement.close();
+        } catch (SQLException e) {
+            logger.log(Level.INFO, SQL_EXCEPTION_MSG + ": " + e.getMessage());
+        }
+        return isVisible;
+    }
 
     /* (non-Javadoc)
      * @see edu.northeastern.ccs.im.persistence.IQueryHandler#getGroupMembers(java.lang.String)
@@ -925,6 +959,46 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
             logger.log(Level.INFO, SQL_EXCEPTION_MSG + ": " + e.getMessage());
         }
         return groups;
+    }
+
+
+    //gets all the user-names for messages forwarded to private chats
+    private List<String> trackMessagesFromPrivate(long messageID) {
+        String query = String.format("SELECT %s.%s FROM %s inner join %s on %s.%s = %s.%s WHERE "
+                        + "%s.%s = %d", DBConstants.USER_TABLE, DBConstants.USER_USERNAME,
+                DBConstants.MESSAGE_TABLE, DBConstants.USER_TABLE,
+                DBConstants.MESSAGE_TABLE, DBConstants.MESSAGE_RECEIVER_ID,
+                DBConstants.USER_TABLE, DBConstants.USER_ID,
+                DBConstants.MESSAGE_TABLE, DBConstants.MESSAGE_ID, messageID);
+        return trackMessageHelper(query, DBConstants.USER_TABLE + "." + DBConstants.USER_USERNAME);
+
+    }
+
+    //gets all the group-names for messages forwarded to groups
+    private List<String> trackMessagesFromGroups(long messageID) {
+        String query = String.format("SELECT %s.%s FROM %s inner join %s on %s.%s = %s.%s WHERE "
+                        + "%s.%s = %d", DBConstants.GROUP_TABLE, DBConstants.GROUP_NAME,
+                DBConstants.MESSAGE_TABLE, DBConstants.GROUP_TABLE,
+                DBConstants.MESSAGE_TABLE, DBConstants.MESSAGE_RECEIVER_ID,
+                DBConstants.GROUP_TABLE, DBConstants.GROUP_ID,
+                DBConstants.MESSAGE_TABLE, DBConstants.MESSAGE_ID, messageID);
+        return trackMessageHelper(query, DBConstants.GROUP_TABLE + "." + DBConstants.GROUP_NAME);
+    }
+
+    private List<String> trackMessageHelper(String query, String selectColumn) {
+        List<String> receiverList = new ArrayList<>();
+        try {
+            PreparedStatement statement = connection.prepareStatement(query);
+            ResultSet rs = statement.executeQuery();
+            while (rs.next()) {
+                receiverList.add(rs.getString(selectColumn));
+            }
+            rs.close();
+            statement.close();
+        } catch (SQLException e) {
+            logger.log(Level.INFO, SQL_EXCEPTION_MSG + ": " + e.getMessage());
+        }
+        return receiverList;
     }
 
 }

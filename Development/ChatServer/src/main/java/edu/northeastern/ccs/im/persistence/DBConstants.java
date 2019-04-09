@@ -134,7 +134,12 @@ public class DBConstants {
     
     /** The time sent field in the message table. */
     public static final String MESSAGE_TIME = "time_sent";
-    
+
+    /** The parent message id if it is a forwarded message */
+    public static final String MESSAGE_PARENT_ID = "parent_msg_id";
+
+    public static final Long MESSAGE_PARENT_ID_DEFAULT = null;
+
     /** The isDeleted bit field in the message table. */
     public static final String IS_DELETED = "isDeleted";
 
