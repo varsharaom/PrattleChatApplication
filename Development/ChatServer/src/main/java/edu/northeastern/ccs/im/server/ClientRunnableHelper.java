@@ -219,7 +219,7 @@ class ClientRunnableHelper {
 		text.append(trackInfo.get("users")
 				.stream()
 				.reduce("", (user1, user2) -> user1 + "\n" + user2));
-		return text.toString();
+		return text.toString().trim();
 	}
 
 	private void handleChangeGroupVisibility(String senderName, String[] contents) {
