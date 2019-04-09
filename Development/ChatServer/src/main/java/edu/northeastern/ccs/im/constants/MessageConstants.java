@@ -83,6 +83,8 @@ public final class MessageConstants {
 
     public static final String PRIVATE_VISIBILITY_IDENTIFIER = "PRIVATE";
 
+    public static final String TRACK_MESSAGE_IDENTIFIER = "TRCK_MSG";
+
     /** The prefix for message id for messages shown on the console. */
     public static final String MSG_ID_PREFIX = "<";
     
@@ -195,6 +197,8 @@ public final class MessageConstants {
     public static final String REQUEST_PREFIX = "[REQUEST] ";
 
     public static final String MESSAGE_SENT_INFO = "[INFO] Message sent : ";
+    public static final String INVALID_MESSAGE_TRACKER_ERR = OPERATION_UNSUCCESSFUL_ERR +
+            "Messages can be tracked only by the originators. ";
 
 
     /**
