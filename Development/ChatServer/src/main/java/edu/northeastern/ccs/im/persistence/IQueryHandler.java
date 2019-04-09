@@ -64,7 +64,7 @@ public interface IQueryHandler {
      * @param parentMsgID  id of the parent message
      * @return the long
      */
-    public long storeMessage(String senderName, String receiverName, MessageType type, String msgText, long parentMsgID);
+    public long storeMessage(String senderName, String receiverName, MessageType type, String msgText, Long parentMsgID);
 
 
     /**

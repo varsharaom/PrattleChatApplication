@@ -104,7 +104,7 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
         return storeMessage(senderName, receiverName, type, msgText, DBConstants.MESSAGE_PARENT_ID_DEFAULT);
     }
 
-    public long storeMessage(String senderName, String receiverName, MessageType type, String msgText, long parentMsgID) {
+    public long storeMessage(String senderName, String receiverName, MessageType type, String msgText, Long parentMsgID) {
         Date date = new Date(System.currentTimeMillis());
         SimpleDateFormat format = new SimpleDateFormat(DBConstants.DATE_FORMAT);
         long senderID = getUserID(senderName);
