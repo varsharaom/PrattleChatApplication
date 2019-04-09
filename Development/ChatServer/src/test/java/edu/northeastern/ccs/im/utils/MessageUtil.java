@@ -133,6 +133,15 @@ public final class MessageUtil {
         return Message.makeBroadcastMessage(SIMPLE_USER, getValidGroupVisibilityChangeMessageText());
     }
 
+    public static Message getValidUserVisibilityChangeMessage() {
+        return Message.makeBroadcastMessage(SIMPLE_USER, getValidUserVisibilityChangeMessageText());
+    }
+
+    private static String getValidUserVisibilityChangeMessageText() {
+        return CUSTOM_COMMAND_PREFIX + ACTION_MSG_IDENTIFIER + CUSTOM_COMMAND_SUFFIX
+                + " " + CHANGE_USER_VISIBILITY_IDENTIFIER + " PRIVATE senderName";
+    }
+
     public static Message getValidTrackMessage() {
         return Message.makeBroadcastMessage(SIMPLE_USER, getValidTrackMessageText());
     }
@@ -295,5 +304,4 @@ public final class MessageUtil {
     private MessageUtil() {
 
     }
-
 }

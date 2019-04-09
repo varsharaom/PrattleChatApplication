@@ -1,5 +1,6 @@
 package edu.northeastern.ccs.im.server;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import edu.northeastern.ccs.serverim.Message;
 import edu.northeastern.ccs.serverim.MessageType;
 
@@ -182,7 +183,10 @@ class ClientRunnableHelper {
 			handleRequestGroupAdd(message.getName(), contents);
 		} else if (actualAction.equals(MessageConstants.CHANGE_GROUP_VISIBILITY_IDENTIFIER)) {
 			handleChangeGroupVisibility(message.getName(), contents);
-		} else if (actualAction.equals(MessageConstants.TRACK_MESSAGE_IDENTIFIER)) {
+		} else if (actualAction.equals(MessageConstants.CHANGE_USER_VISIBILITY_IDENTIFIER)) {
+			handleUserVisibility(message.getName(), contents);
+		}
+		else if (actualAction.equals(MessageConstants.TRACK_MESSAGE_IDENTIFIER)) {
 			handleTrackMessage(message.getName(), contents);
 		} else {
 			Message errorMessage = Message.makeErrorMessage(message.getName(),
@@ -190,6 +194,30 @@ class ClientRunnableHelper {
 			Prattle.sendErrorMessage(errorMessage);
 		}
 
+	}
+
+	private void handleUserVisibility(String senderName, String[] contents) {
+		boolean isPrivate = isPrivateVisibility(contents[1]);
+		boolean isActualVisibilityPrivate = false;
+//				queryHandler.getUserVisibility(senderName);
+
+		if (isPrivate == isActualVisibilityPrivate) {
+			Message errorMessage = Message.makeErrorMessage(senderName,
+					"[INFO] User's visibility is already " + isPrivate);
+			Prattle.sendErrorMessage(errorMessage);
+		}
+		else {
+			toggleUserVisibility(senderName, isPrivate);
+		}
+		queryHandler.updateUserVisibility(senderName, isPrivate);
+
+	}
+
+	private void toggleUserVisibility(String senderName, boolean isPrivate) {
+		queryHandler.updateUserVisibility(senderName, isPrivate);
+		Message ackMessage = Message.makeAckMessage(MessageType.DIRECT, senderName,
+				"Visbility successfully updated to - " + isPrivate);
+		Prattle.sendAckMessage(ackMessage);
 	}
 
 	private void handleTrackMessage(String senderName, String[] contents) {
@@ -244,9 +272,12 @@ class ClientRunnableHelper {
 		return toBeGroupVisibility.equals(MessageConstants.PRIVATE_VISIBILITY_IDENTIFIER);
 	}
 
-	private void toggleGroupVisibility(String groupName, String senderName, boolean toBeGroupVisibility) {
+	private void toggleGroupVisibility(String groupName, String senderName, boolean isPrivate) {
 		if (queryHandler.getGroupModerators(groupName).contains(senderName)) {
-			queryHandler.updateGroupVisibility(groupName, toBeGroupVisibility);
+			queryHandler.updateGroupVisibility(groupName, isPrivate);
+			Message ackMessage = Message.makeAckMessage(MessageType.DIRECT, senderName,
+					"Group Visbility successfully updated to - " + isPrivate);
+			Prattle.sendAckMessage(ackMessage);
 		}
 		else {
 			Message errorMessage = Message.makeErrorMessage(senderName,

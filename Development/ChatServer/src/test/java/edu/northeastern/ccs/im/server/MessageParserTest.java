@@ -282,6 +282,15 @@ public class MessageParserTest {
     }
 
     @Test
+    public void testUserVisibilityChangeMessage() {
+        Message message = MessageUtil.getValidUserVisibilityChangeMessage();
+
+        Message constructedMessage = clientRunnableHelper.getCustomConstructedMessage(message);
+        assertTrue(constructedMessage.isActionMessage());;
+    }
+
+
+    @Test
     public void testTrackMessage() {
         Message message = MessageUtil.getValidTrackMessage();
 

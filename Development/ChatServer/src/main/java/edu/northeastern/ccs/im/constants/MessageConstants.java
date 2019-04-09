@@ -81,6 +81,8 @@ public final class MessageConstants {
 
     public static final String CHANGE_GROUP_VISIBILITY_IDENTIFIER = "CHNG_GRP_VSBLTY";
 
+    public static final String CHANGE_USER_VISIBILITY_IDENTIFIER = "CHNG_USR_VSBLTY";
+
     public static final String PRIVATE_VISIBILITY_IDENTIFIER = "PRIVATE";
 
     public static final String TRACK_MESSAGE_IDENTIFIER = "TRCK_MSG";
