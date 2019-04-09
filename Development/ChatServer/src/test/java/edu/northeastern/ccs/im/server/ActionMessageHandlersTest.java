@@ -4,6 +4,7 @@ import edu.northeastern.ccs.im.persistence.IQueryHandler;
 import edu.northeastern.ccs.im.utils.MessageUtil;
 import edu.northeastern.ccs.serverim.Message;
 import org.junit.Test;
+import org.junit.experimental.theories.suppliers.TestedOn;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -268,4 +269,45 @@ public class ActionMessageHandlersTest {
         when(queryHandler.getMessage(anyLong())).thenReturn(trackMsg);
         clientRunnableHelper.handleMessages(validGroupSubsetMessage);
     }
+
+    @Test
+    public void testChangeGroupVisibilityHappyPath() {
+        Message message = MessageUtil.getValidGroupVisibilityChangeMessage();
+
+        Message validGroupVisibilityChangeMessage = clientRunnableHelper
+                .getCustomConstructedMessage(message);
+
+        when(queryHandler.getGroupModerators(anyString()))
+                .thenReturn(Collections.singletonList(validGroupVisibilityChangeMessage.getName()));
+        doNothing().when(queryHandler).updateGroupVisibility(anyString(), anyBoolean());
+
+        clientRunnableHelper.handleMessages(validGroupVisibilityChangeMessage);
+    }
+
+    @Test
+    public void testChangeGroupVisibilityByNonModerator() {
+        Message message = MessageUtil.getValidGroupVisibilityChangeMessage();
+
+        Message validGroupVisibilityChangeMessage = clientRunnableHelper
+                .getCustomConstructedMessage(message);
+
+        when(queryHandler.getGroupModerators(anyString()))
+                .thenReturn(new ArrayList<>());
+        doNothing().when(queryHandler).updateGroupVisibility(anyString(), anyBoolean());
+
+        clientRunnableHelper.handleMessages(validGroupVisibilityChangeMessage);
+    }
+
+    @Test
+    public void testChangeUserVisibilityHappyPath() {
+        Message message = MessageUtil.getValidUserVisibilityChangeMessage();
+
+        Message validGroupVisibilityChangeMessage = clientRunnableHelper
+                .getCustomConstructedMessage(message);
+
+        doNothing().when(queryHandler).updateUserVisibility(anyString(), anyBoolean());
+
+        clientRunnableHelper.handleMessages(validGroupVisibilityChangeMessage);
+    }
 }
+

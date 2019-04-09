@@ -216,7 +216,7 @@ class ClientRunnableHelper {
 	private void toggleUserVisibility(String senderName, boolean isPrivate) {
 		queryHandler.updateUserVisibility(senderName, isPrivate);
 		Message ackMessage = Message.makeAckMessage(MessageType.DIRECT, senderName,
-				"Visbility successfully updated to - " + isPrivate);
+				"Visibility successfully updated to - " + isPrivate);
 		Prattle.sendAckMessage(ackMessage);
 	}
 
@@ -276,7 +276,7 @@ class ClientRunnableHelper {
 		if (queryHandler.getGroupModerators(groupName).contains(senderName)) {
 			queryHandler.updateGroupVisibility(groupName, isPrivate);
 			Message ackMessage = Message.makeAckMessage(MessageType.DIRECT, senderName,
-					"Group Visbility successfully updated to - " + isPrivate);
+					"Group Visibility successfully updated to - " + isPrivate);
 			Prattle.sendAckMessage(ackMessage);
 		}
 		else {
