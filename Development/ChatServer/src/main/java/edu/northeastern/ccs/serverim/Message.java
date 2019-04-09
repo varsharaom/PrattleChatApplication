@@ -2,7 +2,6 @@ package edu.northeastern.ccs.serverim;
 
 import edu.northeastern.ccs.im.constants.MessageConstants;
 
-import java.util.Arrays;
 import java.util.List;
 
 /**
