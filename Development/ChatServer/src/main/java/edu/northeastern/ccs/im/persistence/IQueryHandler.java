@@ -42,6 +42,15 @@ public interface IQueryHandler {
      */
     public long validateLogin(String username, String password);
 
+
+    /**
+     * Checks if the user is invisible for general searches
+     *
+     * @param userName name of the user
+     * @return visibility status
+     */
+    public boolean isUserInVisible(String userName);
+
     /**
      * Store message.
      *

@@ -95,6 +95,26 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
         doUpdateQuery(query);
     }
 
+    @Override
+    public boolean isUserInVisible(String userName) {
+        String query = String.format("SELECT %s from %s WHERE %s=\'%s\'",
+                DBConstants.USER_INVISIBLE, DBConstants.USER_TABLE,
+                DBConstants.USER_USERNAME, userName);
+        boolean isInVisible = false;
+        try {
+            PreparedStatement statement = connection.prepareStatement(query);
+            ResultSet rs = statement.executeQuery();
+            if (rs.next()) {
+                isInVisible = rs.getInt(DBConstants.USER_INVISIBLE) == DBConstants.USER_INVISIBLE_TRUE;
+            }
+            rs.close();
+            statement.close();
+        } catch (SQLException e) {
+            logger.log(Level.INFO, SQL_EXCEPTION_MSG + ": " + e.getMessage());
+        }
+        return isInVisible;
+    }
+
     /* (non-Javadoc)
      * @see edu.northeastern.ccs.im.persistence.IQueryHandler#storeMessage(java.lang.String, java.lang.String, edu.northeastern.ccs.serverim.MessageType, java.lang.String)
      */
