@@ -11,7 +11,7 @@ import edu.northeastern.ccs.im.persistence.QueryFactory;
 import edu.northeastern.ccs.serverim.Message;
 import edu.northeastern.ccs.serverim.MessageType;
 
-public class MessageFactoryTests {
+public class MessageFactoryTest {
 	
 	IQueryHandler queryHandler;
 

@@ -133,6 +133,15 @@ public final class MessageUtil {
         return Message.makeBroadcastMessage(SIMPLE_USER, getValidGroupVisibilityChangeMessageText());
     }
 
+    public static Message getValidTrackMessage() {
+        return Message.makeBroadcastMessage(SIMPLE_USER, getValidTrackMessageText());
+    }
+
+    private static String getValidTrackMessageText() {
+        return CUSTOM_COMMAND_PREFIX + ACTION_MSG_IDENTIFIER + CUSTOM_COMMAND_SUFFIX
+                + " " + TRACK_MESSAGE_IDENTIFIER + " " + "124 senderName";
+    }
+
     private static String getValidGroupVisibilityChangeMessageText() {
         return CUSTOM_COMMAND_PREFIX + ACTION_MSG_IDENTIFIER + CUSTOM_COMMAND_SUFFIX
                 + " " + CHANGE_GROUP_VISIBILITY_IDENTIFIER + " PRIVATE groupName senderName";

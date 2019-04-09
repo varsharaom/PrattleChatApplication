@@ -6,6 +6,7 @@ import edu.northeastern.ccs.serverim.MessageType;
 import edu.northeastern.ccs.serverim.User;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -312,4 +313,6 @@ public interface IQueryHandler {
      */
     // Circles
     public long addUserToCircle(String senderName, String receiverName);
+
+    public Map<String, List<String>> trackMessage(long messageId);
 }

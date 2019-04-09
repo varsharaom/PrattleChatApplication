@@ -279,4 +279,12 @@ public class MessageParserTest {
         Message constructedMessage = clientRunnableHelper.getCustomConstructedMessage(message);
         assertTrue(constructedMessage.isActionMessage());
     }
+
+    @Test
+    public void testTrackMessage() {
+        Message message = MessageUtil.getValidTrackMessage();
+
+        Message constructedMessage = clientRunnableHelper.getCustomConstructedMessage(message);
+        assertTrue(constructedMessage.isActionMessage());;
+    }
 }

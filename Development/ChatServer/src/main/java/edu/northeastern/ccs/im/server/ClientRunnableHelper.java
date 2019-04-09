@@ -9,6 +9,7 @@ import edu.northeastern.ccs.im.persistence.QueryFactory;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -181,12 +182,44 @@ class ClientRunnableHelper {
 			handleRequestGroupAdd(message.getName(), contents);
 		} else if (actualAction.equals(MessageConstants.CHANGE_GROUP_VISIBILITY_IDENTIFIER)) {
 			handleChangeGroupVisibility(message.getName(), contents);
+		} else if (actualAction.equals(MessageConstants.TRACK_MESSAGE_IDENTIFIER)) {
+			handleTrackMessage(message.getName(), contents);
 		} else {
 			Message errorMessage = Message.makeErrorMessage(message.getName(),
 					MessageConstants.INVALID_ACTION_TYPE_ERR);
 			Prattle.sendErrorMessage(errorMessage);
 		}
 
+	}
+
+	private void handleTrackMessage(String senderName, String[] contents) {
+		long messageId = Long.parseLong(contents[1]);
+		Message originalMessage = queryHandler.getMessage(messageId);
+
+		if (originalMessage.getName().equals(senderName)) {
+			Map<String, List<String>> trackInfo = queryHandler.trackMessage(messageId);
+			String text = getBuiltTrackMessageInfo(trackInfo);
+			Message responseMessage = Message.makeDirectMessage(senderName, senderName,
+					text);
+			Prattle.sendDirectMessage(responseMessage);
+		}
+		else {
+			Prattle.sendErrorMessage(Message.makeErrorMessage(senderName,
+					MessageConstants.INVALID_MESSAGE_TRACKER_ERR));
+		}
+	}
+
+	private String getBuiltTrackMessageInfo(Map<String, List<String>> trackInfo) {
+		StringBuilder text = new StringBuilder(" Message Tracking information: \n");
+		text.append("Groups: ");
+		text.append(trackInfo.get("groups")
+				.stream()
+				.reduce("", (group1, group2) -> group1 + "\n" + group2));
+		text.append("\nUsers: ");
+		text.append(trackInfo.get("users")
+				.stream()
+				.reduce("", (user1, user2) -> user1 + "\n" + user2));
+		return text.toString().trim();
 	}
 
 	private void handleChangeGroupVisibility(String senderName, String[] contents) {

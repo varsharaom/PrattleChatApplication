@@ -180,6 +180,11 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
         return doInsertQuery(query);
     }
 
+    @Override
+    public Map<String, List<String>> trackMessage(long messageId) {
+        return new HashMap<>();
+    }
+
     /* (non-Javadoc)
      * @see edu.northeastern.ccs.im.persistence.IQueryHandler#checkUserNameExists(java.lang.String)
      */
