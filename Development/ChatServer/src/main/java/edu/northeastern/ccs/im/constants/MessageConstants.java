@@ -80,7 +80,7 @@ public final class MessageConstants {
 
     public static final String CHANGE_GROUP_VISIBILITY_IDENTIFIER = "CHNG_GRP_VSBLTY";
 
-    public static final String HISTORY = "HISTORY";
+    public static final String MESSAGE_HISTORY_IDENTIFIER = "HISTORY";
     
     public static final String PRIVATE_VISIBILITY_IDENTIFIER = "PRIVATE";
 

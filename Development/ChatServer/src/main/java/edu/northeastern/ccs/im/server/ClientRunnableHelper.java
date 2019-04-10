@@ -180,7 +180,7 @@ class ClientRunnableHelper {
 			handleChangeGroupVisibility(message.getName(), contents);
 		} else if (actualAction.equals(MessageConstants.TRACK_MESSAGE_IDENTIFIER)) {
 			handleTrackMessage(message.getName(), contents);
-		} else if (actualAction.equals(MessageConstants.HISTORY)) {
+		} else if (actualAction.equals(MessageConstants.MESSAGE_HISTORY_IDENTIFIER)) {
 			handleGetChatHistory(message.getName(), contents);
 		} else {
 			Message errorMessage = Message.makeErrorMessage(message.getName(),
