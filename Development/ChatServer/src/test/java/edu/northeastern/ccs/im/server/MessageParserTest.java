@@ -24,6 +24,8 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class MessageParserTest {
 
+	public static String MESSAGE_CONTENT_EMPTY = "Constructed message content is empty";
+	
     @InjectMocks
     private ClientRunnableHelper clientRunnableHelper;
 
@@ -36,7 +38,7 @@ public class MessageParserTest {
         Message constructedMessage = clientRunnableHelper.getCustomConstructedMessage(message);
 
         assertTrue(constructedMessage.isRegisterMessage());
-        assertNotNull("Constructed message content is empty", message.getText());
+        assertNotNull(MESSAGE_CONTENT_EMPTY, message.getText());
 
         String[] content = message.getText().split(" ");
         assertEquals(3, content.length);
@@ -54,7 +56,7 @@ public class MessageParserTest {
         Message constructedMessage = clientRunnableHelper.getCustomConstructedMessage(message);
 
         assertTrue(constructedMessage.isLoginMessage());
-        assertNotNull("Constructed message content is empty", message.getText());
+        assertNotNull(MESSAGE_CONTENT_EMPTY, message.getText());
 
         String[] content = message.getText().split(" ");
         assertEquals(3, content.length);
@@ -72,7 +74,7 @@ public class MessageParserTest {
         Message constructedMessage = clientRunnableHelper.getCustomConstructedMessage(message);
 
         assertTrue(constructedMessage.isDirectMessage());
-        assertNotNull("Constructed message content is empty", message.getText());
+        assertNotNull(MESSAGE_CONTENT_EMPTY, message.getText());
 
         String[] content = message.getText().split(" ", 4);
         assertEquals(4, content.length);
@@ -80,7 +82,6 @@ public class MessageParserTest {
         assertTrue(ClientRunnableHelperUtil.isValidDirectMessageIdentifer(content[0]));
         assertEquals(constructedMessage.getName(), content[1]);
         assertEquals(constructedMessage.getMsgReceiver(), content[2]);
-//        assertEquals(constructedMessage.getText(), content[3]);
         assertTrue(constructedMessage.getText().contains(content[3]));
     }
 
@@ -100,7 +101,6 @@ public class MessageParserTest {
         assertEquals(constructedMessage.getName(), content[1]);
         assertEquals(constructedMessage.getMsgReceiver(), content[2]);
         assertEquals(constructedMessage.getText(), content[3]);
-
     }
 
     @Test
@@ -257,5 +257,34 @@ public class MessageParserTest {
 
         Message constructedMessage = clientRunnableHelper.getCustomConstructedMessage(message);
         assertTrue(constructedMessage.getText().endsWith(MessageConstants.INVALID_GROUP_INFO_ERR));
+    }
+
+    @Test
+    public void testValidGroupSubsetMessage() {
+        Message message = MessageUtil.getValidGroupSubsetMessage();
+
+        Message constructedMessage = clientRunnableHelper.getCustomConstructedMessage(message);
+
+        assertTrue(constructedMessage.isGroupSubsetMessage());
+        assertEquals("senderName", constructedMessage.getName());
+        assertEquals("groupName", constructedMessage.getMsgReceiver());
+        assertEquals(3, constructedMessage.getReceivers().size());
+        assertNotNull(constructedMessage.getText());
+    }
+
+    @Test
+    public void testGroupVisibilityChangeMessage() {
+        Message message = MessageUtil.getValidGroupVisibilityChangeMessage();
+
+        Message constructedMessage = clientRunnableHelper.getCustomConstructedMessage(message);
+        assertTrue(constructedMessage.isActionMessage());
+    }
+
+    @Test
+    public void testTrackMessage() {
+        Message message = MessageUtil.getValidTrackMessage();
+
+        Message constructedMessage = clientRunnableHelper.getCustomConstructedMessage(message);
+        assertTrue(constructedMessage.isActionMessage());;
     }
 }

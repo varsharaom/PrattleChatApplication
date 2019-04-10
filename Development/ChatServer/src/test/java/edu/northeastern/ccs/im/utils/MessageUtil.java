@@ -125,6 +125,33 @@ public final class MessageUtil {
         return Message.makeBroadcastMessage(SIMPLE_USER, getValidGetGroupMembersMessageText());
     }
 
+    public static Message getValidGroupSubsetMessage() {
+        return Message.makeBroadcastMessage(SIMPLE_USER, getValidGroupSubsetMessageText());
+    }
+
+    public static Message getValidGroupVisibilityChangeMessage() {
+        return Message.makeBroadcastMessage(SIMPLE_USER, getValidGroupVisibilityChangeMessageText());
+    }
+
+    public static Message getValidTrackMessage() {
+        return Message.makeBroadcastMessage(SIMPLE_USER, getValidTrackMessageText());
+    }
+
+    private static String getValidTrackMessageText() {
+        return CUSTOM_COMMAND_PREFIX + ACTION_MSG_IDENTIFIER + CUSTOM_COMMAND_SUFFIX
+                + " " + TRACK_MESSAGE_IDENTIFIER + " " + "124 senderName";
+    }
+
+    private static String getValidGroupVisibilityChangeMessageText() {
+        return CUSTOM_COMMAND_PREFIX + ACTION_MSG_IDENTIFIER + CUSTOM_COMMAND_SUFFIX
+                + " " + CHANGE_GROUP_VISIBILITY_IDENTIFIER + " PRIVATE groupName senderName";
+    }
+
+    private static String getValidGroupSubsetMessageText() {
+        return CUSTOM_COMMAND_PREFIX + GROUP_SUBSET_IDENTIFIER + CUSTOM_COMMAND_SUFFIX +
+                " senderName RCVRS Receiver1 Receiver2 Receiver3 RCVRS groupName message text";
+    }
+
     private static String getValidGetGroupMembersMessageText() {
         return CUSTOM_COMMAND_PREFIX + GET_INFO_IDENTIFIER
                 + CUSTOM_COMMAND_SUFFIX + " " + GET_GRP_MEMBERS_IDENTIFIER
@@ -249,7 +276,6 @@ public final class MessageUtil {
                 + CUSTOM_COMMAND_SUFFIX + " " + SIMPLE_USER
                 + " password";
     }
-
 
     public static boolean isErrorMessage(Message message) {
         String[] parsedMessageContents = message.getText().split(" ");
