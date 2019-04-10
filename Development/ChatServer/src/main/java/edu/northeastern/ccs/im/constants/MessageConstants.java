@@ -71,6 +71,7 @@ public final class MessageConstants {
     
     /** The command to leave a group. */
     public static final String LEAVE_GROUP_IDENTIFIER = "LV_GRP";
+
     public static final String REQUEST_GROUP_ADD_IDENTIFIER = "GRP_REQ";
 
     /** An error message code for server responses. */
@@ -198,7 +199,10 @@ public final class MessageConstants {
     public static final String REQUEST_PREFIX = "[REQUEST] ";
 
     public static final String MESSAGE_SENT_INFO = "[INFO] Message sent : ";
-    
+    public static final String INVALID_MESSAGE_TRACKER_ERR = OPERATION_UNSUCCESSFUL_ERR +
+            "Messages can be tracked only by the originators. ";
+
+
     /**
      * Private constructor for class with static methods.
      */
