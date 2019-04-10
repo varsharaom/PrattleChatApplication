@@ -102,7 +102,7 @@ public abstract class Prattle {
 	 * Enqueue group message for the receiving users.
 	 *
 	 * @param message the message
-	 * @param groupMemebers the group members
+	 * @param userNames the group members
 	 */
 	static void sendMessageToMultipleUsers(Message message, Set<String> userNames) {
 		message.setMessageType(MessageType.BROADCAST);

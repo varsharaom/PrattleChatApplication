@@ -1,6 +1,5 @@
 package edu.northeastern.ccs.im.server;
 
-import com.sun.org.apache.bcel.internal.generic.MULTIANEWARRAY;
 import edu.northeastern.ccs.im.persistence.IQueryHandler;
 import edu.northeastern.ccs.im.utils.MessageUtil;
 import edu.northeastern.ccs.serverim.Message;
@@ -10,7 +9,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import java.lang.invoke.MutableCallSite;
+import java.util.*;
 
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.doNothing;
@@ -216,4 +215,57 @@ public class ActionMessageHandlersTest {
         clientRunnableHelper.handleMessages(invalidActionMessage);
     }
 
+    @Test
+    public void testMessageGroupSubsetHappyPath() {
+        Message message = MessageUtil.getValidGroupSubsetMessage();
+        Message validGroupSubsetMessage = clientRunnableHelper.getCustomConstructedMessage(message);
+
+        List<String> users = validGroupSubsetMessage.getReceivers();
+        when(queryHandler.getGroupMembers(anyString())).thenReturn(users);
+        when(queryHandler.isGroupMember(anyString(), anyString())).thenReturn(true);
+
+        clientRunnableHelper.handleMessages(validGroupSubsetMessage);
+    }
+
+    @Test
+    public void testMessagesGroupSubsetInvalidReceivers() {
+        Message message = MessageUtil.getValidGroupSubsetMessage();
+        Message validGroupSubsetMessage = clientRunnableHelper.getCustomConstructedMessage(message);
+
+        List<String> users = Arrays.asList("user1", "user2");
+        when(queryHandler.getGroupMembers(anyString())).thenReturn(users);
+        when(queryHandler.isGroupMember(anyString(), anyString())).thenReturn(false);
+
+        clientRunnableHelper.handleMessages(validGroupSubsetMessage);
+    }
+
+    @Test
+    public void testTrackMessageHappyPath() {
+        Message message = MessageUtil.getValidTrackMessage();
+        Message validGroupSubsetMessage = clientRunnableHelper.getCustomConstructedMessage(message);
+
+        Message trackMsg = Message.makeBroadcastMessage("senderName", "");
+        Map<String, List<String>> map = new HashMap<>();
+        map.put("groups", Arrays.asList("group1", "group2"));
+        map.put("users", Arrays.asList("user1", "user2"));
+
+        when(queryHandler.trackMessage(anyLong())).thenReturn(map);
+        when(queryHandler.getMessage(anyLong())).thenReturn(trackMsg);
+        clientRunnableHelper.handleMessages(validGroupSubsetMessage);
+    }
+
+    @Test
+    public void testTrackMessageByNonOriginator() {
+        Message message = MessageUtil.getValidTrackMessage();
+        Message validGroupSubsetMessage = clientRunnableHelper.getCustomConstructedMessage(message);
+
+        Message trackMsg = Message.makeBroadcastMessage("nonOriginator", "");
+        Map<String, List<String>> map = new HashMap<>();
+        map.put("groups", Arrays.asList("group1", "group2"));
+        map.put("users", Arrays.asList("user1", "user2"));
+
+        when(queryHandler.trackMessage(anyLong())).thenReturn(map);
+        when(queryHandler.getMessage(anyLong())).thenReturn(trackMsg);
+        clientRunnableHelper.handleMessages(validGroupSubsetMessage);
+    }
 }

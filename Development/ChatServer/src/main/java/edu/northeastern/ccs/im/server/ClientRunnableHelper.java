@@ -9,6 +9,7 @@ import edu.northeastern.ccs.im.persistence.QueryFactory;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -137,10 +138,13 @@ class ClientRunnableHelper {
 	private void handleChatMessages(Message msg) {
 		if (msg.isDirectMessage()) {
 			handleDirectMessages(msg);
-		} else {
+		} else if (msg.isGroupMessage()) {
 			handleGroupMessages(msg);
+		} else {
+			handleMultiReceiverMessages(msg);
 		}
 	}
+
 
 	/**
 	 * Delegate get info messages to the direct messages handler.
@@ -176,6 +180,10 @@ class ClientRunnableHelper {
 			handleLeaveGroup(message.getName(), contents);
 		} else if (actualAction.equals(MessageConstants.REQUEST_GROUP_ADD_IDENTIFIER)) {
 			handleRequestGroupAdd(message.getName(), contents);
+		} else if (actualAction.equals(MessageConstants.CHANGE_GROUP_VISIBILITY_IDENTIFIER)) {
+			handleChangeGroupVisibility(message.getName(), contents);
+		} else if (actualAction.equals(MessageConstants.TRACK_MESSAGE_IDENTIFIER)) {
+			handleTrackMessage(message.getName(), contents);
 		} else {
 			Message errorMessage = Message.makeErrorMessage(message.getName(),
 					MessageConstants.INVALID_ACTION_TYPE_ERR);
@@ -183,6 +191,70 @@ class ClientRunnableHelper {
 		}
 
 	}
+
+	private void handleTrackMessage(String senderName, String[] contents) {
+		long messageId = Long.parseLong(contents[1]);
+		Message originalMessage = queryHandler.getMessage(messageId);
+
+		if (originalMessage.getName().equals(senderName)) {
+			Map<String, List<String>> trackInfo = queryHandler.trackMessage(messageId);
+			String text = getBuiltTrackMessageInfo(trackInfo);
+			Message responseMessage = Message.makeDirectMessage(senderName, senderName,
+					text);
+			Prattle.sendDirectMessage(responseMessage);
+		}
+		else {
+			Prattle.sendErrorMessage(Message.makeErrorMessage(senderName,
+					MessageConstants.INVALID_MESSAGE_TRACKER_ERR));
+		}
+	}
+
+	private String getBuiltTrackMessageInfo(Map<String, List<String>> trackInfo) {
+		StringBuilder text = new StringBuilder(" Message Tracking information: \n");
+		text.append("Groups: ");
+		text.append(trackInfo.get("groups")
+				.stream()
+				.reduce("", (group1, group2) -> group1 + "\n" + group2));
+		text.append("\nUsers: ");
+		text.append(trackInfo.get("users")
+				.stream()
+				.reduce("", (user1, user2) -> user1 + "\n" + user2));
+		return text.toString().trim();
+	}
+
+	private void handleChangeGroupVisibility(String senderName, String[] contents) {
+		boolean toBeGroupVisibility = isPrivateVisibility(contents[1]);
+		String groupName = contents[2];
+
+		boolean actualGroupVisibility = false;
+//				queryHandler.getGroupVisibility(groupName);
+
+		if (actualGroupVisibility == toBeGroupVisibility) {
+			Message errorMessage = Message.makeErrorMessage(senderName,
+					"[INFO] Group's visibility is already " + toBeGroupVisibility);
+			Prattle.sendErrorMessage(errorMessage);
+		}
+
+		else {
+			toggleGroupVisibility(groupName, senderName, toBeGroupVisibility);
+		}
+	}
+
+	private boolean isPrivateVisibility(String toBeGroupVisibility) {
+		return toBeGroupVisibility.equals(MessageConstants.PRIVATE_VISIBILITY_IDENTIFIER);
+	}
+
+	private void toggleGroupVisibility(String groupName, String senderName, boolean toBeGroupVisibility) {
+		if (queryHandler.getGroupModerators(groupName).contains(senderName)) {
+			queryHandler.updateGroupVisibility(groupName, toBeGroupVisibility);
+		}
+		else {
+			Message errorMessage = Message.makeErrorMessage(senderName,
+					MessageConstants.INVALID_MODERATOR_ERR);
+			Prattle.sendErrorMessage(errorMessage);
+		}
+	}
+
 
 	/**
 	 * Handle leave group message.
@@ -485,7 +557,7 @@ class ClientRunnableHelper {
 					message.getMessageType(), message.getText());
 			message.setText(getPrependedMessageText(message.getText(), messageId));
 			
-			Message ackMessage = Message.makeAckMessage(MessageType.BROADCAST, message.getName(), 
+			Message ackMessage = Message.makeAckMessage(MessageType.BROADCAST, message.getName(),
 					MessageConstants.MESSAGE_SENT_INFO + messageId);
 			
 			Prattle.sendAckMessage(ackMessage);
@@ -505,7 +577,8 @@ class ClientRunnableHelper {
 	 */
 	private void handleGroupMessages(Message message) {
 		String groupName = message.getMsgReceiver();
-		if (isGroupPresent(groupName)) {
+		if (isGroupPresent(groupName))
+		{
 			long messageId = queryHandler.storeMessage(message.getName(), message.getMsgReceiver(),
 					message.getMessageType(), message.getText());
 
@@ -518,6 +591,44 @@ class ClientRunnableHelper {
 			Prattle.sendErrorMessage(errorMessage);
 		}
 	}
+
+	/***
+	 *
+	 * @param msg
+	 * NOTES: GRP_SBST SENDER_NAME 'RCVRS' RCVR1 RCVR2 RCVR3 RCVR4 'RCVRS' GRP_SBST GROUP_NAME message text
+	 */
+	private void handleMultiReceiverMessages(Message msg) {
+		List<String> actualMembers =  queryHandler.getGroupMembers(msg.getMsgReceiver());
+		Set<String> finalizedReceivers = new HashSet<>();
+
+		for (String potentialGroupMember : msg.getReceivers()) {
+			if (actualMembers.contains(potentialGroupMember)) {
+				finalizedReceivers.add(potentialGroupMember);
+				handleMessageToValidReceiver(msg, potentialGroupMember);
+			}
+
+			else {
+				handleMessageToInvalidReceiver(msg, potentialGroupMember);
+			}
+		}
+
+		Prattle.sendMessageToMultipleUsers(msg, finalizedReceivers);
+	}
+
+	private void handleMessageToInvalidReceiver(Message msg, String potentialGroupMember) {
+		Message errorMessage = Message.makeErrorMessage(msg.getName(),
+				"[ERROR] : " + potentialGroupMember + " does not exist or not " +
+						"a part of the group - " + msg.getMsgReceiver() );
+		Prattle.sendErrorMessage(errorMessage);
+	}
+
+	private void handleMessageToValidReceiver(Message msg, String potentialGroupMember) {
+		Message ackMessage = Message.makeAckMessage(MessageType.GROUP_SUBSET,
+				msg.getName(), "[INFO] Message successfully sent to "
+						+ potentialGroupMember);
+		Prattle.sendAckMessage(ackMessage);
+	}
+
 
 	/**
 	 * Prepend the message text with id to parse and display in the client side.
@@ -550,7 +661,7 @@ class ClientRunnableHelper {
 	 * Returns true if the message is a direct of group message. Otherwise false.
 	 */
 	private boolean isChatMessage(Message msg) {
-		return (msg.isDirectMessage() || msg.isGroupMessage());
+		return (msg.isDirectMessage() || msg.isGroupMessage() || msg.isGroupSubsetMessage());
 	}
 
 	/**
