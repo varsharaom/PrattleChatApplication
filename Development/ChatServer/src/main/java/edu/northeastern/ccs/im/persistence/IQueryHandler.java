@@ -18,7 +18,7 @@ public interface IQueryHandler {
      * Creates the user.
      *
      * @param userName the user name
-     * @param pass the pass
+     * @param pass     the pass
      * @param nickName the nick name
      * @return the user
      */
@@ -54,14 +54,17 @@ public interface IQueryHandler {
     /**
      * Store message.
      *
-     * @param senderName the sender name
+     * @param senderName   the sender name
      * @param receiverName the receiver name
-     * @param type the type
-     * @param msgText the msg text
+     * @param type         the type
+     * @param msgText      the msg text
+     * @param timeStamp    message timestamp
+     * @param timeout      message time out duration
      * @return the long
      */
     //Message Queries
-    public long storeMessage(String senderName, String receiverName, MessageType type, String msgText);
+    public long storeMessage(String senderName, String receiverName, MessageType type, String msgText,
+                             long timeStamp, int timeout);
 
     /**
      * Store forwarded message.
@@ -71,9 +74,12 @@ public interface IQueryHandler {
      * @param type         the type
      * @param msgText      the msg text
      * @param parentMsgID  id of the parent message
+     * @param timeStamp    message timestamp
+     * @param timeout      message time out duration
      * @return the long
      */
-    public long storeMessage(String senderName, String receiverName, MessageType type, String msgText, Long parentMsgID);
+    public long storeMessage(String senderName, String receiverName, MessageType type, String msgText,
+                             Long parentMsgID, long timeStamp, int timeout);
 
 
     /**
@@ -87,11 +93,11 @@ public interface IQueryHandler {
     /**
      * Update user visibility.
      *
-     * @param userName the user name
+     * @param userName      the user name
      * @param makeInVisible the make in visible
      */
     public void updateUserVisibility(String userName, Boolean makeInVisible);
-    
+
     /**
      * Gets the message.
      *
@@ -193,7 +199,7 @@ public interface IQueryHandler {
      * @return the group members
      */
     public List<String> getGroupMembers(String name);
-    
+
     /**
      * Gets the group moderators.
      *
@@ -201,35 +207,35 @@ public interface IQueryHandler {
      * @return the group moderators
      */
     public List<String> getGroupModerators(String name);
-        
+
     /**
      * Adds the group member.
      *
-     * @param userName the user name
+     * @param userName  the user name
      * @param groupName the group name
-     * @param role the role
+     * @param role      the role
      * @return the long
      */
     public long addGroupMember(String userName, String groupName, int role);
-    
+
     /**
      * Removes the group member.
      *
-     * @param userName the user name
+     * @param userName  the user name
      * @param groupName the group name
      * @return the long
      */
     public long removeGroupMember(String userName, String groupName);
-    
+
     /**
      * Change member role.
      *
-     * @param userId the user id
+     * @param userId  the user id
      * @param groupId the group id
-     * @param role the role
+     * @param role    the role
      */
     public void changeMemberRole(long userId, long groupId, int role);
-    
+
     /**
      * Gets the group ID.
      *
@@ -237,7 +243,7 @@ public interface IQueryHandler {
      * @return the group ID
      */
     public long getGroupID(String groupName);
-    
+
     /**
      * Gets the group name.
      *
@@ -245,30 +251,30 @@ public interface IQueryHandler {
      * @return the group name
      */
     public String getGroupName(long groupID);
-    
+
     /**
      * Gets the messages sent by user.
      *
-     * @param id the id
+     * @param id   the id
      * @param type the type
      * @return the messages sent by user
      */
     //Message Log Queries
     public List<Message> getMessagesSentByUser(long id, MessageType type, int start, int limit);
-    
+
     /**
      * Gets the messages sent to user.
      *
-     * @param id the id
+     * @param id   the id
      * @param type the type
      * @return the messages sent to user
      */
     public List<Message> getMessagesSentToUser(long id, MessageType type, int start, int limit);
-    
+
     /**
      * Gets the messages from user chat.
      *
-     * @param senderId the sender id
+     * @param senderId   the sender id
      * @param receiverId the receiver id
      * @return the messages from user chat
      */
@@ -277,7 +283,7 @@ public interface IQueryHandler {
     /**
      * Creates the group.
      *
-     * @param sender the sender
+     * @param sender    the sender
      * @param groupName the group name
      * @return the long
      */
@@ -286,7 +292,7 @@ public interface IQueryHandler {
     /**
      * Delete group.
      *
-     * @param sender the sender
+     * @param sender    the sender
      * @param groupName the group name
      */
     void deleteGroup(String sender, String groupName);
@@ -294,7 +300,7 @@ public interface IQueryHandler {
     /**
      * Checks if is moderator.
      *
-     * @param sender the sender
+     * @param sender    the sender
      * @param groupName the group name
      * @return true, if is moderator
      */
@@ -304,7 +310,7 @@ public interface IQueryHandler {
      * Checks if is group member.
      *
      * @param groupName the group name
-     * @param sender the sender
+     * @param sender    the sender
      * @return true, if is group member
      */
     boolean isGroupMember(String groupName, String sender);
@@ -312,7 +318,7 @@ public interface IQueryHandler {
     /**
      * Make moderator.
      *
-     * @param groupName the group name
+     * @param groupName     the group name
      * @param toBeModerator the to be moderator
      */
     void makeModerator(String groupName, String toBeModerator);
@@ -321,7 +327,7 @@ public interface IQueryHandler {
      * Removes the member.
      *
      * @param groupName the group name
-     * @param member the member
+     * @param member    the member
      */
     void removeMember(String groupName, String member);
 
@@ -333,19 +339,19 @@ public interface IQueryHandler {
      */
     Set<String> getAllGroupMembers(String groupName);
 
-    
+
     /**
      * Update group visibility.
      *
-     * @param groupName the group name
+     * @param groupName     the group name
      * @param makeInVisible the make in visible
      */
     public void updateGroupVisibility(String groupName, Boolean makeInVisible);
-    
+
     /**
      * Adds the user to circle.
      *
-     * @param senderName the sender name
+     * @param senderName   the sender name
      * @param receiverName the receiver name
      * @return the long
      */

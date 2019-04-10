@@ -110,7 +110,8 @@ public class QueryHandlerMySQLImplTest {
     public void testStoreMessageSuccess() {
         long res = 0;
         try {
-            res = handler.storeMessage(QueryConstants.SENDER_USERNAME, QueryConstants.RECEIVER_USERNAME, MessageType.DIRECT, QueryConstants.MESSAGE_TEXT);
+            res = handler.storeMessage(QueryConstants.SENDER_USERNAME, QueryConstants.RECEIVER_USERNAME,
+                    MessageType.DIRECT, QueryConstants.MESSAGE_TEXT, System.currentTimeMillis(), 0);
             assertNotEquals(res, 0);
         } finally {
             // Tear down
@@ -130,7 +131,8 @@ public class QueryHandlerMySQLImplTest {
             sender = handler.createUser(QueryConstants.SENDER_USERNAME, QueryConstants.PASS, QueryConstants.SENDER_USERNAME);
             receiver = handler.createUser(QueryConstants.RECEIVER_USERNAME, QueryConstants.PASS, QueryConstants.RECEIVER_USERNAME);
             handler.updateUserLastLogin(receiver.getUserID());
-            msgId = handler.storeMessage(sender.getUserName(), QueryConstants.RECEIVER_USERNAME, MessageType.DIRECT, QueryConstants.MESSAGE_TEXT);
+            msgId = handler.storeMessage(sender.getUserName(), QueryConstants.RECEIVER_USERNAME, MessageType.DIRECT,
+                    QueryConstants.MESSAGE_TEXT, System.currentTimeMillis(), 0);
 
             receiverId = receiver.getUserID();
             senderId = sender.getUserID();
@@ -164,7 +166,8 @@ public class QueryHandlerMySQLImplTest {
             long msgGrpID = handler.createGroup(sender.getUserName(), QueryConstants.GROUP_2_NAME);
             handler.addGroupMember(receiver.getUserName(), QueryConstants.GROUP_2_NAME, DBConstants.GROUP_INFO_USER_ROLE_MEMBER);
             assertEquals(2, handler.getAllGroupMembers(QueryConstants.GROUP_2_NAME).size());
-            msgId = handler.storeMessage(sender.getUserName(), QueryConstants.GROUP_2_NAME, MessageType.GROUP, QueryConstants.MESSAGE_TEXT);
+            msgId = handler.storeMessage(sender.getUserName(), QueryConstants.GROUP_2_NAME, MessageType.GROUP,
+                    QueryConstants.MESSAGE_TEXT, System.currentTimeMillis(), 0);
 
             receiverId = receiver.getUserID();
             senderId = sender.getUserID();
@@ -235,7 +238,8 @@ public class QueryHandlerMySQLImplTest {
     public void testGetMessageSuccess() {
         long id = 0;
         try {
-            id = handler.storeMessage(QueryConstants.SENDER_USERNAME, QueryConstants.RECEIVER_USERNAME, MessageType.DIRECT, QueryConstants.MESSAGE_TEXT);
+            id = handler.storeMessage(QueryConstants.SENDER_USERNAME, QueryConstants.RECEIVER_USERNAME,
+                    MessageType.DIRECT, QueryConstants.MESSAGE_TEXT, System.currentTimeMillis(), 0);
             Message res = handler.getMessage(id);
             assertEquals(id, res.getId());
         } finally {
@@ -250,7 +254,8 @@ public class QueryHandlerMySQLImplTest {
     public void testGetMessageFailure() {
         long id = 0;
         try {
-            id = handler.storeMessage(QueryConstants.SENDER_USERNAME, QueryConstants.RECEIVER_USERNAME, MessageType.DIRECT, QueryConstants.MESSAGE_TEXT);
+            id = handler.storeMessage(QueryConstants.SENDER_USERNAME, QueryConstants.RECEIVER_USERNAME,
+                    MessageType.DIRECT, QueryConstants.MESSAGE_TEXT, System.currentTimeMillis(), 0);
             Message res = handler.getMessage(id + 1);
             assertNull(res);
         } finally {
@@ -262,7 +267,8 @@ public class QueryHandlerMySQLImplTest {
 
     @Test
     public void testDeleteMessageSuccess() {
-        long id = handler.storeMessage(QueryConstants.SENDER_USERNAME, QueryConstants.RECEIVER_USERNAME, MessageType.DIRECT, QueryConstants.MESSAGE_TEXT);
+        long id = handler.storeMessage(QueryConstants.SENDER_USERNAME, QueryConstants.RECEIVER_USERNAME,
+                MessageType.DIRECT, QueryConstants.MESSAGE_TEXT, System.currentTimeMillis(), 0);
         handler.deleteMessage(id);
         Message res = handler.getMessage(id);
         assertEquals(1, res.getIsDeleted());
@@ -424,13 +430,15 @@ public class QueryHandlerMySQLImplTest {
         try {
             User userOne = handler.createUser(QueryConstants.SENDER_USERNAME, QueryConstants.PASS, QueryConstants.NICKNAME);
             User userTwo = handler.createUser(QueryConstants.RECEIVER_USERNAME, QueryConstants.PASS, QueryConstants.NICKNAME);
-            msgOneId = handler.storeMessage(userOne.getUserName(), userTwo.getUserName(), MessageType.DIRECT, QueryConstants.MESSAGE_TEXT);
+            msgOneId = handler.storeMessage(userOne.getUserName(), userTwo.getUserName(), MessageType.DIRECT,
+                    QueryConstants.MESSAGE_TEXT, System.currentTimeMillis(), 0);
             try {
                 TimeUnit.SECONDS.sleep(1);
             } catch (InterruptedException e) {
 
             }
-            msgTwoId = handler.storeMessage(userOne.getUserName(), userTwo.getUserName(), MessageType.DIRECT, QueryConstants.MESSAGE_SECOND_TEXT);
+            msgTwoId = handler.storeMessage(userOne.getUserName(), userTwo.getUserName(), MessageType.DIRECT,
+                    QueryConstants.MESSAGE_SECOND_TEXT, System.currentTimeMillis(), 0);
             userOneId = userOne.getUserID();
             userTwoId = userTwo.getUserID();
 
@@ -458,13 +466,15 @@ public class QueryHandlerMySQLImplTest {
         try {
             User userOne = handler.createUser(QueryConstants.SENDER_USERNAME, QueryConstants.PASS, QueryConstants.NICKNAME);
             User userTwo = handler.createUser(QueryConstants.RECEIVER_USERNAME, QueryConstants.PASS, QueryConstants.NICKNAME);
-            msgOneId = handler.storeMessage(userOne.getUserName(), userTwo.getUserName(), MessageType.DIRECT, QueryConstants.MESSAGE_TEXT);
+            msgOneId = handler.storeMessage(userOne.getUserName(), userTwo.getUserName(), MessageType.DIRECT,
+                    QueryConstants.MESSAGE_TEXT, System.currentTimeMillis(), 0);
             try {
                 TimeUnit.SECONDS.sleep(1);
             } catch (InterruptedException e) {
 
             }
-            msgTwoId = handler.storeMessage(userOne.getUserName(), userTwo.getUserName(), MessageType.DIRECT, QueryConstants.MESSAGE_SECOND_TEXT);
+            msgTwoId = handler.storeMessage(userOne.getUserName(), userTwo.getUserName(), MessageType.DIRECT,
+                    QueryConstants.MESSAGE_SECOND_TEXT, System.currentTimeMillis(), 0);
             userOneId = userOne.getUserID();
             userTwoId = userTwo.getUserID();
 
@@ -493,13 +503,15 @@ public class QueryHandlerMySQLImplTest {
         try {
             User userOne = handler.createUser(QueryConstants.SENDER_USERNAME, QueryConstants.PASS, QueryConstants.NICKNAME);
             User userTwo = handler.createUser(QueryConstants.RECEIVER_USERNAME, QueryConstants.PASS, QueryConstants.NICKNAME);
-            msgOneId = handler.storeMessage(userOne.getUserName(), userTwo.getUserName(), MessageType.DIRECT, QueryConstants.MESSAGE_TEXT);
+            msgOneId = handler.storeMessage(userOne.getUserName(), userTwo.getUserName(), MessageType.DIRECT,
+                    QueryConstants.MESSAGE_TEXT, System.currentTimeMillis(), 0);
             try {
                 TimeUnit.SECONDS.sleep(1);
             } catch (InterruptedException e) {
 
             }
-            msgTwoId = handler.storeMessage(userOne.getUserName(), userTwo.getUserName(), MessageType.DIRECT, QueryConstants.MESSAGE_SECOND_TEXT);
+            msgTwoId = handler.storeMessage(userOne.getUserName(), userTwo.getUserName(), MessageType.DIRECT,
+                    QueryConstants.MESSAGE_SECOND_TEXT, System.currentTimeMillis(), 0);
             userOneId = userOne.getUserID();
             userTwoId = userTwo.getUserID();
 
@@ -527,13 +539,15 @@ public class QueryHandlerMySQLImplTest {
         try {
             User userOne = handler.createUser(QueryConstants.SENDER_USERNAME, QueryConstants.PASS, QueryConstants.NICKNAME);
             User userTwo = handler.createUser(QueryConstants.RECEIVER_USERNAME, QueryConstants.PASS, QueryConstants.NICKNAME);
-            msgOneId = handler.storeMessage(userOne.getUserName(), userTwo.getUserName(), MessageType.DIRECT, QueryConstants.MESSAGE_TEXT);
+            msgOneId = handler.storeMessage(userOne.getUserName(), userTwo.getUserName(), MessageType.DIRECT,
+                    QueryConstants.MESSAGE_TEXT, System.currentTimeMillis(), 0);
             try {
                 TimeUnit.SECONDS.sleep(1);
             } catch (InterruptedException e) {
 
             }
-            msgTwoId = handler.storeMessage(userOne.getUserName(), userTwo.getUserName(), MessageType.DIRECT, QueryConstants.MESSAGE_SECOND_TEXT);
+            msgTwoId = handler.storeMessage(userOne.getUserName(), userTwo.getUserName(), MessageType.DIRECT,
+                    QueryConstants.MESSAGE_SECOND_TEXT, System.currentTimeMillis(), 0);
             userOneId = userOne.getUserID();
             userTwoId = userTwo.getUserID();
 
@@ -565,19 +579,22 @@ public class QueryHandlerMySQLImplTest {
             User userOne = handler.createUser(QueryConstants.SENDER_USERNAME, QueryConstants.PASS, QueryConstants.NICKNAME);
             User userTwo = handler.createUser(QueryConstants.RECEIVER_USERNAME, QueryConstants.PASS, QueryConstants.NICKNAME);
             User userThree = handler.createUser(QueryConstants.USERNAME, QueryConstants.PASS, QueryConstants.NICKNAME);
-            msgOneId = handler.storeMessage(userOne.getUserName(), userTwo.getUserName(), MessageType.DIRECT, QueryConstants.MESSAGE_TEXT);
+            msgOneId = handler.storeMessage(userOne.getUserName(), userTwo.getUserName(), MessageType.DIRECT,
+                    QueryConstants.MESSAGE_TEXT, System.currentTimeMillis(), 0);
             try {
                 TimeUnit.SECONDS.sleep(1);
             } catch (InterruptedException e) {
 
             }
-            msgTwoId = handler.storeMessage(userOne.getUserName(), userTwo.getUserName(), MessageType.DIRECT, QueryConstants.MESSAGE_SECOND_TEXT);
+            msgTwoId = handler.storeMessage(userOne.getUserName(), userTwo.getUserName(), MessageType.DIRECT,
+                    QueryConstants.MESSAGE_SECOND_TEXT, System.currentTimeMillis(), 0);
             try {
                 TimeUnit.SECONDS.sleep(1);
             } catch (InterruptedException e) {
 
             }
-            msgThreeId = handler.storeMessage(userOne.getUserName(), userThree.getUserName(), MessageType.DIRECT, QueryConstants.MESSAGE_SECOND_TEXT);
+            msgThreeId = handler.storeMessage(userOne.getUserName(), userThree.getUserName(), MessageType.DIRECT,
+                    QueryConstants.MESSAGE_SECOND_TEXT, System.currentTimeMillis(), 0);
             userOneId = userOne.getUserID();
             userTwoId = userTwo.getUserID();
             userThreeId = userThree.getUserID();
@@ -614,19 +631,22 @@ public class QueryHandlerMySQLImplTest {
             User userOne = handler.createUser(QueryConstants.SENDER_USERNAME, QueryConstants.PASS, QueryConstants.NICKNAME);
             User userTwo = handler.createUser(QueryConstants.RECEIVER_USERNAME, QueryConstants.PASS, QueryConstants.NICKNAME);
             User userThree = handler.createUser(QueryConstants.USERNAME, QueryConstants.PASS, QueryConstants.NICKNAME);
-            msgOneId = handler.storeMessage(userOne.getUserName(), userTwo.getUserName(), MessageType.DIRECT, QueryConstants.MESSAGE_TEXT);
+            msgOneId = handler.storeMessage(userOne.getUserName(), userTwo.getUserName(), MessageType.DIRECT,
+                    QueryConstants.MESSAGE_TEXT, System.currentTimeMillis(), 0);
             try {
                 TimeUnit.SECONDS.sleep(1);
             } catch (InterruptedException e) {
 
             }
-            msgTwoId = handler.storeMessage(userOne.getUserName(), userTwo.getUserName(), MessageType.DIRECT, QueryConstants.MESSAGE_SECOND_TEXT);
+            msgTwoId = handler.storeMessage(userOne.getUserName(), userTwo.getUserName(), MessageType.DIRECT,
+                    QueryConstants.MESSAGE_SECOND_TEXT, System.currentTimeMillis(), 0);
             try {
                 TimeUnit.SECONDS.sleep(1);
             } catch (InterruptedException e) {
 
             }
-            msgThreeId = handler.storeMessage(userOne.getUserName(), userThree.getUserName(), MessageType.DIRECT, QueryConstants.MESSAGE_SECOND_TEXT);
+            msgThreeId = handler.storeMessage(userOne.getUserName(), userThree.getUserName(), MessageType.DIRECT,
+                    QueryConstants.MESSAGE_SECOND_TEXT, System.currentTimeMillis(), 0);
             userOneId = userOne.getUserID();
             userTwoId = userTwo.getUserID();
             userThreeId = userThree.getUserID();
@@ -929,8 +949,10 @@ public class QueryHandlerMySQLImplTest {
         long res1 = 0;
         long res2 = 0;
         try {
-            res1 = handler.storeMessage(QueryConstants.SENDER_USERNAME, QueryConstants.RECEIVER_USERNAME, MessageType.DIRECT, QueryConstants.MESSAGE_TEXT);
-            res2 = handler.storeMessage(QueryConstants.RECEIVER_USERNAME, QueryConstants.SENDER_USERNAME, MessageType.DIRECT, QueryConstants.MESSAGE_TEXT, res1);
+            res1 = handler.storeMessage(QueryConstants.SENDER_USERNAME, QueryConstants.RECEIVER_USERNAME,
+                    MessageType.DIRECT, QueryConstants.MESSAGE_TEXT, System.currentTimeMillis(), 0);
+            res2 = handler.storeMessage(QueryConstants.RECEIVER_USERNAME, QueryConstants.SENDER_USERNAME,
+                    MessageType.DIRECT, QueryConstants.MESSAGE_TEXT, res1, System.currentTimeMillis(), 0);
             assertNotEquals(res1, 0);
             assertNotEquals(res2, 0);
         } finally {
@@ -960,10 +982,12 @@ public class QueryHandlerMySQLImplTest {
             assertNotEquals(0, senderId);
             assertNotEquals(0, receiverId);
 
-            res1 = handler.storeMessage(sender.getUserName(), receiver.getUserName(), MessageType.DIRECT, QueryConstants.MESSAGE_TEXT);
+            res1 = handler.storeMessage(sender.getUserName(), receiver.getUserName(), MessageType.DIRECT,
+                    QueryConstants.MESSAGE_TEXT, System.currentTimeMillis(), 0);
             assertNotEquals(0, res1);
             assertEquals(0, handler.trackMessage(res1).get(MessageConstants.TRACK_USER).size());
-            res2 = handler.storeMessage(receiver.getUserName(), sender.getUserName(), MessageType.DIRECT, QueryConstants.MESSAGE_TEXT, res1);
+            res2 = handler.storeMessage(receiver.getUserName(), sender.getUserName(), MessageType.DIRECT,
+                    QueryConstants.MESSAGE_TEXT, res1, System.currentTimeMillis(), 0);
             assertNotEquals(0, res2);
 
             assertEquals(1, handler.trackMessage(res1).get(MessageConstants.TRACK_USER).size());
