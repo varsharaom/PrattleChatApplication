@@ -476,10 +476,14 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
      * @see edu.northeastern.ccs.im.persistence.IQueryHandler#getMessagesFromUserChat(long, long)
      */
     public List<Message> getMessagesFromUserChat(String sender, String receiver, int start, int limit) {
-        String query = String.format("SELECT * FROM %s WHERE %s = %d AND %s = %d AND %s = '%s' ORDER BY %s DESC",
-                DBConstants.MESSAGE_TABLE, DBConstants.MESSAGE_RECEIVER_ID, getUserID(receiver),
+        String query = String.format("SELECT * FROM %s WHERE ((%s = %d AND %s = %d) OR (%s = %d AND %s = %d)) AND %s = '%s' AND %s <> %d ORDER BY %s DESC",
+                DBConstants.MESSAGE_TABLE,
+                DBConstants.MESSAGE_RECEIVER_ID, getUserID(receiver),
                 DBConstants.MESSAGE_SENDER_ID, getUserID(sender),
-                DBConstants.MESSAGE_TYPE, MessageType.DIRECT, DBConstants.MESSAGE_TIME);
+                DBConstants.MESSAGE_RECEIVER_ID, getUserID(sender),
+                DBConstants.MESSAGE_SENDER_ID, getUserID(receiver),
+                DBConstants.MESSAGE_TYPE, MessageType.DIRECT, 
+                DBConstants.IS_DELETED, DBConstants.IS_DELETED_TRUE, DBConstants.MESSAGE_TIME);
 
         if (limit == -1) {
             query += ";";
@@ -494,7 +498,46 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
             statement = connection.prepareStatement(query);
             rs = statement.executeQuery();
 
-            rs.relative(start);
+            while (rs.next()) {
+                Message msg = new Message(rs.getLong(DBConstants.MESSAGE_ID),
+                        MessageType.get(rs.getString(DBConstants.MESSAGE_TYPE)),
+                        getUserName(rs.getInt(DBConstants.MESSAGE_SENDER_ID)),
+                        getUserName(rs.getInt(DBConstants.MESSAGE_RECEIVER_ID)),
+                        rs.getString(DBConstants.MESSAGE_BODY), rs.getInt(DBConstants.IS_DELETED));
+                messageList.add(msg);
+            }
+        } catch (SQLException e) {
+            logger.log(Level.INFO, SQL_EXCEPTION_MSG + ": " + e.getMessage());
+        } finally {
+            try {
+                closeDBResources(rs, statement);
+            } catch (NullPointerException | SQLException e) {
+                logger.log(Level.INFO, SQL_EXCEPTION_MSG + ": " + e.getMessage());
+            }
+        }
+        return messageList;
+    }
+    
+    public List<Message> getMessagesFromGroupChat(String groupName, int start, int limit) {
+        String query = String.format("SELECT * FROM %s WHERE %s = %d AND %s = '%s' AND %s <> %d ORDER BY %s DESC",
+                DBConstants.MESSAGE_TABLE,
+                DBConstants.MESSAGE_RECEIVER_ID, getGroupID(groupName),
+                DBConstants.MESSAGE_TYPE, MessageType.GROUP, 
+                DBConstants.IS_DELETED, DBConstants.IS_DELETED_TRUE, DBConstants.MESSAGE_TIME);
+
+        if (limit == -1) {
+            query += ";";
+        } else {
+            query += " LIMIT " + start + "," + limit + ";";
+        }
+
+        List<Message> messageList = new ArrayList<>();
+        ResultSet rs = null;
+        PreparedStatement statement = null;
+        try {
+            statement = connection.prepareStatement(query);
+            rs = statement.executeQuery();
+
             while (rs.next()) {
                 Message msg = new Message(rs.getLong(DBConstants.MESSAGE_ID),
                         MessageType.get(rs.getString(DBConstants.MESSAGE_TYPE)),

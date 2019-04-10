@@ -273,6 +273,19 @@ public interface IQueryHandler {
      * @return the messages from user chat
      */
     public List<Message> getMessagesFromUserChat(String sender, String receiver, int start, int limit);
+    
+    
+    /**
+     * Gets the messages from group chat.
+     *
+     * @param sender the sender
+     * @param receiver the receiver
+     * @param start the start
+     * @param limit the limit
+     * @return the messages from group chat
+     */
+    public List<Message> getMessagesFromGroupChat(String groupName, int start, int limit);
+    
 
     /**
      * Creates the group.

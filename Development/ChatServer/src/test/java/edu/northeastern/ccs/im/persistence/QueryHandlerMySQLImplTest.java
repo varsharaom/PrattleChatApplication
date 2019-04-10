@@ -601,6 +601,64 @@ public class QueryHandlerMySQLImplTest {
             handler.doUpdateQuery(query);
         }
     }
+    
+    @Test
+    public void testGetMessagesFromGroupChat() {
+    		long msgOneId = 0;
+        long msgTwoId = 0;
+        long msgThreeId = 0;
+        long userOneId = 0;
+        long userTwoId = 0;
+        long groupId = 0;
+        try {
+            User userOne = handler.createUser(QueryConstants.SENDER_USERNAME, QueryConstants.PASS, QueryConstants.NICKNAME);
+            User userTwo = handler.createUser(QueryConstants.RECEIVER_USERNAME, QueryConstants.PASS, QueryConstants.NICKNAME);
+            groupId = handler.createGroup(userOne.getUserName(), QueryConstants.GROUP_NAME);
+            handler.addGroupMember(QueryConstants.RECEIVER_USERNAME, QueryConstants.GROUP_NAME, QueryConstants.MEMBER_ROLE_ID);
+            
+            msgOneId = handler.storeMessage(userOne.getUserName(), QueryConstants.GROUP_NAME, MessageType.GROUP, QueryConstants.MESSAGE_TEXT);
+            try {
+                TimeUnit.SECONDS.sleep(1);
+            } catch (InterruptedException e) {
+
+            }
+            msgTwoId = handler.storeMessage(userOne.getUserName(), QueryConstants.GROUP_NAME, MessageType.GROUP, QueryConstants.MESSAGE_SECOND_TEXT);
+            try {
+                TimeUnit.SECONDS.sleep(1);
+            } catch (InterruptedException e) {
+
+            }
+            userOneId = userOne.getUserID();
+            userTwoId = userTwo.getUserID();
+
+            List<Message> messageList = handler.getMessagesFromGroupChat(QueryConstants.GROUP_NAME, 0, 1);
+            assertEquals(1, messageList.size());
+            assertEquals(QueryConstants.MESSAGE_SECOND_TEXT, messageList.get(0).getText());
+            
+            messageList = handler.getMessagesFromGroupChat(QueryConstants.GROUP_NAME, 1, 1);
+            assertEquals(1, messageList.size());
+            assertEquals(QueryConstants.MESSAGE_TEXT, messageList.get(0).getText());
+            
+            messageList = handler.getMessagesFromGroupChat(QueryConstants.GROUP_NAME, 2, 1);
+            assertEquals(0, messageList.size());
+        } finally {
+            // Tear down
+        		handler.removeGroupMember(QueryConstants.RECEIVER_USERNAME, QueryConstants.GROUP_NAME);
+        		handler.removeGroupMember(QueryConstants.SENDER_USERNAME, QueryConstants.GROUP_NAME);
+            String query = String.format(QueryConstants.TEARDOWN_DELETE, DBConstants.MESSAGE_TABLE, DBConstants.MESSAGE_ID, msgOneId);
+            handler.doUpdateQuery(query);
+            query = String.format(QueryConstants.TEARDOWN_DELETE, DBConstants.MESSAGE_TABLE, DBConstants.MESSAGE_ID, msgTwoId);
+            handler.doUpdateQuery(query);
+            query = String.format(QueryConstants.TEARDOWN_DELETE, DBConstants.MESSAGE_TABLE, DBConstants.MESSAGE_ID, msgThreeId);
+            handler.doUpdateQuery(query);
+            query = String.format(QueryConstants.TEARDOWN_DELETE, DBConstants.USER_TABLE, DBConstants.USER_ID, userOneId);
+            handler.doUpdateQuery(query);
+            query = String.format(QueryConstants.TEARDOWN_DELETE, DBConstants.USER_TABLE, DBConstants.USER_ID, userTwoId);
+            handler.doUpdateQuery(query);
+            query = String.format(QueryConstants.TEARDOWN_DELETE, DBConstants.GROUP_TABLE, DBConstants.GROUP_ID, groupId);
+            handler.doUpdateQuery(query);
+        }
+    }
 
     @Test
     public void testGetAllMessagesFromUserChat() {
