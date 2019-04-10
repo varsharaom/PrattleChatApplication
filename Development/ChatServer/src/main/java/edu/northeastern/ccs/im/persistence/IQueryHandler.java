@@ -42,6 +42,15 @@ public interface IQueryHandler {
      */
     public long validateLogin(String username, String password);
 
+
+    /**
+     * Checks if the user is invisible for general searches
+     *
+     * @param userName name of the user
+     * @return visibility status
+     */
+    public boolean isUserInVisible(String userName);
+
     /**
      * Store message.
      *
@@ -53,7 +62,28 @@ public interface IQueryHandler {
      */
     //Message Queries
     public long storeMessage(String senderName, String receiverName, MessageType type, String msgText);
-  
+
+    /**
+     * Store forwarded message.
+     *
+     * @param senderName   the sender name
+     * @param receiverName the receiver name
+     * @param type         the type
+     * @param msgText      the msg text
+     * @param parentMsgID  id of the parent message
+     * @return the long
+     */
+    public long storeMessage(String senderName, String receiverName, MessageType type, String msgText, Long parentMsgID);
+
+
+    /**
+     * returns all the users and groups who have been forwarded with the given message ID.
+     *
+     * @param messageID source message id
+     * @return Map containing list of group and individual names.
+     */
+    public Map<String, List<String>> trackMessage(Long messageID);
+
     /**
      * Update user visibility.
      *
@@ -123,7 +153,15 @@ public interface IQueryHandler {
      * @return the user ID
      */
     public long getUserID(String userName);
-    
+
+    /**
+     * Is the given group public or private
+     *
+     * @param groupName name of the group
+     * @return visibility status
+     */
+    public boolean isGroupInVisible(String groupName);
+
     /**
      * Check group name exists.
      *
@@ -146,8 +184,8 @@ public interface IQueryHandler {
      * @param senderName the sender name
      * @return the my groups
      */
-    public  List<Group> getMyGroups(String senderName);
-    
+    public List<Group> getMyGroups(String senderName);
+
     /**
      * Gets the group members.
      *
@@ -313,6 +351,4 @@ public interface IQueryHandler {
      */
     // Circles
     public long addUserToCircle(String senderName, String receiverName);
-
-    public Map<String, List<String>> trackMessage(long messageId);
 }

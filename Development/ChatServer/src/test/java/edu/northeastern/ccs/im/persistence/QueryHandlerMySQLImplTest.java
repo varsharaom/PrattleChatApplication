@@ -14,10 +14,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import edu.northeastern.ccs.im.constants.MessageConstants;
 import org.junit.Before;
 import org.junit.Test;
-
-import com.mysql.jdbc.log.Log;
 
 import edu.northeastern.ccs.im.constants.QueryConstants;
 import edu.northeastern.ccs.serverim.Group;
@@ -427,10 +426,10 @@ public class QueryHandlerMySQLImplTest {
             User userTwo = handler.createUser(QueryConstants.RECEIVER_USERNAME, QueryConstants.PASS, QueryConstants.NICKNAME);
             msgOneId = handler.storeMessage(userOne.getUserName(), userTwo.getUserName(), MessageType.DIRECT, QueryConstants.MESSAGE_TEXT);
             try {
-				TimeUnit.SECONDS.sleep(1);
-			} catch (InterruptedException e) {
-				
-			}
+                TimeUnit.SECONDS.sleep(1);
+            } catch (InterruptedException e) {
+
+            }
             msgTwoId = handler.storeMessage(userOne.getUserName(), userTwo.getUserName(), MessageType.DIRECT, QueryConstants.MESSAGE_SECOND_TEXT);
             userOneId = userOne.getUserID();
             userTwoId = userTwo.getUserID();
@@ -449,7 +448,7 @@ public class QueryHandlerMySQLImplTest {
             handler.doUpdateQuery(query);
         }
     }
-    
+
     @Test
     public void testGetAllMessagesSentByUser() {
         long msgOneId = 0;
@@ -461,10 +460,10 @@ public class QueryHandlerMySQLImplTest {
             User userTwo = handler.createUser(QueryConstants.RECEIVER_USERNAME, QueryConstants.PASS, QueryConstants.NICKNAME);
             msgOneId = handler.storeMessage(userOne.getUserName(), userTwo.getUserName(), MessageType.DIRECT, QueryConstants.MESSAGE_TEXT);
             try {
-				TimeUnit.SECONDS.sleep(1);
-			} catch (InterruptedException e) {
-				
-			}
+                TimeUnit.SECONDS.sleep(1);
+            } catch (InterruptedException e) {
+
+            }
             msgTwoId = handler.storeMessage(userOne.getUserName(), userTwo.getUserName(), MessageType.DIRECT, QueryConstants.MESSAGE_SECOND_TEXT);
             userOneId = userOne.getUserID();
             userTwoId = userTwo.getUserID();
@@ -496,10 +495,10 @@ public class QueryHandlerMySQLImplTest {
             User userTwo = handler.createUser(QueryConstants.RECEIVER_USERNAME, QueryConstants.PASS, QueryConstants.NICKNAME);
             msgOneId = handler.storeMessage(userOne.getUserName(), userTwo.getUserName(), MessageType.DIRECT, QueryConstants.MESSAGE_TEXT);
             try {
-				TimeUnit.SECONDS.sleep(1);
-			} catch (InterruptedException e) {
-				
-			}
+                TimeUnit.SECONDS.sleep(1);
+            } catch (InterruptedException e) {
+
+            }
             msgTwoId = handler.storeMessage(userOne.getUserName(), userTwo.getUserName(), MessageType.DIRECT, QueryConstants.MESSAGE_SECOND_TEXT);
             userOneId = userOne.getUserID();
             userTwoId = userTwo.getUserID();
@@ -518,7 +517,7 @@ public class QueryHandlerMySQLImplTest {
             handler.doUpdateQuery(query);
         }
     }
-    
+
     @Test
     public void testGetAllMessagesSentToUser() {
         long msgOneId = 0;
@@ -530,10 +529,10 @@ public class QueryHandlerMySQLImplTest {
             User userTwo = handler.createUser(QueryConstants.RECEIVER_USERNAME, QueryConstants.PASS, QueryConstants.NICKNAME);
             msgOneId = handler.storeMessage(userOne.getUserName(), userTwo.getUserName(), MessageType.DIRECT, QueryConstants.MESSAGE_TEXT);
             try {
-				TimeUnit.SECONDS.sleep(1);
-			} catch (InterruptedException e) {
-				
-			}
+                TimeUnit.SECONDS.sleep(1);
+            } catch (InterruptedException e) {
+
+            }
             msgTwoId = handler.storeMessage(userOne.getUserName(), userTwo.getUserName(), MessageType.DIRECT, QueryConstants.MESSAGE_SECOND_TEXT);
             userOneId = userOne.getUserID();
             userTwoId = userTwo.getUserID();
@@ -568,16 +567,16 @@ public class QueryHandlerMySQLImplTest {
             User userThree = handler.createUser(QueryConstants.USERNAME, QueryConstants.PASS, QueryConstants.NICKNAME);
             msgOneId = handler.storeMessage(userOne.getUserName(), userTwo.getUserName(), MessageType.DIRECT, QueryConstants.MESSAGE_TEXT);
             try {
-				TimeUnit.SECONDS.sleep(1);
-			} catch (InterruptedException e) {
-				
-			}
+                TimeUnit.SECONDS.sleep(1);
+            } catch (InterruptedException e) {
+
+            }
             msgTwoId = handler.storeMessage(userOne.getUserName(), userTwo.getUserName(), MessageType.DIRECT, QueryConstants.MESSAGE_SECOND_TEXT);
             try {
-				TimeUnit.SECONDS.sleep(1);
-			} catch (InterruptedException e) {
-				
-			}
+                TimeUnit.SECONDS.sleep(1);
+            } catch (InterruptedException e) {
+
+            }
             msgThreeId = handler.storeMessage(userOne.getUserName(), userThree.getUserName(), MessageType.DIRECT, QueryConstants.MESSAGE_SECOND_TEXT);
             userOneId = userOne.getUserID();
             userTwoId = userTwo.getUserID();
@@ -602,7 +601,7 @@ public class QueryHandlerMySQLImplTest {
             handler.doUpdateQuery(query);
         }
     }
-    
+
     @Test
     public void testGetAllMessagesFromUserChat() {
         long msgOneId = 0;
@@ -617,16 +616,16 @@ public class QueryHandlerMySQLImplTest {
             User userThree = handler.createUser(QueryConstants.USERNAME, QueryConstants.PASS, QueryConstants.NICKNAME);
             msgOneId = handler.storeMessage(userOne.getUserName(), userTwo.getUserName(), MessageType.DIRECT, QueryConstants.MESSAGE_TEXT);
             try {
-				TimeUnit.SECONDS.sleep(1);
-			} catch (InterruptedException e) {
-				
-			}
+                TimeUnit.SECONDS.sleep(1);
+            } catch (InterruptedException e) {
+
+            }
             msgTwoId = handler.storeMessage(userOne.getUserName(), userTwo.getUserName(), MessageType.DIRECT, QueryConstants.MESSAGE_SECOND_TEXT);
             try {
-				TimeUnit.SECONDS.sleep(1);
-			} catch (InterruptedException e) {
-				
-			}
+                TimeUnit.SECONDS.sleep(1);
+            } catch (InterruptedException e) {
+
+            }
             msgThreeId = handler.storeMessage(userOne.getUserName(), userThree.getUserName(), MessageType.DIRECT, QueryConstants.MESSAGE_SECOND_TEXT);
             userOneId = userOne.getUserID();
             userTwoId = userTwo.getUserID();
@@ -880,11 +879,11 @@ public class QueryHandlerMySQLImplTest {
             assertEquals("", handler.getUserName(user2Id));
         }
     }
-    
+
     @Test
     public void testUpdateUserVisibility() {
-    		User user = null;
-    		long userId = -1L;
+        User user = null;
+        long userId = -1L;
         try {
             user = handler.createUser(QueryConstants.USERNAME, QueryConstants.PASS, QueryConstants.USERNAME);
             userId = user.getUserID();
@@ -896,16 +895,16 @@ public class QueryHandlerMySQLImplTest {
             assertEquals(sizeBefore - 1L, userList.size());
             handler.updateUserVisibility(QueryConstants.USERNAME, false);
         } finally {
-        		//teardown
-        		String query = String.format(QueryConstants.TEARDOWN_DELETE, DBConstants.USER_TABLE, DBConstants.USER_ID, userId);
+            //teardown
+            String query = String.format(QueryConstants.TEARDOWN_DELETE, DBConstants.USER_TABLE, DBConstants.USER_ID, userId);
             handler.doUpdateQuery(query);
         }
     }
 
     @Test
     public void testUpdateGroupVisibility() {
-    		User user = null;
-    		long userId = -1L;
+        User user = null;
+        long userId = -1L;
         try {
             user = handler.createUser(QueryConstants.USERNAME, QueryConstants.PASS, QueryConstants.USERNAME);
             userId = user.getUserID();
@@ -917,8 +916,115 @@ public class QueryHandlerMySQLImplTest {
             assertEquals(sizeBefore - 1L, groupList.size());
             handler.updateGroupVisibility(QueryConstants.GROUP_NAME, false);
         } finally {
-        		//teardown
-        		String query = String.format(QueryConstants.TEARDOWN_DELETE, DBConstants.USER_TABLE, DBConstants.USER_ID, userId);
+            //teardown
+            String query = String.format(QueryConstants.TEARDOWN_DELETE, DBConstants.USER_TABLE, DBConstants.USER_ID, userId);
+            handler.doUpdateQuery(query);
+            handler.removeMember(QueryConstants.GROUP_NAME, QueryConstants.USERNAME);
+            handler.deleteGroup(QueryConstants.USERNAME, QueryConstants.GROUP_NAME);
+        }
+    }
+
+    @Test
+    public void testStoreForwardedMessage() {
+        long res1 = 0;
+        long res2 = 0;
+        try {
+            res1 = handler.storeMessage(QueryConstants.SENDER_USERNAME, QueryConstants.RECEIVER_USERNAME, MessageType.DIRECT, QueryConstants.MESSAGE_TEXT);
+            res2 = handler.storeMessage(QueryConstants.RECEIVER_USERNAME, QueryConstants.SENDER_USERNAME, MessageType.DIRECT, QueryConstants.MESSAGE_TEXT, res1);
+            assertNotEquals(res1, 0);
+            assertNotEquals(res2, 0);
+        } finally {
+            // Tear down
+            String query = String.format(QueryConstants.TEARDOWN_DELETE, DBConstants.MESSAGE_TABLE, DBConstants.MESSAGE_ID, res1);
+            handler.doUpdateQuery(query);
+            query = String.format(QueryConstants.TEARDOWN_DELETE, DBConstants.MESSAGE_TABLE, DBConstants.MESSAGE_ID, res2);
+            handler.doUpdateQuery(query);
+        }
+    }
+
+    @Test
+    public void testTrackMessage() {
+        long res1 = 0;
+        long res2 = 0;
+        User sender = null;
+        User receiver = null;
+        long senderId = 0;
+        long receiverId = 0;
+
+        try {
+            sender = handler.createUser(QueryConstants.SENDER_USERNAME, QueryConstants.PASS, QueryConstants.SENDER_USERNAME);
+            receiver = handler.createUser(QueryConstants.RECEIVER_USERNAME, QueryConstants.PASS, QueryConstants.RECEIVER_USERNAME);
+
+            senderId = sender.getUserID();
+            receiverId = receiver.getUserID();
+            assertNotEquals(0, senderId);
+            assertNotEquals(0, receiverId);
+
+            res1 = handler.storeMessage(sender.getUserName(), receiver.getUserName(), MessageType.DIRECT, QueryConstants.MESSAGE_TEXT);
+            assertNotEquals(0, res1);
+            assertEquals(0, handler.trackMessage(res1).get(MessageConstants.TRACK_USER).size());
+            res2 = handler.storeMessage(receiver.getUserName(), sender.getUserName(), MessageType.DIRECT, QueryConstants.MESSAGE_TEXT, res1);
+            assertNotEquals(0, res2);
+
+            assertEquals(1, handler.trackMessage(res1).get(MessageConstants.TRACK_USER).size());
+        } finally {
+            // Tear down
+            String query = String.format(QueryConstants.TEARDOWN_DELETE, DBConstants.MESSAGE_TABLE, DBConstants.MESSAGE_ID, res1);
+            handler.doUpdateQuery(query);
+            query = String.format(QueryConstants.TEARDOWN_DELETE, DBConstants.MESSAGE_TABLE, DBConstants.MESSAGE_ID, res2);
+            handler.doUpdateQuery(query);
+
+            query = String.format(QueryConstants.TEARDOWN_DELETE, DBConstants.USER_TABLE, DBConstants.USER_ID, receiverId);
+            handler.doUpdateQuery(query);
+
+            query = String.format(QueryConstants.TEARDOWN_DELETE, DBConstants.USER_TABLE, DBConstants.USER_ID, senderId);
+            handler.doUpdateQuery(query);
+        }
+    }
+
+    @Test
+    public void testUserVisibilityStatus() {
+        User user = null;
+        long userId = -1L;
+        try {
+            user = handler.createUser(QueryConstants.USERNAME, QueryConstants.PASS, QueryConstants.USERNAME);
+            userId = user.getUserID();
+
+            List<User> userList = handler.getAllUsers();
+            int sizeBefore = userList.size();
+            assertFalse(handler.isUserInVisible(user.getUserName()));
+            handler.updateUserVisibility(QueryConstants.USERNAME, true);
+            assertTrue(handler.isUserInVisible(user.getUserName()));
+            userList = handler.getAllUsers();
+            assertEquals(sizeBefore - 1L, userList.size());
+            handler.updateUserVisibility(QueryConstants.USERNAME, false);
+        } finally {
+            //teardown
+            String query = String.format(QueryConstants.TEARDOWN_DELETE, DBConstants.USER_TABLE, DBConstants.USER_ID, userId);
+            handler.doUpdateQuery(query);
+        }
+    }
+
+    @Test
+    public void testGroupVisibilityStatus() {
+        User user = null;
+        long userId = -1L;
+        try {
+            user = handler.createUser(QueryConstants.USERNAME, QueryConstants.PASS, QueryConstants.USERNAME);
+            userId = user.getUserID();
+            handler.createGroup(QueryConstants.USERNAME, QueryConstants.GROUP_NAME);
+            List<Group> groupList = handler.getAllGroups();
+            int sizeBefore = groupList.size();
+            assertFalse(handler.isGroupInVisible(QueryConstants.GROUP_NAME));
+            handler.updateGroupVisibility(QueryConstants.GROUP_NAME, true);
+            assertTrue(handler.isGroupInVisible(QueryConstants.GROUP_NAME));
+            groupList = handler.getAllGroups();
+            assertEquals(sizeBefore - 1L, groupList.size());
+            handler.updateGroupVisibility(QueryConstants.GROUP_NAME, false);
+            assertFalse(handler.isGroupInVisible(QueryConstants.GROUP_NAME));
+        } finally {
+            //teardown
+            String query = String.format(QueryConstants.TEARDOWN_DELETE, DBConstants.USER_TABLE, DBConstants.USER_ID, userId);
             handler.doUpdateQuery(query);
             handler.removeMember(QueryConstants.GROUP_NAME, QueryConstants.USERNAME);
             handler.deleteGroup(QueryConstants.USERNAME, QueryConstants.GROUP_NAME);
