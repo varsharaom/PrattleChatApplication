@@ -35,7 +35,7 @@ public class Message {
     private String msgSender;
 
     private String msgReceiver;
-    
+
     private int isDeleted;
 
     /**
@@ -44,6 +44,86 @@ public class Message {
     private String msgText;
 
     private List<String> receivers;
+
+    private final long timeStamp;
+
+    private final int timeOutMinutes;
+
+    /**
+     * Instantiates a new message.
+     *
+     * @param id             the id
+     * @param handle         the handle
+     * @param sender         the sender
+     * @param receiver       the receiver
+     * @param text           the text
+     * @param isDeleted      the bit to indicate if a message is deleted
+     * @param timeStamp      timestamp of message
+     * @param timeoutMinutes timeoutMinutes for this message
+     */
+    public Message(long id, MessageType handle, String sender, String receiver,
+                   String text, int isDeleted, long timeStamp, int timeoutMinutes) {
+        this.msgType = handle;
+        this.msgSender = sender;
+        this.msgReceiver = receiver;
+        this.msgText = text;
+        this.id = id;
+        this.isDeleted = isDeleted;
+        this.timeStamp = timeStamp;
+        this.timeOutMinutes = timeoutMinutes;
+    }
+
+    /**
+     * Instantiates a new message.
+     *
+     * @param id        the id
+     * @param handle    the handle
+     * @param sender    the sender
+     * @param receiver  the receiver
+     * @param text      the text
+     * @param isDeleted the bit to indicate if a message is deleted
+     */
+    public Message(long id, MessageType handle, String sender, String receiver, String text, int isDeleted) {
+        this(id, handle, sender, receiver, text, isDeleted, System.currentTimeMillis(), 0);
+    }
+
+    /**
+     * Create a new message that contains actual IM text. The type of distribution
+     * is defined by the handle and we must also set the name of the message sender,
+     * message recipient, and the text to send.
+     *
+     * @param handle Handle for the type of message being created.
+     *               //	 * @param srcName Name of the individual sending this message
+     * @param text   Text of the instant message
+     */
+    private Message(MessageType handle, String srcName, String text) {
+        this(handle, srcName, "", text);
+    }
+
+    /**
+     * Instantiates a new message without the user id.
+     *
+     * @param handle   the handle
+     * @param sender   the sender
+     * @param receiver the receiver
+     * @param text     the text
+     */
+    public Message(MessageType handle, String sender, String receiver, String text) {
+        this(-1L, handle, sender, receiver, text, 0);
+    }
+
+    /**
+     * Create a new message that contains a command sent the server that requires a
+     * single argument. This message contains the given handle and the single
+     * argument.
+     *
+     * @param handle  Handle for the type of message being created.
+     * @param srcName Argument for the message; at present this is the name used to
+     *                log-in to the IM server.
+     */
+    private Message(MessageType handle, String srcName) {
+        this(handle, srcName, "");
+    }
 
 
     /**
@@ -63,7 +143,7 @@ public class Message {
     public long getId() {
         return this.id;
     }
-    
+
     /**
      * Gets the isDeleted bit.
      *
@@ -73,66 +153,12 @@ public class Message {
         return this.isDeleted;
     }
 
-    /**
-     * Create a new message that contains actual IM text. The type of distribution
-     * is defined by the handle and we must also set the name of the message sender,
-     * message recipient, and the text to send.
-     *
-     * @param handle Handle for the type of message being created.
-     *               //	 * @param srcName Name of the individual sending this message
-     * @param text   Text of the instant message
-     */
-    private Message(MessageType handle, String srcName, String text) {
-        msgType = handle;
-        // Save the properly formatted identifier for the user sending the
-        // message.
-        msgSender = srcName;
-        // Save the text of the message.
-        msgText = text;
+    public long getTimeStamp() {
+        return timeStamp;
     }
 
-    /**
-     * Instantiates a new message.
-     *
-     * @param id the id
-     * @param handle the handle
-     * @param sender the sender
-     * @param receiver the receiver
-     * @param text the text
-     * @param isDeleted the bit to indicate if a message is deleted
-     */
-    public Message(long id, MessageType handle, String sender, String receiver, String text, int isDeleted) {
-        this.msgType = handle;
-        this.msgSender = sender;
-        this.msgReceiver = receiver;
-        this.msgText = text;
-        this.id = id;
-        this.isDeleted = isDeleted;
-    }
-
-    /**
-     * Instantiates a new message without the user id.
-     *
-     * @param handle the handle
-     * @param sender the sender
-     * @param receiver the receiver
-     * @param text the text
-     */
-    public Message(MessageType handle, String sender, String receiver, String text) {
-        this(-1L, handle, sender, receiver, text, 0);
-    }
-
-    /**
-     * Create a new message that contains a command sent the server that requires a
-     * single argument. This message contains the given handle and the single
-     * argument.
-     *
-     * @param handle  Handle for the type of message being created.
-     * @param srcName Argument for the message; at present this is the name used to
-     *                log-in to the IM server.
-     */
-    private Message(MessageType handle, String srcName) {
-        this(handle, srcName, "");
+    public int getTimeOutMinutes() {
+        return timeOutMinutes;
     }
 
     /**
@@ -222,10 +248,10 @@ public class Message {
     /**
      * Make login acknowledgement message.
      *
-     * @param handle the handle
-     * @param sender the sender
+     * @param handle   the handle
+     * @param sender   the sender
      * @param receiver the receiver
-     * @param msgText the message text
+     * @param msgText  the message text
      * @return the message
      */
     public static Message makeLoginAckMessage(MessageType handle, String sender, String receiver, String msgText) {
@@ -235,9 +261,9 @@ public class Message {
     /**
      * Make acknowledgement message.
      *
-     * @param handle the handle
+     * @param handle    the handle
      * @param msgSender the message sender
-     * @param msgText the message text
+     * @param msgText   the message text
      * @return the message
      */
     public static Message makeAckMessage(MessageType handle, String msgSender, String msgText) {
@@ -247,9 +273,9 @@ public class Message {
     /**
      * Make direct message.
      *
-     * @param msgSender the message sender
+     * @param msgSender   the message sender
      * @param msgReceiver the message receiver
-     * @param msgText the message text
+     * @param msgText     the message text
      * @return the message
      */
     public static Message makeDirectMessage(String msgSender, String msgReceiver, String msgText) {
@@ -261,7 +287,7 @@ public class Message {
      *
      * @param msgSender the message sender
      * @param groupName the group name
-     * @param msgText the message text
+     * @param msgText   the message text
      * @return the message
      */
     public static Message makeGroupMessage(String msgSender, String groupName, String msgText) {
@@ -271,9 +297,9 @@ public class Message {
     /**
      * Make get info message.
      *
-     * @param msgSender the message sender
+     * @param msgSender   the message sender
      * @param msgReceiver the message receiver
-     * @param msgText the message text
+     * @param msgText     the message text
      * @return the message
      */
     public static Message makeGetInfoMessage(String msgSender, String msgReceiver, String msgText) {
@@ -284,7 +310,7 @@ public class Message {
      * Make error message.
      *
      * @param msgSender the message sender
-     * @param msgText the message text
+     * @param msgText   the message text
      * @return the message
      */
     public static Message makeErrorMessage(String msgSender, String msgText) {
@@ -294,8 +320,8 @@ public class Message {
     /**
      * Make delete message.
      *
-     * @param messageId the message id
-     * @param msgSender the message sender
+     * @param messageId   the message id
+     * @param msgSender   the message sender
      * @param msgReceiver the message receiver
      * @return the message
      */
@@ -306,7 +332,7 @@ public class Message {
     /**
      * Make action message.
      *
-     * @param sender the sender
+     * @param sender       the sender
      * @param actualAction the actual action
      * @return the message
      */
