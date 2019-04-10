@@ -138,8 +138,8 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
 
     public Map<String, List<String>> trackMessage(Long messageID) {
         Map<String, List<String>> trackedMap = new HashMap<>();
-        trackedMap.put(MessageConstants.TRACK_USER, trackMessagesFromPrivate(messageID));
-        trackedMap.put(MessageConstants.TRACKER_GROUP, trackMessagesFromGroups(messageID));
+        trackedMap.put(MessageConstants.FORWARDED_USERS, trackMessagesFromPrivate(messageID));
+        trackedMap.put(MessageConstants.FORWARDED_GROUPS, trackMessagesFromGroups(messageID));
         return trackedMap;
     }
 

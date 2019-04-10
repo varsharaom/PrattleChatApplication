@@ -198,8 +198,7 @@ class ClientRunnableHelper {
 
 	private void handleUserVisibility(String senderName, String[] contents) {
 		boolean isPrivate = isPrivateVisibility(contents[1]);
-		boolean isActualVisibilityPrivate = false;
-//				queryHandler.getUserVisibility(senderName);
+		boolean isActualVisibilityPrivate = queryHandler.isUserInVisible(senderName);
 
 		if (isPrivate == isActualVisibilityPrivate) {
 			Message errorMessage = Message.makeErrorMessage(senderName,
@@ -240,11 +239,11 @@ class ClientRunnableHelper {
 	private String getBuiltTrackMessageInfo(Map<String, List<String>> trackInfo) {
 		StringBuilder text = new StringBuilder(" Message Tracking information: \n");
 		text.append("Groups: ");
-		text.append(trackInfo.get("groups")
+		text.append(trackInfo.get(MessageConstants.FORWARDED_GROUPS)
 				.stream()
 				.reduce("", (group1, group2) -> group1 + "\n" + group2));
 		text.append("\nUsers: ");
-		text.append(trackInfo.get("users")
+		text.append(trackInfo.get(MessageConstants.FORWARDED_USERS)
 				.stream()
 				.reduce("", (user1, user2) -> user1 + "\n" + user2));
 		return text.toString().trim();
@@ -254,10 +253,9 @@ class ClientRunnableHelper {
 		boolean toBeGroupVisibility = isPrivateVisibility(contents[1]);
 		String groupName = contents[2];
 
-		boolean actualGroupVisibility = false;
-//				queryHandler.getGroupVisibility(groupName);
+		boolean isActuallyPrivate = queryHandler.isGroupInVisible(groupName);
 
-		if (actualGroupVisibility == toBeGroupVisibility) {
+		if (isActuallyPrivate == toBeGroupVisibility) {
 			Message errorMessage = Message.makeErrorMessage(senderName,
 					"[INFO] Group's visibility is already " + toBeGroupVisibility);
 			Prattle.sendErrorMessage(errorMessage);
@@ -273,7 +271,7 @@ class ClientRunnableHelper {
 	}
 
 	private void toggleGroupVisibility(String groupName, String senderName, boolean isPrivate) {
-		if (queryHandler.getGroupModerators(groupName).contains(senderName)) {
+		if (queryHandler.isModerator(senderName, groupName)) {
 			queryHandler.updateGroupVisibility(groupName, isPrivate);
 			Message ackMessage = Message.makeAckMessage(MessageType.DIRECT, senderName,
 					"Group Visibility successfully updated to - " + isPrivate);
@@ -698,7 +696,7 @@ class ClientRunnableHelper {
 	/**
 	 * Returns true if the message is a get all Users message. Otherwise false.
 	 */
-	static boolean isGetInfoMessage(Message msg) {
+	private static boolean isGetInfoMessage(Message msg) {
 		return msg.isGetInfoMessage();
 	}
 

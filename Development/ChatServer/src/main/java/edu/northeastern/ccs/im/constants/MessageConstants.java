@@ -310,12 +310,12 @@ public final class MessageConstants {
     /**
      * Represents the list of message forwarded users.
      */
-    public static final String TRACK_USER = "TRACK_USER";
+    public static final String FORWARDED_USERS = "forwarded_users";
 
     /**
      * Represents the list of message forwarded groups.
      */
-    public static final String TRACKER_GROUP = "TRACK_GROUP";
+    public static final String FORWARDED_GROUPS = "forwarded_groups";
 
     /**
      * Private constructor for class with static methods.

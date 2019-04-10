@@ -1,7 +1,5 @@
 package edu.northeastern.ccs.im.server;
 
-
-import com.sun.org.apache.bcel.internal.generic.MULTIANEWARRAY;
 import edu.northeastern.ccs.im.constants.MessageConstants;
 import edu.northeastern.ccs.im.persistence.IQueryHandler;
 import edu.northeastern.ccs.im.utils.ClientRunnableHelperUtil;
@@ -19,6 +17,7 @@ import java.util.regex.Pattern;
 
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.anyLong;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -273,25 +272,27 @@ public class MessageParserTest {
     }
 
     @Test
-    public void testGroupVisibilityChangeMessage() {
-        Message message = MessageUtil.getValidGroupVisibilityChangeMessage();
-
-        Message constructedMessage = clientRunnableHelper.getCustomConstructedMessage(message);
-        assertTrue(constructedMessage.isActionMessage());
-    }
-
-    @Test
-    public void testUserVisibilityChangeMessage() {
-        Message message = MessageUtil.getValidUserVisibilityChangeMessage();
+    public void testTrackMessage() {
+        Message message = MessageUtil.getValidTrackMessage();
 
         Message constructedMessage = clientRunnableHelper.getCustomConstructedMessage(message);
         assertTrue(constructedMessage.isActionMessage());;
     }
 
+    @Test
+    public void testChangeGroupVisibilityToPrivate() {
+        Message message = MessageUtil.getValidGroupVisibilityToPrivateMessage();
+
+        when(queryHandler.isGroupInVisible(anyString())).thenReturn(false);
+        when(queryHandler.isModerator(anyString(), anyString())).thenReturn(true);
+        Message constructedMessage = clientRunnableHelper.getCustomConstructedMessage(message);
+        assertTrue(constructedMessage.isActionMessage());
+    }
+
 
     @Test
-    public void testTrackMessage() {
-        Message message = MessageUtil.getValidTrackMessage();
+    public void testUserVisibilityChangeMessage() {
+        Message message = MessageUtil.getValidUserVisibilityChangeMessage();
 
         Message constructedMessage = clientRunnableHelper.getCustomConstructedMessage(message);
         assertTrue(constructedMessage.isActionMessage());;
