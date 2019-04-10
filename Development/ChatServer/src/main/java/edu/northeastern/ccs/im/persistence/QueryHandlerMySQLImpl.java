@@ -475,16 +475,16 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
     /* (non-Javadoc)
      * @see edu.northeastern.ccs.im.persistence.IQueryHandler#getMessagesFromUserChat(long, long)
      */
-    public List<Message> getMessagesFromUserChat(long senderId, long receiverId, int start, int limit) {
+    public List<Message> getMessagesFromUserChat(String sender, String receiver, int start, int limit) {
         String query = String.format("SELECT * FROM %s WHERE %s = %d AND %s = %d AND %s = '%s' ORDER BY %s DESC",
-                DBConstants.MESSAGE_TABLE, DBConstants.MESSAGE_RECEIVER_ID, receiverId,
-                DBConstants.MESSAGE_SENDER_ID, senderId,
+                DBConstants.MESSAGE_TABLE, DBConstants.MESSAGE_RECEIVER_ID, getUserID(receiver),
+                DBConstants.MESSAGE_SENDER_ID, getUserID(sender),
                 DBConstants.MESSAGE_TYPE, MessageType.DIRECT, DBConstants.MESSAGE_TIME);
 
         if (limit == -1) {
             query += ";";
         } else {
-            query += " LIMIT " + (start + limit) + ";";
+            query += " LIMIT " + start + "," + limit + ";";
         }
 
         List<Message> messageList = new ArrayList<>();
