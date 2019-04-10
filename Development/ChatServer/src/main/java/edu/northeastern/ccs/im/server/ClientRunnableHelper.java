@@ -188,6 +188,8 @@ class ClientRunnableHelper {
 		}
 		else if (actualAction.equals(MessageConstants.TRACK_MESSAGE_IDENTIFIER)) {
 			handleTrackMessage(message.getName(), contents);
+		} else if (actualAction.equals(MessageConstants.MESSAGE_HISTORY_IDENTIFIER)) {
+			handleGetChatHistory(message.getName(), contents);
 		} else {
 			Message errorMessage = Message.makeErrorMessage(message.getName(),
 					MessageConstants.INVALID_ACTION_TYPE_ERR);
@@ -319,6 +321,24 @@ class ClientRunnableHelper {
 			ackMessage = MessageConstants.INVALID_USER_ERR;
 		}
 		return ackMessage;
+	}
+	
+	/**
+	 * Handle get chat history.
+	 *
+	 * @param senderName the sender name
+	 * @param content the content
+	 */
+	public void handleGetChatHistory(String senderName, String[] content) {
+		int start = Integer.parseInt(content[1]);
+		int limit = Integer.parseInt(content[2]);
+		String receiver = content[3];
+		
+		List<Message> messageList = queryHandler.getMessagesFromUserChat(senderName, receiver, start, limit);
+		for(Message message : messageList) {
+			Message msg = Message.makeDirectMessage(message.getName(), senderName, message.getText());
+			Prattle.sendDirectMessage(msg);
+		}
 	}
 
 	/**
@@ -715,4 +735,5 @@ class ClientRunnableHelper {
 		}
 		return message;
 	}
+
 }

@@ -272,7 +272,7 @@ public interface IQueryHandler {
      * @param receiverId the receiver id
      * @return the messages from user chat
      */
-    public List<Message> getMessagesFromUserChat(long senderId, long receiverId, int start, int limit);
+    public List<Message> getMessagesFromUserChat(String sender, String receiver, int start, int limit);
 
     /**
      * Creates the group.

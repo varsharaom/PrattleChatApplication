@@ -33,9 +33,11 @@ create table message (
 	id INTEGER PRIMARY KEY NOT NULL auto_increment,
     sender_id INTEGER REFERENCES user(id),
     receiver_id INTEGER REFERENCES user(id),
+    parent_msg_id INTEGER REFERENCES user(id),
     type VARCHAR(10),
     body VARCHAR(500),
     time_sent DATETIME,
+    time_expires DATETIME DEFAULT NULL,
     isDeleted INTEGER DEFAULT 0
 );
 
