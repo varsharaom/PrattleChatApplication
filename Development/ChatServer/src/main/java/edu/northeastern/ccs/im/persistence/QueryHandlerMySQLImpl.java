@@ -989,7 +989,7 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
                 DBConstants.MESSAGE_TABLE, DBConstants.USER_TABLE,
                 DBConstants.MESSAGE_TABLE, DBConstants.MESSAGE_RECEIVER_ID,
                 DBConstants.USER_TABLE, DBConstants.USER_ID,
-                DBConstants.MESSAGE_TABLE, DBConstants.MESSAGE_ID, messageID);
+                DBConstants.MESSAGE_TABLE, DBConstants.MESSAGE_PARENT_ID, messageID);
         return trackMessageHelper(query, DBConstants.USER_TABLE + "." + DBConstants.USER_USERNAME);
 
     }
@@ -1001,7 +1001,7 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
                 DBConstants.MESSAGE_TABLE, DBConstants.GROUP_TABLE,
                 DBConstants.MESSAGE_TABLE, DBConstants.MESSAGE_RECEIVER_ID,
                 DBConstants.GROUP_TABLE, DBConstants.GROUP_ID,
-                DBConstants.MESSAGE_TABLE, DBConstants.MESSAGE_ID, messageID);
+                DBConstants.MESSAGE_TABLE, DBConstants.MESSAGE_PARENT_ID, messageID);
         return trackMessageHelper(query, DBConstants.GROUP_TABLE + "." + DBConstants.GROUP_NAME);
     }
 
