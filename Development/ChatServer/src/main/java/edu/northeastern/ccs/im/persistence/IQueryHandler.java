@@ -82,7 +82,7 @@ public interface IQueryHandler {
      * @param messageID source message id
      * @return Map containing list of group and individual names.
      */
-    public Map<String, List<String>> trackMessage(long messageID);
+    public Map<String, List<String>> trackMessage(Long messageID);
 
     /**
      * Update user visibility.
