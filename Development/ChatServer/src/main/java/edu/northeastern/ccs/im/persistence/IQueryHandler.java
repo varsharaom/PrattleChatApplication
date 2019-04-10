@@ -160,7 +160,7 @@ public interface IQueryHandler {
      * @param groupName name of the group
      * @return visibility status
      */
-    public boolean isGroupVisible(String groupName);
+    public boolean isGroupInVisible(String groupName);
 
     /**
      * Check group name exists.

@@ -519,23 +519,23 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
 
 
     @Override
-    public boolean isGroupVisible(String groupName) {
+    public boolean isGroupInVisible(String groupName) {
         String query = String.format("SELECT %s from %s WHERE %s=\'%s\'",
                 DBConstants.GROUP_IS_PRIVATE, DBConstants.GROUP_TABLE,
                 DBConstants.GROUP_NAME, groupName);
-        boolean isVisible = false;
+        boolean isInvisible = false;
         try {
             PreparedStatement statement = connection.prepareStatement(query);
             ResultSet rs = statement.executeQuery();
             if (rs.next()) {
-                isVisible = rs.getInt(DBConstants.GROUP_IS_PRIVATE) == DBConstants.GROUP_PUBLIC_CODE;
+                isInvisible = rs.getInt(DBConstants.GROUP_IS_PRIVATE) == DBConstants.GROUP_PRIVATE_CODE;
             }
             rs.close();
             statement.close();
         } catch (SQLException e) {
             logger.log(Level.INFO, SQL_EXCEPTION_MSG + ": " + e.getMessage());
         }
-        return isVisible;
+        return isInvisible;
     }
 
     /* (non-Javadoc)

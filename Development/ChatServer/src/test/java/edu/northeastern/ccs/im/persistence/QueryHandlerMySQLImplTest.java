@@ -1015,13 +1015,13 @@ public class QueryHandlerMySQLImplTest {
             handler.createGroup(QueryConstants.USERNAME, QueryConstants.GROUP_NAME);
             List<Group> groupList = handler.getAllGroups();
             int sizeBefore = groupList.size();
-            assertTrue(handler.isGroupVisible(QueryConstants.GROUP_NAME));
+            assertFalse(handler.isGroupInVisible(QueryConstants.GROUP_NAME));
             handler.updateGroupVisibility(QueryConstants.GROUP_NAME, true);
-            assertFalse(handler.isGroupVisible(QueryConstants.GROUP_NAME));
+            assertTrue(handler.isGroupInVisible(QueryConstants.GROUP_NAME));
             groupList = handler.getAllGroups();
             assertEquals(sizeBefore - 1L, groupList.size());
             handler.updateGroupVisibility(QueryConstants.GROUP_NAME, false);
-            assertTrue(handler.isGroupVisible(QueryConstants.GROUP_NAME));
+            assertFalse(handler.isGroupInVisible(QueryConstants.GROUP_NAME));
         } finally {
             //teardown
             String query = String.format(QueryConstants.TEARDOWN_DELETE, DBConstants.USER_TABLE, DBConstants.USER_ID, userId);
