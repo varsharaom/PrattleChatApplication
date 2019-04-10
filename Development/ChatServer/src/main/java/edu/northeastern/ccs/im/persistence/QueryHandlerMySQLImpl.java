@@ -1,5 +1,6 @@
 package edu.northeastern.ccs.im.persistence;
 
+import edu.northeastern.ccs.im.constants.MessageConstants;
 import edu.northeastern.ccs.serverim.Group;
 import edu.northeastern.ccs.serverim.Message;
 import edu.northeastern.ccs.serverim.MessageType;
@@ -94,20 +95,52 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
         doUpdateQuery(query);
     }
 
+    @Override
+    public boolean isUserInVisible(String userName) {
+        String query = String.format("SELECT %s from %s WHERE %s=\'%s\'",
+                DBConstants.USER_INVISIBLE, DBConstants.USER_TABLE,
+                DBConstants.USER_USERNAME, userName);
+        boolean isInVisible = false;
+        try {
+            PreparedStatement statement = connection.prepareStatement(query);
+            ResultSet rs = statement.executeQuery();
+            if (rs.next()) {
+                isInVisible = rs.getInt(DBConstants.USER_INVISIBLE) == DBConstants.USER_INVISIBLE_TRUE;
+            }
+            rs.close();
+            statement.close();
+        } catch (SQLException e) {
+            logger.log(Level.INFO, SQL_EXCEPTION_MSG + ": " + e.getMessage());
+        }
+        return isInVisible;
+    }
+
     /* (non-Javadoc)
      * @see edu.northeastern.ccs.im.persistence.IQueryHandler#storeMessage(java.lang.String, java.lang.String, edu.northeastern.ccs.serverim.MessageType, java.lang.String)
      */
     //-----------------Message Queries-------------------
+
     public long storeMessage(String senderName, String receiverName, MessageType type, String msgText) {
+        return storeMessage(senderName, receiverName, type, msgText, DBConstants.MESSAGE_PARENT_ID_DEFAULT);
+    }
+
+    public long storeMessage(String senderName, String receiverName, MessageType type, String msgText, Long parentMsgID) {
         Date date = new Date(System.currentTimeMillis());
         SimpleDateFormat format = new SimpleDateFormat(DBConstants.DATE_FORMAT);
         long senderID = getUserID(senderName);
         long receiverID = type.equals(MessageType.GROUP) ? getGroupID(receiverName) : getUserID(receiverName);
-        String query = String.format("INSERT INTO %s (%s,%s,%s,%s,%s) VALUES(%d,%d,'%s','%s','%s');",
+        String query = String.format("INSERT INTO %s (%s,%s,%s,%s,%s,%s) VALUES(%d, %d,'%s','%s','%s', %d);",
                 DBConstants.MESSAGE_TABLE, DBConstants.MESSAGE_SENDER_ID, DBConstants.MESSAGE_RECEIVER_ID,
-                DBConstants.MESSAGE_TYPE, DBConstants.MESSAGE_BODY, DBConstants.MESSAGE_TIME,
-                senderID, receiverID, type, msgText, format.format(date));
+                DBConstants.MESSAGE_TYPE, DBConstants.MESSAGE_BODY, DBConstants.MESSAGE_TIME, DBConstants.MESSAGE_PARENT_ID,
+                senderID, receiverID, type, msgText, format.format(date), parentMsgID);
         return doInsertQuery(query);
+    }
+
+    public Map<String, List<String>> trackMessage(Long messageID) {
+        Map<String, List<String>> trackedMap = new HashMap<>();
+        trackedMap.put(MessageConstants.TRACK_USER, trackMessagesFromPrivate(messageID));
+        trackedMap.put(MessageConstants.TRACKER_GROUP, trackMessagesFromGroups(messageID));
+        return trackedMap;
     }
 
     /* (non-Javadoc)
@@ -121,9 +154,11 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
                 DBConstants.MESSAGE_ID, messageID
         );
         Message message = null;
+        ResultSet rs = null;
+        PreparedStatement statement = null;
         try {
-            PreparedStatement statement = connection.prepareStatement(query);
-            ResultSet rs = statement.executeQuery();
+            statement = connection.prepareStatement(query);
+            rs = statement.executeQuery();
             if (rs.next()) {
                 message = new Message(rs.getLong(DBConstants.MESSAGE_ID),
                         MessageType.get(rs.getString(DBConstants.MESSAGE_TYPE)),
@@ -131,10 +166,14 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
                         getUserName(rs.getLong(DBConstants.MESSAGE_RECEIVER_ID)),
                         rs.getString(DBConstants.MESSAGE_BODY), rs.getInt(DBConstants.IS_DELETED));
             }
-            rs.close();
-            statement.close();
         } catch (SQLException e) {
             logger.log(Level.INFO, SQL_EXCEPTION_MSG + ": " + e.getMessage());
+        } finally {
+            try {
+                closeDBResources(rs, statement);
+            } catch (NullPointerException | SQLException e) {
+                logger.log(Level.INFO, SQL_EXCEPTION_MSG + ": " + e.getMessage());
+            }
         }
         return message;
     }
@@ -172,11 +211,6 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
                 DBConstants.CIRCLES_TABLE, DBConstants.CIRCLE_USER_1_ID,
                 DBConstants.CIRCLE_USER_2_ID, senderID, receiverID);
         return doInsertQuery(query);
-    }
-
-    @Override
-    public Map<String, List<String>> trackMessage(long messageId) {
-        return new HashMap<>();
     }
 
     /* (non-Javadoc)
@@ -217,8 +251,8 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
     @Override
     public List<Group> getMyGroups(String senderName) {
         String query = String.format("Select %s.%s, %s.%s from %s "
-                        + "inner join %s on %s.%s = %s.%s "
-                        + "inner join %s on %s.%s = %s.%s "
+                        + " inner join %s on %s.%s = %s.%s "
+                        + "  inner join %s on %s.%s = %s.%s "
                         + "where %s.%s = '%s';",
                 //Select columns
                 DBConstants.GROUP_TABLE, DBConstants.GROUP_ID,
@@ -252,9 +286,11 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
                 DBConstants.USER_INVISIBLE, DBConstants.USER_INVISIBLE_FALSE);
 
         List<User> userList = new ArrayList<>();
+        ResultSet rs = null;
+        PreparedStatement statement = null;
         try {
-            PreparedStatement statement = connection.prepareStatement(query);
-            ResultSet rs = statement.executeQuery();
+            statement = connection.prepareStatement(query);
+            rs = statement.executeQuery();
 
             Date date = new Date(System.currentTimeMillis());
             while (rs.next()) {
@@ -262,10 +298,14 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
                         rs.getString(DBConstants.USER_USERNAME), rs.getString(DBConstants.USER_NICKNAME), date.getTime(), 0);
                 userList.add(user);
             }
-            rs.close();
-            statement.close();
         } catch (SQLException e) {
             logger.log(Level.INFO, SQL_EXCEPTION_MSG + ": " + e.getMessage());
+        } finally {
+            try {
+                closeDBResources(rs, statement);
+            } catch (NullPointerException | SQLException e) {
+                logger.log(Level.INFO, SQL_EXCEPTION_MSG + ": " + e.getMessage());
+            }
         }
         return userList;
     }
@@ -283,9 +323,11 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
                 DBConstants.CIRCLE_USER_2_ID, senderID);
         Set<Long> circleIDs = new HashSet<>();
 
+        ResultSet rs = null;
+        PreparedStatement statement = null;
         try {
-            PreparedStatement statement = connection.prepareStatement(query);
-            ResultSet rs = statement.executeQuery();
+            statement = connection.prepareStatement(query);
+            rs = statement.executeQuery();
             while (rs.next()) {
                 long idToAdd = rs.getLong(DBConstants.CIRCLE_USER_1_ID) == senderID ?
                         rs.getLong(DBConstants.CIRCLE_USER_2_ID) : rs.getLong(DBConstants.CIRCLE_USER_1_ID);
@@ -295,6 +337,12 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
             statement.close();
         } catch (SQLException e) {
             logger.log(Level.INFO, SQL_EXCEPTION_MSG + ": " + e.getMessage());
+        } finally {
+            try {
+                closeDBResources(rs, statement);
+            } catch (NullPointerException | SQLException e) {
+                logger.log(Level.INFO, SQL_EXCEPTION_MSG + ": " + e.getMessage());
+            }
         }
         List<User> circleList = new ArrayList<>();
 
@@ -302,8 +350,8 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
             query = String.format("SELECT u.* FROM %s as u WHERE %s = %d;",
                     DBConstants.USER_TABLE, DBConstants.USER_ID, userId);
             try {
-                PreparedStatement statement = connection.prepareStatement(query);
-                ResultSet rs = statement.executeQuery();
+                statement = connection.prepareStatement(query);
+                rs = statement.executeQuery();
 
                 Date date = new Date(System.currentTimeMillis());
                 while (rs.next()) {
@@ -311,10 +359,14 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
                             rs.getString(DBConstants.USER_USERNAME), rs.getString(DBConstants.USER_NICKNAME), date.getTime(), rs.getInt(DBConstants.USER_INVISIBLE));
                     circleList.add(user);
                 }
-                rs.close();
-                statement.close();
             } catch (SQLException e) {
                 logger.log(Level.INFO, SQL_EXCEPTION_MSG + ": " + e.getMessage());
+            } finally {
+                try {
+                    closeDBResources(rs, statement);
+                } catch (NullPointerException | SQLException e) {
+                    logger.log(Level.INFO, SQL_EXCEPTION_MSG + ": " + e.getMessage());
+                }
             }
         }
 
@@ -354,13 +406,15 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
         if (limit == -1) {
             query += ";";
         } else {
-            query += " LIMIT " + (start + limit) + ";";
+            query += "  LIMIT " + (start + limit) + ";";
         }
 
         List<Message> messageList = new ArrayList<>();
+        ResultSet rs = null;
+        PreparedStatement statement = null;
         try {
-            PreparedStatement statement = connection.prepareStatement(query);
-            ResultSet rs = statement.executeQuery();
+            statement = connection.prepareStatement(query);
+            rs = statement.executeQuery();
 
             rs.relative(start);
             while (rs.next()) {
@@ -368,10 +422,14 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
                         getUserName(rs.getInt(DBConstants.MESSAGE_RECEIVER_ID)), rs.getString(DBConstants.MESSAGE_BODY), rs.getInt(DBConstants.IS_DELETED));
                 messageList.add(msg);
             }
-            rs.close();
-            statement.close();
         } catch (SQLException e) {
             logger.log(Level.INFO, SQL_EXCEPTION_MSG + ": " + e.getMessage());
+        } finally {
+            try {
+                closeDBResources(rs, statement);
+            } catch (NullPointerException | SQLException e) {
+                logger.log(Level.INFO, SQL_EXCEPTION_MSG + ": " + e.getMessage());
+            }
         }
         return messageList;
     }
@@ -390,9 +448,11 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
         }
 
         List<Message> messageList = new ArrayList<>();
+        ResultSet rs = null;
+        PreparedStatement statement = null;
         try {
-            PreparedStatement statement = connection.prepareStatement(query);
-            ResultSet rs = statement.executeQuery();
+            statement = connection.prepareStatement(query);
+            rs = statement.executeQuery();
 
             rs.relative(start);
             while (rs.next()) {
@@ -400,10 +460,14 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
                         getUserName(rs.getInt(DBConstants.MESSAGE_RECEIVER_ID)), rs.getString(DBConstants.MESSAGE_BODY), rs.getInt(DBConstants.IS_DELETED));
                 messageList.add(msg);
             }
-            rs.close();
-            statement.close();
         } catch (SQLException e) {
             logger.log(Level.INFO, SQL_EXCEPTION_MSG + ": " + e.getMessage());
+        } finally {
+            try {
+                closeDBResources(rs, statement);
+            } catch (NullPointerException | SQLException e) {
+                logger.log(Level.INFO, SQL_EXCEPTION_MSG + ": " + e.getMessage());
+            }
         }
         return messageList;
     }
@@ -424,9 +488,11 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
         }
 
         List<Message> messageList = new ArrayList<>();
+        ResultSet rs = null;
+        PreparedStatement statement = null;
         try {
-            PreparedStatement statement = connection.prepareStatement(query);
-            ResultSet rs = statement.executeQuery();
+            statement = connection.prepareStatement(query);
+            rs = statement.executeQuery();
 
             rs.relative(start);
             while (rs.next()) {
@@ -437,15 +503,40 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
                         rs.getString(DBConstants.MESSAGE_BODY), rs.getInt(DBConstants.IS_DELETED));
                 messageList.add(msg);
             }
-            rs.close();
-            statement.close();
         } catch (SQLException e) {
             logger.log(Level.INFO, SQL_EXCEPTION_MSG + ": " + e.getMessage());
+        } finally {
+            try {
+                closeDBResources(rs, statement);
+            } catch (NullPointerException | SQLException e) {
+                logger.log(Level.INFO, SQL_EXCEPTION_MSG + ": " + e.getMessage());
+            }
         }
         return messageList;
     }
 
     //-----------------Group Queries----------------------------------
+
+
+    @Override
+    public boolean isGroupInVisible(String groupName) {
+        String query = String.format("SELECT %s from %s WHERE %s=\'%s\'",
+                DBConstants.GROUP_IS_PRIVATE, DBConstants.GROUP_TABLE,
+                DBConstants.GROUP_NAME, groupName);
+        boolean isInvisible = false;
+        try {
+            PreparedStatement statement = connection.prepareStatement(query);
+            ResultSet rs = statement.executeQuery();
+            if (rs.next()) {
+                isInvisible = rs.getInt(DBConstants.GROUP_IS_PRIVATE) == DBConstants.GROUP_PRIVATE_CODE;
+            }
+            rs.close();
+            statement.close();
+        } catch (SQLException e) {
+            logger.log(Level.INFO, SQL_EXCEPTION_MSG + ": " + e.getMessage());
+        }
+        return isInvisible;
+    }
 
     /* (non-Javadoc)
      * @see edu.northeastern.ccs.im.persistence.IQueryHandler#getGroupMembers(java.lang.String)
@@ -519,16 +610,22 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
                 DBConstants.GROUP_INFO_USER_ROLE, DBConstants.GROUP_INFO_TABLE, DBConstants.GROUP_INFO_GROUP_ID,
                 getGroupID(groupName), DBConstants.GROUP_INFO_USER_ID, getUserID(sender));
         int role = -1;
+        ResultSet rs = null;
+        PreparedStatement statement = null;
         try {
-            PreparedStatement statement = connection.prepareStatement(query);
-            ResultSet rs = statement.executeQuery();
+            statement = connection.prepareStatement(query);
+            rs = statement.executeQuery();
             if (rs.next()) {
                 role = rs.getInt(DBConstants.GROUP_INFO_USER_ROLE);
             }
-            rs.close();
-            statement.close();
         } catch (SQLException e) {
             logger.log(Level.INFO, SQL_EXCEPTION_MSG + ": " + e.getMessage());
+        } finally {
+            try {
+                closeDBResources(rs, statement);
+            } catch (NullPointerException | SQLException e) {
+                logger.log(Level.INFO, SQL_EXCEPTION_MSG + ": " + e.getMessage());
+            }
         }
         return role == DBConstants.GROUP_INFO_USER_ROLE_MODERATOR;
     }
@@ -543,14 +640,20 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
                 DBConstants.GROUP_INFO_TABLE, DBConstants.GROUP_INFO_GROUP_ID,
                 getGroupID(groupName), DBConstants.GROUP_INFO_USER_ID, getUserID(sender));
         boolean isMember = false;
+        ResultSet rs = null;
+        PreparedStatement statement = null;
         try {
-            PreparedStatement statement = connection.prepareStatement(query);
-            ResultSet rs = statement.executeQuery();
+            statement = connection.prepareStatement(query);
+            rs = statement.executeQuery();
             isMember = rs.next();
-            rs.close();
-            statement.close();
         } catch (SQLException e) {
             logger.log(Level.INFO, SQL_EXCEPTION_MSG + ": " + e.getMessage());
+        } finally {
+            try {
+                closeDBResources(rs, statement);
+            } catch (NullPointerException | SQLException e) {
+                logger.log(Level.INFO, SQL_EXCEPTION_MSG + ": " + e.getMessage());
+            }
         }
         return isMember;
     }
@@ -589,16 +692,22 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
                         "WHERE gi.%s = %d;",
                 DBConstants.GROUP_INFO_USER_ID, DBConstants.GROUP_INFO_TABLE, DBConstants.GROUP_INFO_GROUP_ID, getGroupID(groupName));
         Set<String> groupMembers = new HashSet<>();
+        ResultSet rs = null;
+        PreparedStatement statement = null;
         try {
-            PreparedStatement statement = connection.prepareStatement(query);
-            ResultSet rs = statement.executeQuery();
+            statement = connection.prepareStatement(query);
+            rs = statement.executeQuery();
             while (rs.next()) {
                 groupMembers.add(getUserName(rs.getLong(DBConstants.GROUP_INFO_USER_ID)));
             }
-            rs.close();
-            statement.close();
         } catch (SQLException e) {
             logger.log(Level.INFO, SQL_EXCEPTION_MSG + ": " + e.getMessage());
+        } finally {
+            try {
+                closeDBResources(rs, statement);
+            } catch (NullPointerException | SQLException e) {
+                logger.log(Level.INFO, SQL_EXCEPTION_MSG + ": " + e.getMessage());
+            }
         }
         return groupMembers;
     }
@@ -699,9 +808,14 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
             } else {
                 throw new SQLException("Creating user failed, no ID obtained.");
             }
-            statement.close();
         } catch (SQLException e) {
             logger.log(Level.INFO, SQL_EXCEPTION_MSG + ": " + e.getMessage());
+        } finally {
+            try {
+                closeDBResources(null, statement);
+            } catch (NullPointerException | SQLException e) {
+                logger.log(Level.INFO, SQL_EXCEPTION_MSG + ": " + e.getMessage());
+            }
         }
         return key;
     }
@@ -718,9 +832,14 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
         try {
             statement = connection.prepareStatement(query);
             updateCode = statement.executeUpdate(query);
-            statement.close();
         } catch (SQLException e) {
             logger.log(Level.INFO, SQL_EXCEPTION_MSG + ": " + e.getMessage());
+        } finally {
+            try {
+                closeDBResources(null, statement);
+            } catch (NullPointerException | SQLException e) {
+                logger.log(Level.INFO, SQL_EXCEPTION_MSG + ": " + e.getMessage());
+            }
         }
         return updateCode;
     }
@@ -736,16 +855,23 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
     //helper method for queries that return ID
     private long idHelper(String query, String selectColumn) {
         long id = -1l;
+        ResultSet rs = null;
+        PreparedStatement statement = null;
         try {
-            PreparedStatement statement = connection.prepareStatement(query);
-            ResultSet rs = statement.executeQuery();
+            statement = connection.prepareStatement(query);
+            rs = statement.executeQuery();
             if (rs.next()) {
                 id = rs.getLong(selectColumn);
             }
-            rs.close();
             statement.close();
         } catch (SQLException e) {
             logger.log(Level.INFO, SQL_EXCEPTION_MSG + ": " + e.getMessage());
+        } finally {
+            try {
+                closeDBResources(rs, statement);
+            } catch (NullPointerException | SQLException e) {
+                logger.log(Level.INFO, SQL_EXCEPTION_MSG + ": " + e.getMessage());
+            }
         }
         return id;
     }
@@ -760,16 +886,22 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
     //helper method for group members or moderator list
     private List<String> getPeopleHelper(String query, String selectColumn) {
         List<String> memberList = new ArrayList<>();
+        ResultSet rs = null;
+        PreparedStatement statement = null;
         try {
-            PreparedStatement statement = connection.prepareStatement(query);
-            ResultSet rs = statement.executeQuery();
-            while(rs.next()) {
+            statement = connection.prepareStatement(query);
+            rs = statement.executeQuery();
+            while (rs.next()) {
                 memberList.add(getUserName(rs.getInt(selectColumn)));
             }
-            rs.close();
-            statement.close();
         } catch (SQLException e) {
             logger.log(Level.INFO, SQL_EXCEPTION_MSG + ": " + e.getMessage());
+        } finally {
+            try {
+                closeDBResources(rs, statement);
+            } catch (NullPointerException | SQLException e) {
+                logger.log(Level.INFO, SQL_EXCEPTION_MSG + ": " + e.getMessage());
+            }
         }
         return memberList;
     }
@@ -783,16 +915,22 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
     //helper method that returns name of some entity
     private String nameHelper(String query, String selectColumn) {
         String name = "";
+        ResultSet rs = null;
+        PreparedStatement statement = null;
         try {
-            PreparedStatement statement = connection.prepareStatement(query);
-            ResultSet rs = statement.executeQuery();
+            statement = connection.prepareStatement(query);
+            rs = statement.executeQuery();
             if (rs.next()) {
                 name = rs.getString(selectColumn);
             }
-            rs.close();
-            statement.close();
         } catch (SQLException e) {
             logger.log(Level.INFO, SQL_EXCEPTION_MSG + ": " + e.getMessage());
+        } finally {
+            try {
+                closeDBResources(rs, statement);
+            } catch (NullPointerException | SQLException e) {
+                logger.log(Level.INFO, SQL_EXCEPTION_MSG + ": " + e.getMessage());
+            }
         }
         return name;
     }
@@ -806,14 +944,20 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
     // helper method that checks if the given person or group name is present
     private boolean nameAvailabilityHelper(String query) {
         boolean isNameFound = false;
+        ResultSet rs = null;
+        PreparedStatement statement = null;
         try {
-            PreparedStatement statement = connection.prepareStatement(query);
-            ResultSet rs = statement.executeQuery();
+            statement = connection.prepareStatement(query);
+            rs = statement.executeQuery();
             isNameFound = rs.next();
-            rs.close();
-            statement.close();
         } catch (SQLException e) {
             logger.log(Level.INFO, SQL_EXCEPTION_MSG + ": " + e.getMessage());
+        } finally {
+            try {
+                closeDBResources(rs, statement);
+            } catch (NullPointerException | SQLException e) {
+                logger.log(Level.INFO, SQL_EXCEPTION_MSG + ": " + e.getMessage());
+            }
         }
         return isNameFound;
     }
@@ -849,19 +993,25 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
                 DBConstants.USER_LAST_SEEN, DBConstants.USER_TABLE,
                 DBConstants.USER_ID, userID);
         String time = new Date().toString();
+        ResultSet rs = null;
+        PreparedStatement statement = null;
         try {
-            PreparedStatement statement = connection.prepareStatement(query);
-            ResultSet rs = statement.executeQuery();
+            statement = connection.prepareStatement(query);
+            rs = statement.executeQuery();
             if (rs.next()) {
                 java.sql.Timestamp dbSqlTimestamp = rs.getTimestamp(DBConstants.USER_LAST_SEEN);
                 Date date = new Date(dbSqlTimestamp.getTime());
                 SimpleDateFormat format = new SimpleDateFormat(DBConstants.DATE_FORMAT);
                 time = format.format(date);
             }
-            rs.close();
-            statement.close();
         } catch (SQLException e) {
             logger.log(Level.INFO, SQL_EXCEPTION_MSG);
+        } finally {
+            try {
+                closeDBResources(rs, statement);
+            } catch (NullPointerException | SQLException e) {
+                logger.log(Level.INFO, SQL_EXCEPTION_MSG + ": " + e.getMessage());
+            }
         }
 
         return time;
@@ -874,7 +1024,7 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
      * @return the group messages since login
      */
     private List<Message> getGroupMessagesSinceLogin(long userID) {
-        String last_seen = getUserLastSeen(userID);
+        String lastSeen = getUserLastSeen(userID);
         String query = String.format(
                 "SELECT %s, %s, %s , %s.%s, %s.%s as %s from %s "
                         + "inner join %s on %s.%s = %s.%s "
@@ -900,7 +1050,7 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
                 DBConstants.GROUP_INFO_TABLE, DBConstants.GROUP_INFO_GROUP_ID,
                 //Filters
                 //Date greater than last seen time
-                DBConstants.MESSAGE_TIME, last_seen,
+                DBConstants.MESSAGE_TIME, lastSeen,
                 //Receiver id is a group that has this user as one of its member
                 DBConstants.MESSAGE_RECEIVER_ID, DBConstants.GROUP_INFO_TABLE, DBConstants.GROUP_INFO_GROUP_ID,
                 DBConstants.IS_DELETED, DBConstants.IS_DELETED_TRUE);
@@ -916,9 +1066,11 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
     private List<Message> getMessages(String query, String senderColumn, long receiverID, String textColumn) {
         List<Message> messages = new ArrayList<>();
         Set<Long> visitedMessages = new HashSet<>();
+        ResultSet rs = null;
+        PreparedStatement statement = null;
         try {
-            PreparedStatement statement = connection.prepareStatement(query);
-            ResultSet rs = statement.executeQuery();
+            statement = connection.prepareStatement(query);
+            rs = statement.executeQuery();
             while (rs.next()) {
                 long msgID = rs.getLong(DBConstants.MESSAGE_ID_ALIAS);
 
@@ -929,10 +1081,14 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
                 }
 
             }
-            rs.close();
-            statement.close();
         } catch (SQLException e) {
             logger.log(Level.INFO, SQL_EXCEPTION_MSG + ": " + e.getMessage());
+        } finally {
+            try {
+                closeDBResources(rs, statement);
+            } catch (NullPointerException | SQLException e) {
+                logger.log(Level.INFO, SQL_EXCEPTION_MSG + ": " + e.getMessage());
+            }
         }
         return messages;
     }
@@ -945,19 +1101,74 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
      */
     private List<Group> getGroupsHelper(String query, String idColumn, String nameColumn) {
         List<Group> groups = new ArrayList<>();
+        ResultSet rs = null;
+        PreparedStatement statement = null;
+        try {
+            statement = connection.prepareStatement(query);
+            rs = statement.executeQuery();
+            while (rs.next()) {
+                Group grp = new Group(rs.getLong(idColumn), rs.getString(nameColumn));
+                groups.add(grp);
+            }
+        } catch (SQLException e) {
+            logger.log(Level.INFO, SQL_EXCEPTION_MSG + ": " + e.getMessage());
+        } finally {
+            try {
+                closeDBResources(rs, statement);
+            } catch (NullPointerException | SQLException e) {
+                logger.log(Level.INFO, SQL_EXCEPTION_MSG + ": " + e.getMessage());
+            }
+        }
+        return groups;
+    }
+
+    private void closeDBResources(ResultSet rs, PreparedStatement statement) throws SQLException {
+        if (rs != null) {
+            rs.close();
+        }
+        if (statement != null) {
+            statement.close();
+        }
+    }
+
+
+    //gets all the user-names for messages forwarded to private chats
+    private List<String> trackMessagesFromPrivate(long messageID) {
+        String query = String.format("SELECT %s.%s FROM %s inner join %s on %s.%s = %s.%s WHERE "
+                        + "%s.%s = %d", DBConstants.USER_TABLE, DBConstants.USER_USERNAME,
+                DBConstants.MESSAGE_TABLE, DBConstants.USER_TABLE,
+                DBConstants.MESSAGE_TABLE, DBConstants.MESSAGE_RECEIVER_ID,
+                DBConstants.USER_TABLE, DBConstants.USER_ID,
+                DBConstants.MESSAGE_TABLE, DBConstants.MESSAGE_PARENT_ID, messageID);
+        return trackMessageHelper(query, DBConstants.USER_TABLE + "." + DBConstants.USER_USERNAME);
+
+    }
+
+    //gets all the group-names for messages forwarded to groups
+    private List<String> trackMessagesFromGroups(long messageID) {
+        String query = String.format("SELECT %s.%s FROM %s inner join %s on %s.%s = %s.%s WHERE "
+                        + "%s.%s = %d", DBConstants.GROUP_TABLE, DBConstants.GROUP_NAME,
+                DBConstants.MESSAGE_TABLE, DBConstants.GROUP_TABLE,
+                DBConstants.MESSAGE_TABLE, DBConstants.MESSAGE_RECEIVER_ID,
+                DBConstants.GROUP_TABLE, DBConstants.GROUP_ID,
+                DBConstants.MESSAGE_TABLE, DBConstants.MESSAGE_PARENT_ID, messageID);
+        return trackMessageHelper(query, DBConstants.GROUP_TABLE + "." + DBConstants.GROUP_NAME);
+    }
+
+    private List<String> trackMessageHelper(String query, String selectColumn) {
+        List<String> receiverList = new ArrayList<>();
         try {
             PreparedStatement statement = connection.prepareStatement(query);
             ResultSet rs = statement.executeQuery();
             while (rs.next()) {
-                Group grp = new Group(rs.getLong(idColumn), rs.getString(nameColumn));
-                groups.add(grp);
+                receiverList.add(rs.getString(selectColumn));
             }
             rs.close();
             statement.close();
         } catch (SQLException e) {
             logger.log(Level.INFO, SQL_EXCEPTION_MSG + ": " + e.getMessage());
         }
-        return groups;
+        return receiverList;
     }
 
 }
