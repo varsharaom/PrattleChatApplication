@@ -126,6 +126,8 @@ public final class MessageConstants {
     public static final String GROUP_SUBSET_IDENTIFIER = "GRP_SBST";
 
     public static final String CHANGE_GROUP_VISIBILITY_IDENTIFIER = "CHNG_GRP_VSBLTY";
+  
+    public static final String CHANGE_USER_VISIBILITY_IDENTIFIER = "CHNG_USR_VSBLTY";
 
     public static final String MESSAGE_HISTORY_IDENTIFIER = "HISTORY";
     
@@ -310,12 +312,12 @@ public final class MessageConstants {
     /**
      * Represents the list of message forwarded users.
      */
-    public static final String TRACK_USER = "TRACK_USER";
+    public static final String FORWARDED_USERS = "forwarded_users";
 
     /**
      * Represents the list of message forwarded groups.
      */
-    public static final String TRACKER_GROUP = "TRACK_GROUP";
+    public static final String FORWARDED_GROUPS = "forwarded_groups";
 
     /**
      * Private constructor for class with static methods.

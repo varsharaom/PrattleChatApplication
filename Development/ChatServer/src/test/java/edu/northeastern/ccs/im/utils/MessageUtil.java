@@ -129,8 +129,21 @@ public final class MessageUtil {
         return Message.makeBroadcastMessage(SIMPLE_USER, getValidGroupSubsetMessageText());
     }
 
-    public static Message getValidGroupVisibilityChangeMessage() {
-        return Message.makeBroadcastMessage(SIMPLE_USER, getValidGroupVisibilityChangeMessageText());
+    public static Message getValidGroupVisibilityToPrivateMessage() {
+        return Message.makeBroadcastMessage(SIMPLE_USER, getValidGroupVisibilityToPrivateMessageText());
+    }
+
+    public static Message getValidGroupVisibilityToPublicMessage() {
+        return Message.makeBroadcastMessage(SIMPLE_USER, getValidGroupVisibilityToPublicMessageText());
+    }
+
+    public static Message getValidUserVisibilityChangeMessage() {
+        return Message.makeBroadcastMessage(SIMPLE_USER, getValidUserVisibilityChangeMessageText());
+    }
+
+    private static String getValidUserVisibilityChangeMessageText() {
+        return CUSTOM_COMMAND_PREFIX + ACTION_MSG_IDENTIFIER + CUSTOM_COMMAND_SUFFIX
+                + " " + CHANGE_USER_VISIBILITY_IDENTIFIER + " PRIVATE senderName";
     }
 
     public static Message getValidTrackMessage() {
@@ -142,10 +155,16 @@ public final class MessageUtil {
                 + " " + TRACK_MESSAGE_IDENTIFIER + " " + "124 senderName";
     }
 
-    private static String getValidGroupVisibilityChangeMessageText() {
+    private static String getValidGroupVisibilityToPrivateMessageText() {
         return CUSTOM_COMMAND_PREFIX + ACTION_MSG_IDENTIFIER + CUSTOM_COMMAND_SUFFIX
                 + " " + CHANGE_GROUP_VISIBILITY_IDENTIFIER + " PRIVATE groupName senderName";
     }
+
+    private static String getValidGroupVisibilityToPublicMessageText() {
+        return CUSTOM_COMMAND_PREFIX + ACTION_MSG_IDENTIFIER + CUSTOM_COMMAND_SUFFIX
+                + " " + CHANGE_GROUP_VISIBILITY_IDENTIFIER + " PUBLIC groupName senderName";
+    }
+
 
     private static String getValidGroupSubsetMessageText() {
         return CUSTOM_COMMAND_PREFIX + GROUP_SUBSET_IDENTIFIER + CUSTOM_COMMAND_SUFFIX +

@@ -962,11 +962,11 @@ public class QueryHandlerMySQLImplTest {
 
             res1 = handler.storeMessage(sender.getUserName(), receiver.getUserName(), MessageType.DIRECT, QueryConstants.MESSAGE_TEXT);
             assertNotEquals(0, res1);
-            assertEquals(0, handler.trackMessage(res1).get(MessageConstants.TRACK_USER).size());
+            assertEquals(0, handler.trackMessage(res1).get(MessageConstants.FORWARDED_USERS).size());
             res2 = handler.storeMessage(receiver.getUserName(), sender.getUserName(), MessageType.DIRECT, QueryConstants.MESSAGE_TEXT, res1);
             assertNotEquals(0, res2);
 
-            assertEquals(1, handler.trackMessage(res1).get(MessageConstants.TRACK_USER).size());
+            assertEquals(1, handler.trackMessage(res1).get(MessageConstants.FORWARDED_USERS).size());
         } finally {
             // Tear down
             String query = String.format(QueryConstants.TEARDOWN_DELETE, DBConstants.MESSAGE_TABLE, DBConstants.MESSAGE_ID, res1);

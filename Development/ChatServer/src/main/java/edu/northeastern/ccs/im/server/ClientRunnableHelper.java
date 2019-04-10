@@ -1,5 +1,6 @@
 package edu.northeastern.ccs.im.server;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import edu.northeastern.ccs.serverim.Message;
 import edu.northeastern.ccs.serverim.MessageType;
 
@@ -182,7 +183,10 @@ class ClientRunnableHelper {
 			handleRequestGroupAdd(message.getName(), contents);
 		} else if (actualAction.equals(MessageConstants.CHANGE_GROUP_VISIBILITY_IDENTIFIER)) {
 			handleChangeGroupVisibility(message.getName(), contents);
-		} else if (actualAction.equals(MessageConstants.TRACK_MESSAGE_IDENTIFIER)) {
+		} else if (actualAction.equals(MessageConstants.CHANGE_USER_VISIBILITY_IDENTIFIER)) {
+			handleUserVisibility(message.getName(), contents);
+		}
+		else if (actualAction.equals(MessageConstants.TRACK_MESSAGE_IDENTIFIER)) {
 			handleTrackMessage(message.getName(), contents);
 		} else if (actualAction.equals(MessageConstants.MESSAGE_HISTORY_IDENTIFIER)) {
 			handleGetChatHistory(message.getName(), contents);
@@ -192,6 +196,29 @@ class ClientRunnableHelper {
 			Prattle.sendErrorMessage(errorMessage);
 		}
 
+	}
+
+	private void handleUserVisibility(String senderName, String[] contents) {
+		boolean isPrivate = isPrivateVisibility(contents[1]);
+		boolean isActualVisibilityPrivate = queryHandler.isUserInVisible(senderName);
+
+		if (isPrivate == isActualVisibilityPrivate) {
+			Message errorMessage = Message.makeErrorMessage(senderName,
+					"[INFO] User's visibility is already " + isPrivate);
+			Prattle.sendErrorMessage(errorMessage);
+		}
+		else {
+			toggleUserVisibility(senderName, isPrivate);
+		}
+		queryHandler.updateUserVisibility(senderName, isPrivate);
+
+	}
+
+	private void toggleUserVisibility(String senderName, boolean isPrivate) {
+		queryHandler.updateUserVisibility(senderName, isPrivate);
+		Message ackMessage = Message.makeAckMessage(MessageType.DIRECT, senderName,
+				"Visibility successfully updated to - " + isPrivate);
+		Prattle.sendAckMessage(ackMessage);
 	}
 
 	private void handleTrackMessage(String senderName, String[] contents) {
@@ -214,11 +241,11 @@ class ClientRunnableHelper {
 	private String getBuiltTrackMessageInfo(Map<String, List<String>> trackInfo) {
 		StringBuilder text = new StringBuilder(" Message Tracking information: \n");
 		text.append("Groups: ");
-		text.append(trackInfo.get("groups")
+		text.append(trackInfo.get(MessageConstants.FORWARDED_GROUPS)
 				.stream()
 				.reduce("", (group1, group2) -> group1 + "\n" + group2));
 		text.append("\nUsers: ");
-		text.append(trackInfo.get("users")
+		text.append(trackInfo.get(MessageConstants.FORWARDED_USERS)
 				.stream()
 				.reduce("", (user1, user2) -> user1 + "\n" + user2));
 		return text.toString().trim();
@@ -228,10 +255,9 @@ class ClientRunnableHelper {
 		boolean toBeGroupVisibility = isPrivateVisibility(contents[1]);
 		String groupName = contents[2];
 
-		boolean actualGroupVisibility = false;
-//				queryHandler.getGroupVisibility(groupName);
+		boolean isActuallyPrivate = queryHandler.isGroupInVisible(groupName);
 
-		if (actualGroupVisibility == toBeGroupVisibility) {
+		if (isActuallyPrivate == toBeGroupVisibility) {
 			Message errorMessage = Message.makeErrorMessage(senderName,
 					"[INFO] Group's visibility is already " + toBeGroupVisibility);
 			Prattle.sendErrorMessage(errorMessage);
@@ -246,9 +272,12 @@ class ClientRunnableHelper {
 		return toBeGroupVisibility.equals(MessageConstants.PRIVATE_VISIBILITY_IDENTIFIER);
 	}
 
-	private void toggleGroupVisibility(String groupName, String senderName, boolean toBeGroupVisibility) {
-		if (queryHandler.getGroupModerators(groupName).contains(senderName)) {
-			queryHandler.updateGroupVisibility(groupName, toBeGroupVisibility);
+	private void toggleGroupVisibility(String groupName, String senderName, boolean isPrivate) {
+		if (queryHandler.isModerator(senderName, groupName)) {
+			queryHandler.updateGroupVisibility(groupName, isPrivate);
+			Message ackMessage = Message.makeAckMessage(MessageType.DIRECT, senderName,
+					"Group Visibility successfully updated to - " + isPrivate);
+			Prattle.sendAckMessage(ackMessage);
 		}
 		else {
 			Message errorMessage = Message.makeErrorMessage(senderName,
@@ -687,7 +716,7 @@ class ClientRunnableHelper {
 	/**
 	 * Returns true if the message is a get all Users message. Otherwise false.
 	 */
-	static boolean isGetInfoMessage(Message msg) {
+	private static boolean isGetInfoMessage(Message msg) {
 		return msg.isGetInfoMessage();
 	}
 

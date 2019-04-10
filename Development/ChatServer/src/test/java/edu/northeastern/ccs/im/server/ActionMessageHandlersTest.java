@@ -1,5 +1,6 @@
 package edu.northeastern.ccs.im.server;
 
+import edu.northeastern.ccs.im.constants.MessageConstants;
 import edu.northeastern.ccs.im.persistence.IQueryHandler;
 import edu.northeastern.ccs.im.utils.MessageUtil;
 import edu.northeastern.ccs.serverim.Message;
@@ -11,6 +12,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.*;
 
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
@@ -246,8 +248,8 @@ public class ActionMessageHandlersTest {
 
         Message trackMsg = Message.makeBroadcastMessage("senderName", "");
         Map<String, List<String>> map = new HashMap<>();
-        map.put("groups", Arrays.asList("group1", "group2"));
-        map.put("users", Arrays.asList("user1", "user2"));
+        map.put(MessageConstants.FORWARDED_GROUPS, Arrays.asList("group1", "group2"));
+        map.put(MessageConstants.FORWARDED_USERS, Arrays.asList("user1", "user2"));
 
         when(queryHandler.trackMessage(anyLong())).thenReturn(map);
         when(queryHandler.getMessage(anyLong())).thenReturn(trackMsg);
@@ -261,11 +263,96 @@ public class ActionMessageHandlersTest {
 
         Message trackMsg = Message.makeBroadcastMessage("nonOriginator", "");
         Map<String, List<String>> map = new HashMap<>();
-        map.put("groups", Arrays.asList("group1", "group2"));
-        map.put("users", Arrays.asList("user1", "user2"));
+        map.put(MessageConstants.FORWARDED_GROUPS, Arrays.asList("group1", "group2"));
+        map.put(MessageConstants.FORWARDED_USERS, Arrays.asList("user1", "user2"));
 
         when(queryHandler.trackMessage(anyLong())).thenReturn(map);
         when(queryHandler.getMessage(anyLong())).thenReturn(trackMsg);
         clientRunnableHelper.handleMessages(validGroupSubsetMessage);
     }
+
+    @Test
+    public void testChangeGroupVisibilityToPrivate() {
+        Message message = MessageUtil.getValidGroupVisibilityToPrivateMessage();
+
+        Message validGroupVisibilityChangeMessage = clientRunnableHelper
+                .getCustomConstructedMessage(message);
+
+        when(queryHandler.isModerator(anyString(), anyString())).thenReturn(true);
+        doNothing().when(queryHandler).updateGroupVisibility(anyString(), anyBoolean());
+
+        clientRunnableHelper.handleMessages(validGroupVisibilityChangeMessage);
+    }
+
+    @Test
+    public void testChangeGroupVisibilityByNonModerator() {
+        Message message = MessageUtil.getValidGroupVisibilityToPrivateMessage();
+
+        Message validGroupVisibilityChangeMessage = clientRunnableHelper
+                .getCustomConstructedMessage(message);
+
+        when(queryHandler.isModerator(anyString(), anyString())).thenReturn(false);
+
+        clientRunnableHelper.handleMessages(validGroupVisibilityChangeMessage);
+    }
+
+    @Test
+    public void testChangeGroupVisibilityToPublic() {
+        Message message = MessageUtil.getValidGroupVisibilityToPublicMessage();
+        Message constructedMessage = clientRunnableHelper.getCustomConstructedMessage(message);
+
+        when(queryHandler.isGroupInVisible(anyString())).thenReturn(true);
+        when(queryHandler.isModerator(anyString(), anyString())).thenReturn(true);
+        doNothing().when(queryHandler).updateGroupVisibility(anyString(), anyBoolean());;
+
+        clientRunnableHelper.handleMessages(constructedMessage);
+    }
+
+    @Test
+    public void testInvalidGroupVisibilityChangeBothPrivate() {
+        Message message = MessageUtil.getValidGroupVisibilityToPrivateMessage();
+        Message constructedMessage = clientRunnableHelper.getCustomConstructedMessage(message);
+
+        when(queryHandler.isGroupInVisible(anyString())).thenReturn(true);
+        when(queryHandler.isModerator(anyString(), anyString())).thenReturn(true);
+        doNothing().when(queryHandler).updateGroupVisibility(anyString(), anyBoolean());;
+
+        clientRunnableHelper.handleMessages(constructedMessage);
+    }
+
+
+    @Test
+    public void testChangeGroupVisibilityByInvalidModerator() {
+        Message message = MessageUtil.getValidGroupVisibilityToPublicMessage();
+
+        when(queryHandler.isGroupInVisible(anyString())).thenReturn(true);
+        when(queryHandler.isModerator(anyString(), anyString())).thenReturn(false);
+        Message constructedMessage = clientRunnableHelper.getCustomConstructedMessage(message);
+        assertTrue(constructedMessage.isActionMessage());
+    }
+
+    @Test
+    public void testValidChangeUserVisibilityToPrivate() {
+        Message message = MessageUtil.getValidUserVisibilityChangeMessage();
+
+        Message validGroupVisibilityChangeMessage = clientRunnableHelper
+                .getCustomConstructedMessage(message);
+        when(queryHandler.isUserInVisible(anyString())).thenReturn(false);
+        doNothing().when(queryHandler).updateUserVisibility(anyString(), anyBoolean());
+
+        clientRunnableHelper.handleMessages(validGroupVisibilityChangeMessage);
+    }
+
+    @Test
+    public void testInvalidChangeUserVisibilityBothPrivate() {
+        Message message = MessageUtil.getValidUserVisibilityChangeMessage();
+
+        Message validGroupVisibilityChangeMessage = clientRunnableHelper
+                .getCustomConstructedMessage(message);
+        when(queryHandler.isUserInVisible(anyString())).thenReturn(true);
+        doNothing().when(queryHandler).updateUserVisibility(anyString(), anyBoolean());
+
+        clientRunnableHelper.handleMessages(validGroupVisibilityChangeMessage);
+    }
 }
+
