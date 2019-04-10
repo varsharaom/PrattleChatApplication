@@ -583,8 +583,8 @@ public class QueryHandlerMySQLImplTest {
             userTwoId = userTwo.getUserID();
             userThreeId = userThree.getUserID();
 
-            List<Message> messageList = handler.getMessagesFromUserChat(userOne.getUserID(), userTwo.getUserID(), 0, 1);
-            assertEquals(messageList.size(), 1);
+            List<Message> messageList = handler.getMessagesFromUserChat(userOne.getUserName(), userTwo.getUserName(), 0, 1);
+            assertEquals(1, messageList.size());
             assertEquals(QueryConstants.MESSAGE_SECOND_TEXT, messageList.get(0).getText());
         } finally {
             // Tear down
@@ -632,8 +632,8 @@ public class QueryHandlerMySQLImplTest {
             userTwoId = userTwo.getUserID();
             userThreeId = userThree.getUserID();
 
-            List<Message> messageList = handler.getMessagesFromUserChat(userOne.getUserID(), userTwo.getUserID(), 0, -1);
-            assertEquals(messageList.size(), 2);
+            List<Message> messageList = handler.getMessagesFromUserChat(userOne.getUserName(), userTwo.getUserName(), 0, -1);
+            assertEquals(2, messageList.size());
             assertEquals(QueryConstants.MESSAGE_SECOND_TEXT, messageList.get(0).getText());
             assertEquals(QueryConstants.MESSAGE_TEXT, messageList.get(1).getText());
         } finally {
