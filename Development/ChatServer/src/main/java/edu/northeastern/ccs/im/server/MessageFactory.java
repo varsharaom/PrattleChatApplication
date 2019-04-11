@@ -69,10 +69,9 @@ public class MessageFactory {
         int timeOutMinutes = Integer.parseInt(timeoutInfoAndText[0].trim());
         String actualContent = timeoutInfoAndText[1].trim();
 
-        Message groupSubsetMessage = Message.makeGroupSubsetMessage(senderName, groupName, actualContent);
-
+        Message groupSubsetMessage = Message.makeGroupSubsetMessage(senderName, groupName,
+                actualContent, timeOutMinutes);
         groupSubsetMessage.setReceivers(Arrays.asList(receivers));
-        groupSubsetMessage.setTimeOutMinutes(timeOutMinutes);
 
         return groupSubsetMessage;
     }
@@ -146,9 +145,8 @@ public class MessageFactory {
         int timeOutMinutes = Integer.parseInt(arr[2]);
         String actualContent = arr[3];
 
-        Message constructedMessage =  Message.makeDirectMessage(sender, receiver, actualContent);
-        constructedMessage.setTimeOutMinutes(timeOutMinutes);
-        return constructedMessage;
+        return Message.makeDirectMessage(sender, receiver, actualContent,
+                timeOutMinutes);
     }
 
     /**
@@ -162,9 +160,8 @@ public class MessageFactory {
         int timeOutMinutes = Integer.parseInt(arr[2]);
         String actualContent = arr[3];
 
-        Message constructedMessage = Message.makeGroupMessage(sender, groupName, actualContent);
-        constructedMessage.setTimeOutMinutes(timeOutMinutes);
-        return constructedMessage;
+        return Message.makeGroupMessage(sender, groupName, actualContent, timeOutMinutes);
+
     }
 
     /**
@@ -198,12 +195,13 @@ public class MessageFactory {
         String sender = content[2];
         Message actualMessage = queryHandler.getMessage(messageId);
         String text = actualMessage.getText();
+        int originalMessageTimeout = actualMessage.getTimeOutMinutes();
 
         Message constructedMessage;
         if (actualMessage.isDirectMessage()) {
-            constructedMessage = Message.makeGroupMessage(sender, receiver, text);
+            constructedMessage = Message.makeGroupMessage(sender, receiver, text, originalMessageTimeout);
         } else {
-            constructedMessage = Message.makeDirectMessage(sender, receiver, text);
+            constructedMessage = Message.makeDirectMessage(sender, receiver, text, originalMessageTimeout);
         }
 
         constructedMessage.setId(messageId);

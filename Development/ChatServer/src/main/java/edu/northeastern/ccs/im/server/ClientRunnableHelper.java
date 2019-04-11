@@ -221,7 +221,7 @@ class ClientRunnableHelper {
             Map<String, List<String>> trackInfo = queryHandler.trackMessage(messageId);
             String text = getBuiltTrackMessageInfo(trackInfo);
             Message responseMessage = Message.makeDirectMessage(senderName, senderName,
-                    text);
+                    text, 0);
             Prattle.sendDirectMessage(responseMessage);
         } else {
             Prattle.sendErrorMessage(Message.makeErrorMessage(senderName,
@@ -327,7 +327,8 @@ class ClientRunnableHelper {
             messageList = queryHandler.getMessagesFromGroupChat(receiver, start, limit);
         }
         for (Message message : messageList) {
-            Message msg = Message.makeDirectMessage(message.getName(), senderName, getPrependedMessageText(message.getText(), message.getId()));
+            Message msg = Message.makeDirectMessage(message.getName(), senderName,
+                    getPrependedMessageText(message.getText(), message.getId()), 0);
             Prattle.sendDirectMessage(msg);
         }
     }
