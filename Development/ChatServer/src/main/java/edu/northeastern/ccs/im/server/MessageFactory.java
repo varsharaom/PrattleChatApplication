@@ -57,7 +57,7 @@ public class MessageFactory {
     }
 
     private static Message constructCustomGroupSubsetMessage(String restOfMessageText, IQueryHandler queryHandler) {
-        String[] contents = restOfMessageText.split("RCVRS");
+        String[] contents = restOfMessageText.split(MessageConstants.RECEIVERS_DELIMITER);
         
         String[] senderReceiver = contents[0].trim().split(" ");
         String senderName = senderReceiver[0];
@@ -66,12 +66,13 @@ public class MessageFactory {
         String[] receivers = contents[1].trim().split(" ");
         String[] timeoutInfoAndText = contents[2].trim().split(" ", 2);
         
-        int timeout = Integer.parseInt(timeoutInfoAndText[0].trim());
+        int timeOutMinutes = Integer.parseInt(timeoutInfoAndText[0].trim());
         String actualContent = timeoutInfoAndText[1].trim();
 
-        Message groupSubsetMessage = Message.makeGroupSubsetMessage(senderName, groupName, actualContent);
+        Message groupSubsetMessage = Message.makeGroupSubsetMessage(senderName, groupName,
+                actualContent, timeOutMinutes);
         groupSubsetMessage.setReceivers(Arrays.asList(receivers));
-        
+
         return groupSubsetMessage;
     }
 
@@ -137,26 +138,30 @@ public class MessageFactory {
      * Construct a direct message based on the parsed input message.
      */
     private static Message constructCustomDirectMessage(String restOfMessageText) {
-        String[] arr = restOfMessageText.split(" ", 3);
+        String[] arr = restOfMessageText.split(" ", 4);
 
         String sender = arr[0];
         String receiver = arr[1];
-        String actualContent = arr[2];
+        int timeOutMinutes = Integer.parseInt(arr[2]);
+        String actualContent = arr[3];
 
-        return Message.makeDirectMessage(sender, receiver, actualContent);
+        return Message.makeDirectMessage(sender, receiver, actualContent,
+                timeOutMinutes);
     }
 
     /**
      * Construct a group message based on the parsed input message.
      */
     private static Message constructCustomGroupMessage(String restOfMessageText) {
-        String[] arr = restOfMessageText.split(" ", 3);
+        String[] arr = restOfMessageText.split(" ", 4);
 
         String sender = arr[0];
         String groupName = arr[1];
-        String actualContent = arr[2];
+        int timeOutMinutes = Integer.parseInt(arr[2]);
+        String actualContent = arr[3];
 
-        return Message.makeGroupMessage(sender, groupName, actualContent);
+        return Message.makeGroupMessage(sender, groupName, actualContent, timeOutMinutes);
+
     }
 
     /**
@@ -179,23 +184,29 @@ public class MessageFactory {
     /**
      * Construct a custom forward message.
      *
-     * @param restOfMessagetext the rest of messagetext
+     * @param restOfMessageText the rest of messagetext
      * @param queryHandler      the query handler
      * @return the message
      */
-    private static Message constructCustomForwardMessage(String restOfMessagetext, IQueryHandler queryHandler) {
-        String[] content = restOfMessagetext.split(" ");
+    private static Message constructCustomForwardMessage(String restOfMessageText, IQueryHandler queryHandler) {
+        String[] content = restOfMessageText.split(" ");
         String receiver = content[0];
-        long messageId = Long.parseLong(content[1]);
+        long messageId = queryHandler.getParentMessageID(Long.parseLong(content[1]));
         String sender = content[2];
-
         Message actualMessage = queryHandler.getMessage(messageId);
-        String messageOriginator = actualMessage.getName();
+        String text = actualMessage.getText();
+        int originalMessageTimeout = actualMessage.getTimeOutMinutes();
 
-        String text = actualMessage.getText() + " <<< FORWARDED MESSAGE FROM  " + messageOriginator
-                + " >>>";
+        Message constructedMessage;
+        if (actualMessage.isDirectMessage()) {
+            constructedMessage = Message.makeGroupMessage(sender, receiver, text, originalMessageTimeout);
+        } else {
+            constructedMessage = Message.makeDirectMessage(sender, receiver, text, originalMessageTimeout);
+        }
 
-        return Message.makeDirectMessage(sender, receiver, text);
+        constructedMessage.setId(messageId);
+
+        return constructedMessage;
     }
 
     /**

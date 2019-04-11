@@ -1225,7 +1225,8 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
                 long msgID = rs.getLong(DBConstants.MESSAGE_ID_ALIAS);
 
                 if (!visitedMessages.contains(msgID)) {
-                    Message m = Message.makeDirectMessage(getUserName(rs.getLong(senderColumn)), getUserName(receiverID), rs.getString(textColumn));
+                    Message m = Message.makeDirectMessage(getUserName(rs.getLong(senderColumn)),
+                            getUserName(receiverID), rs.getString(textColumn), 0);
                     messages.add(m);
                     visitedMessages.add(msgID);
                 }
