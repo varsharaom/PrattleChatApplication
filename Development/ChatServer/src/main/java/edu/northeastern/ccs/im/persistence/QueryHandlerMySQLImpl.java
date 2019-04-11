@@ -101,9 +101,11 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
                 DBConstants.USER_INVISIBLE, DBConstants.USER_TABLE,
                 DBConstants.USER_USERNAME, userName);
         boolean isInVisible = false;
+        ResultSet rs = null;
+        PreparedStatement statement = null;
         try {
-            PreparedStatement statement = connection.prepareStatement(query);
-            ResultSet rs = statement.executeQuery();
+            statement = connection.prepareStatement(query);
+            rs = statement.executeQuery();
             if (rs.next()) {
                 isInVisible = rs.getInt(DBConstants.USER_INVISIBLE) == DBConstants.USER_INVISIBLE_TRUE;
             }
@@ -111,6 +113,12 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
             statement.close();
         } catch (SQLException e) {
             logger.log(Level.INFO, SQL_EXCEPTION_MSG + ": " + e.getMessage());
+        } finally {
+            try {
+                closeDBResources(rs, statement);
+            } catch (NullPointerException | SQLException e) {
+                logger.log(Level.INFO, SQL_EXCEPTION_MSG + ": " + e.getMessage());
+            }
         }
         return isInVisible;
     }
@@ -609,9 +617,11 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
                 DBConstants.GROUP_IS_PRIVATE, DBConstants.GROUP_TABLE,
                 DBConstants.GROUP_NAME, groupName);
         boolean isInvisible = false;
+        ResultSet rs = null;
+        PreparedStatement statement = null;
         try {
-            PreparedStatement statement = connection.prepareStatement(query);
-            ResultSet rs = statement.executeQuery();
+            statement = connection.prepareStatement(query);
+            rs = statement.executeQuery();
             if (rs.next()) {
                 isInvisible = rs.getInt(DBConstants.GROUP_IS_PRIVATE) == DBConstants.GROUP_PRIVATE_CODE;
             }
@@ -619,6 +629,12 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
             statement.close();
         } catch (SQLException e) {
             logger.log(Level.INFO, SQL_EXCEPTION_MSG + ": " + e.getMessage());
+        } finally {
+            try {
+                closeDBResources(rs, statement);
+            } catch (NullPointerException | SQLException e) {
+                logger.log(Level.INFO, SQL_EXCEPTION_MSG + ": " + e.getMessage());
+            }
         }
         return isInvisible;
     }
@@ -1245,9 +1261,11 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
 
     private List<String> trackMessageHelper(String query, String selectColumn) {
         List<String> receiverList = new ArrayList<>();
+        ResultSet rs = null;
+        PreparedStatement statement = null;
         try {
-            PreparedStatement statement = connection.prepareStatement(query);
-            ResultSet rs = statement.executeQuery();
+            statement = connection.prepareStatement(query);
+            rs = statement.executeQuery();
             while (rs.next()) {
                 receiverList.add(rs.getString(selectColumn));
             }
@@ -1255,6 +1273,12 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
             statement.close();
         } catch (SQLException e) {
             logger.log(Level.INFO, SQL_EXCEPTION_MSG + ": " + e.getMessage());
+        } finally {
+            try {
+                closeDBResources(rs, statement);
+            } catch (NullPointerException | SQLException e) {
+                logger.log(Level.INFO, SQL_EXCEPTION_MSG + ": " + e.getMessage());
+            }
         }
         return receiverList;
     }
@@ -1272,7 +1296,7 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
     }
 
     private long minutesToMilliSeconds(int minutes) {
-        return minutes * 60 * 1000;
+        return minutes * 60000l;
     }
 
     private int milliSecondsToMinutes(long mills) {
