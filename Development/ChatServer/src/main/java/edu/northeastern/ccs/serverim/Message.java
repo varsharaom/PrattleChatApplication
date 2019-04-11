@@ -47,7 +47,7 @@ public class Message {
 
 	private final long timeStamp;
 
-	private final int timeOutMinutes;
+	private int timeOutMinutes;
 
 	/**
 	 * Instantiates a new message.
@@ -177,6 +177,10 @@ public class Message {
 
 	public long getTimeStamp() {
 		return timeStamp;
+	}
+
+	public void setTimeOutMinutes (int timeOutMinutes) {
+		this.timeOutMinutes = timeOutMinutes;
 	}
 
 	public int getTimeOutMinutes() {

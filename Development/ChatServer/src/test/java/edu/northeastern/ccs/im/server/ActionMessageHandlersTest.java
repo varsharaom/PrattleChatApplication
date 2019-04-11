@@ -217,7 +217,7 @@ public class ActionMessageHandlersTest {
         clientRunnableHelper.handleMessages(invalidActionMessage);
     }
 
-//    @Test
+    @Test
     public void testMessageGroupSubsetHappyPath() {
         Message message = MessageUtil.getValidGroupSubsetMessage();
         Message validGroupSubsetMessage = clientRunnableHelper.getCustomConstructedMessage(message);
@@ -229,7 +229,7 @@ public class ActionMessageHandlersTest {
         clientRunnableHelper.handleMessages(validGroupSubsetMessage);
     }
 
-//    @Test
+    @Test
     public void testMessagesGroupSubsetInvalidReceivers() {
         Message message = MessageUtil.getValidGroupSubsetMessage();
         Message validGroupSubsetMessage = clientRunnableHelper.getCustomConstructedMessage(message);

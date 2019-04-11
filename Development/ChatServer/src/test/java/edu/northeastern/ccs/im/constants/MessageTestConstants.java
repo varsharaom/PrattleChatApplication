@@ -16,7 +16,7 @@ public final class MessageTestConstants {
 
     public static final String SIMPLE_DRCT_MESSAGE = CUSTOM_COMMAND_PREFIX
             + DIRECT_MSG_IDENTIFIER + CUSTOM_COMMAND_SUFFIX
-            + " sender receiver hi receiver. This is a private message";
+            + " sender receiver 14 hi receiver. This is a private message";
 
 
     public static final String NULL_OUTPUT = "--";

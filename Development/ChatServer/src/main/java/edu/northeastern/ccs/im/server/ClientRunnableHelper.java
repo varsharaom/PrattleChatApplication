@@ -7,7 +7,6 @@ import edu.northeastern.ccs.im.constants.MessageConstants;
 import edu.northeastern.ccs.im.persistence.IQueryHandler;
 import edu.northeastern.ccs.im.persistence.QueryFactory;
 
-import java.util.Calendar;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -576,10 +575,17 @@ class ClientRunnableHelper {
      */
     private void handleDirectMessages(Message message) {
         if (isUserPresent(message.getMsgReceiver())) {
+            long parentMessageId = message.getId();
+            long messageId = persistMessage(message);
 
-            long messageId = queryHandler.storeMessage(message.getName(), message.getMsgReceiver(),
-                    message.getMessageType(), message.getText(), message.getTimeStamp(), message.getTimeOutMinutes());
-            message.setText(getPrependedMessageText(message.getText(), messageId));
+            if (messageId != parentMessageId) {
+                message.setText(getPrependedMessageText(message.getText()
+                        + " <<< FORWARDED MESSAGE>>> ", messageId));
+            }
+            else {
+                message.setText(getPrependedMessageText(message.getText(), messageId));
+            }
+
 
             Message ackMessage = Message.makeAckMessage(MessageType.BROADCAST, message.getName(),
                     MessageConstants.MESSAGE_SENT_INFO + messageId);
@@ -593,6 +599,13 @@ class ClientRunnableHelper {
         }
     }
 
+    private long persistMessage(Message message) {
+        return queryHandler.storeMessage(message.getName(), message.getMsgReceiver(),
+                message.getMessageType(), message.getText(), message.getId(),
+                message.getTimeStamp(), message.getTimeOutMinutes());
+
+    }
+
     /**
      * Handle group message.
      *
@@ -601,10 +614,16 @@ class ClientRunnableHelper {
     private void handleGroupMessages(Message message) {
         String groupName = message.getMsgReceiver();
         if (isGroupPresent(groupName)) {
-            long messageId = queryHandler.storeMessage(message.getName(), message.getMsgReceiver(),
-                    message.getMessageType(), message.getText(), message.getTimeStamp(), message.getTimeOutMinutes());
+            long parentMessageId = message.getId();
+            long messageId = persistMessage(message);
 
-            message.setText(getPrependedMessageText(message.getText(), messageId));
+            if (messageId != parentMessageId) {
+                message.setText(getPrependedMessageText(message.getText()
+                        + " <<< FORWARDED MESSAGE>>> ", messageId));
+            }
+            else {
+                message.setText(getPrependedMessageText(message.getText(), messageId));
+            }
             Set<String> groupMemberNames = queryHandler.getAllGroupMembers(groupName);
             Prattle.sendMessageToMultipleUsers(message, groupMemberNames);
         } else {
