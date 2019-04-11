@@ -1,7 +1,6 @@
 package edu.northeastern.ccs.im.server;
 
 import java.util.Iterator;
-import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ScheduledFuture;

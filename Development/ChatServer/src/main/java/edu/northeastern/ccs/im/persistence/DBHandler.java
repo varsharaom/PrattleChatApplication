@@ -11,21 +11,27 @@ import java.util.logging.Logger;
  * The Class DBHandler.
  */
 public class DBHandler {
-	
-	/**
-	 * Private constructor to disallow creation of objects.
-	 */
-	private DBHandler() {
-		
-	}
 
-	/** The logger instance used in query methods. */
-	static final Logger logger = Logger.getGlobal();
-	
-	/** The error message for class not found exception. */
-	public static final String CLASS_EXCEPTION_MSG = "Class not found exception";
-	
-    /** The JDBC connection instance. */
+    /**
+     * Private constructor to disallow creation of objects.
+     */
+    private DBHandler() {
+
+    }
+
+    /**
+     * The logger instance used in query methods.
+     */
+    static final Logger logger = Logger.getGlobal();
+
+    /**
+     * The error message for class not found exception.
+     */
+    public static final String CLASS_EXCEPTION_MSG = "Class not found exception";
+
+    /**
+     * The JDBC connection instance.
+     */
     private static Connection conn = null;
 
     /**
@@ -45,9 +51,17 @@ public class DBHandler {
      */
     private static void createConnection() {
         try {
-            conn = DriverManager.getConnection(DBConstants.CONNECTION_STRING, DBConstants.DB_USER, DBConstants.DB_CRED);
+            conn = DriverManager.getConnection(DBConstants.CONNECTION_STRING, getUser(), getCreds());
         } catch (SQLException e) {
-        		logger.log(Level.INFO, ""+e.getMessage());
+            logger.log(Level.INFO, "" + e.getMessage());
         }
+    }
+
+    private static String getUser() {
+        return DBConstants.DB_USER;
+    }
+
+    private static String getCreds() {
+        return DBConstants.DB_CRED;
     }
 }
