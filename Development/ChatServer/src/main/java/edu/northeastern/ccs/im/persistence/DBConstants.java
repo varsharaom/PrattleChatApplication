@@ -133,10 +133,13 @@ public class DBConstants {
     public static final String MESSAGE_BODY = "body";
     
     /** The time sent field in the message table. */
-    public static final String MESSAGE_TIME = "time_sent";
+    public static final String MESSAGE_TIMESTAMP = "time_sent";
 
     /** The parent message id if it is a forwarded message */
     public static final String MESSAGE_PARENT_ID = "parent_msg_id";
+
+    /** Time out field if the message is timed one */
+    public static final String MESSAGE_TIME_OUT = "time_expires";
 
     public static final Long MESSAGE_PARENT_ID_DEFAULT = null;
 

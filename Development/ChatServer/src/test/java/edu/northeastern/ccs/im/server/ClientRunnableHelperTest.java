@@ -307,7 +307,7 @@ public class ClientRunnableHelperTest {
         Message message = MessageUtil.getValidGroupBroadcastMessage();
 
         when(iQueryHandler.checkGroupNameExists(anyString())).thenReturn(true);
-        when(iQueryHandler.storeMessage(anyString(), anyString(), any(), anyString()))
+        when(iQueryHandler.storeMessage(anyString(), anyString(), any(), anyString(),  anyLong(), anyInt()))
                 .thenReturn(1l);
         Message groupMessage = clientRunnableHelper.getCustomConstructedMessage(message);
         clientRunnableHelper.handleMessages(groupMessage);
@@ -319,7 +319,7 @@ public class ClientRunnableHelperTest {
         Message message = MessageUtil.getValidGroupBroadcastMessage();
 
         when(iQueryHandler.checkGroupNameExists(anyString())).thenReturn(false);
-        when(iQueryHandler.storeMessage(anyString(), anyString(), any(), anyString()))
+        when(iQueryHandler.storeMessage(anyString(), anyString(), any(), anyString(), anyLong(), anyInt()))
                 .thenReturn(1l);
         Message groupMessage = clientRunnableHelper.getCustomConstructedMessage(message);
         clientRunnableHelper.handleMessages(groupMessage);
@@ -402,7 +402,7 @@ public class ClientRunnableHelperTest {
         Message fwdMessage = clientRunnableHelper.getCustomConstructedMessage(message);
 
         when(iQueryHandler.checkUserNameExists(anyString())).thenReturn(true);
-        when(iQueryHandler.storeMessage(anyString(), anyString(), any(), anyString()))
+        when(iQueryHandler.storeMessage(anyString(), anyString(), any(), anyString(),  anyLong(), anyInt()))
                 .thenReturn(1l);
         clientRunnableHelper.handleMessages(fwdMessage);
     }
