@@ -45,7 +45,7 @@ public class MessageFactory {
             else if (type.equals(MessageConstants.ACTION_MSG_IDENTIFIER))
                 message = constructActionMessage(restOfMessageText);
             else if (type.equals(MessageConstants.GROUP_SUBSET_IDENTIFIER))
-                message = constructCustomGroupSubsetMessage(restOfMessageText, queryHandler);
+                message = constructCustomGroupSubsetMessage(restOfMessageText);
             else
                 message = Message.makeErrorMessage(clientMessage.getName(),
                         MessageConstants.UNKNOWN_MESSAGE_TYPE_ERR);
@@ -56,16 +56,16 @@ public class MessageFactory {
         return message;
     }
 
-    private static Message constructCustomGroupSubsetMessage(String restOfMessageText, IQueryHandler queryHandler) {
+    private static Message constructCustomGroupSubsetMessage(String restOfMessageText) {
         String[] contents = restOfMessageText.split(MessageConstants.RECEIVERS_DELIMITER);
-        
+
         String[] senderReceiver = contents[0].trim().split(" ");
         String senderName = senderReceiver[0];
         String groupName = senderReceiver[1];
-        
+
         String[] receivers = contents[1].trim().split(" ");
         String[] timeoutInfoAndText = contents[2].trim().split(" ", 2);
-        
+
         int timeOutMinutes = Integer.parseInt(timeoutInfoAndText[0].trim());
         String actualContent = timeoutInfoAndText[1].trim();
 
@@ -297,5 +297,5 @@ public class MessageFactory {
         }
         return messageTypeAsString;
     }
-    
+
 }

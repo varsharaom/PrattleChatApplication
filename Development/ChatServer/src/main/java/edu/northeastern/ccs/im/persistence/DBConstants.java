@@ -151,4 +151,6 @@ public class DBConstants {
 
     /** The DateTime format used in the message table. */
     public static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
+
+    public static final String LIMIT = "  LIMIT ";
 }
