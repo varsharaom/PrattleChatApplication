@@ -159,19 +159,30 @@ public class MessageParserTest {
         assertTrue(constructedMessage.getText().startsWith(MessageConstants.GET_MY_GROUPS_CONSOLE_INFO));
     }
 
-//    @Test
-    public void testValidForwardMessage() {
-        Message message = MessageUtil.getValidForwardMessage();
+    @Test
+    public void testValidForwardDirectMessage() {
+        Message message = MessageUtil.getValidForwardDirectMessage();
 
-        when(queryHandler.getMessage(anyLong())).thenReturn(QueryHandlerUtil.getValidMessage());
-        Message constuctedMessage = clientRunnableHelper.getCustomConstructedMessage(message);
+        when(queryHandler.getMessage(anyLong())).thenReturn(QueryHandlerUtil.getValidDirectMessage());
+        when(queryHandler.getParentMessageID(anyLong())).thenReturn(1L);
+        Message constructedMessage = clientRunnableHelper.getCustomConstructedMessage(message);
 
-        String expectedPattern = ".*<<< FORWARDED MESSAGE * ";
-        Pattern pattern = Pattern.compile(expectedPattern);
-        Matcher matcher = pattern.matcher(constuctedMessage.getText());
+        assertTrue(constructedMessage.isDirectMessage());
+        assertEquals("Forwarded messages must have a parent Id set",
+                1L, constructedMessage.getId());
+    }
 
-        assertTrue(constuctedMessage.isDirectMessage());
-        assertTrue("Constructed message does not have forwarded message info.", matcher.find());
+    @Test
+    public void testValidForwardGroupMessage() {
+        Message message = MessageUtil.getValidForwardDirectMessage();
+
+        when(queryHandler.getMessage(anyLong())).thenReturn(QueryHandlerUtil.getValidGroupMessage());
+        when(queryHandler.getParentMessageID(anyLong())).thenReturn(1L);
+        Message constructedMessage = clientRunnableHelper.getCustomConstructedMessage(message);
+
+        assertTrue(constructedMessage.isGroupMessage());
+        assertEquals("Forwarded messages must have a parent Id set",
+                1L, constructedMessage.getId());
     }
 
     @Test

@@ -88,7 +88,7 @@ public final class MessageUtil {
                 getInvalidTypeMessageText());
     }
 
-    public static Message getValidForwardMessage() {
+    public static Message getValidForwardDirectMessage() {
         return Message.makeBroadcastMessage(SIMPLE_USER,
                 getValidForwardMessageText());
     }

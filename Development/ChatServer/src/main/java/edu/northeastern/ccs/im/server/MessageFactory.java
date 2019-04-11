@@ -199,9 +199,9 @@ public class MessageFactory {
 
         Message constructedMessage;
         if (actualMessage.isDirectMessage()) {
-            constructedMessage = Message.makeGroupMessage(sender, receiver, text, originalMessageTimeout);
-        } else {
             constructedMessage = Message.makeDirectMessage(sender, receiver, text, originalMessageTimeout);
+        } else {
+            constructedMessage = Message.makeGroupMessage(sender, receiver, text, originalMessageTimeout);
         }
 
         constructedMessage.setId(messageId);
