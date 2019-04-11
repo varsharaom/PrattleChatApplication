@@ -194,7 +194,7 @@ public class MessageFactory {
     private static Message constructCustomForwardMessage(String restOfMessageText, IQueryHandler queryHandler) {
         String[] content = restOfMessageText.split(" ");
         String receiver = content[0];
-        long messageId = Long.parseLong(content[1]);
+        long messageId = queryHandler.getParentMessageID(Long.parseLong(content[1]));
         String sender = content[2];
         Message actualMessage = queryHandler.getMessage(messageId);
         String text = actualMessage.getText();

@@ -575,17 +575,9 @@ class ClientRunnableHelper {
      */
     private void handleDirectMessages(Message message) {
         if (isUserPresent(message.getMsgReceiver())) {
-            long parentMessageId = message.getId();
             long messageId = persistMessage(message);
 
-            if (messageId != parentMessageId) {
-                message.setText(getPrependedMessageText(message.getText()
-                        + " <<< FORWARDED MESSAGE>>> ", messageId));
-            }
-            else {
-                message.setText(getPrependedMessageText(message.getText(), messageId));
-            }
-
+            formatMessageTextToClientShowable(message, messageId);
 
             Message ackMessage = Message.makeAckMessage(MessageType.BROADCAST, message.getName(),
                     MessageConstants.MESSAGE_SENT_INFO + messageId);
@@ -596,6 +588,17 @@ class ClientRunnableHelper {
             Message errorMessage = Message.makeErrorMessage(message.getName(),
                     MessageConstants.INVALID_DIRECT_RECEIVER_MSG);
             Prattle.sendErrorMessage(errorMessage);
+        }
+    }
+
+    private void formatMessageTextToClientShowable(Message message, long messageId) {
+        long parentMessageId = message.getId();
+        if ((parentMessageId != -1L) && (messageId != parentMessageId)) {
+            message.setText(getPrependedMessageText(message.getText()
+                    + " <<< FORWARDED MESSAGE>>> ", messageId));
+        }
+        else {
+            message.setText(getPrependedMessageText(message.getText(), messageId));
         }
     }
 
@@ -614,16 +617,8 @@ class ClientRunnableHelper {
     private void handleGroupMessages(Message message) {
         String groupName = message.getMsgReceiver();
         if (isGroupPresent(groupName)) {
-            long parentMessageId = message.getId();
             long messageId = persistMessage(message);
-
-            if (messageId != parentMessageId) {
-                message.setText(getPrependedMessageText(message.getText()
-                        + " <<< FORWARDED MESSAGE>>> ", messageId));
-            }
-            else {
-                message.setText(getPrependedMessageText(message.getText(), messageId));
-            }
+            formatMessageTextToClientShowable(message, messageId);
             Set<String> groupMemberNames = queryHandler.getAllGroupMembers(groupName);
             Prattle.sendMessageToMultipleUsers(message, groupMemberNames);
         } else {
