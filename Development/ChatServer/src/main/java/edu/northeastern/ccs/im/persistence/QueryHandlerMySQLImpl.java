@@ -129,15 +129,16 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
     public long storeMessage(String senderName, String receiverName, MessageType type,
                              String msgText, Long parentMsgID, long timeStamp, int timeout) {
         Date date = new Date(timeStamp);
-        Date timeoutStamp = new Date(timeStamp + timeout);
+        Date timeoutStamp = new Date(timeStamp + minutesToMilliSeconds(timeout));
         SimpleDateFormat format = new SimpleDateFormat(DBConstants.DATE_FORMAT);
         long senderID = getUserID(senderName);
         long receiverID = type.equals(MessageType.GROUP) ? getGroupID(receiverName) : getUserID(receiverName);
-        String query = String.format("INSERT INTO %s (%s,%s,%s,%s,%s,%s,%s) VALUES(%d, %d,'%s','%s','%s', %d, '%s');",
+        String query = String.format("INSERT INTO %s (%s,%s,%s,%s,%s,%s,%s) VALUES(%d, %d,'%s','%s','%s', %d, %s);",
                 DBConstants.MESSAGE_TABLE, DBConstants.MESSAGE_SENDER_ID, DBConstants.MESSAGE_RECEIVER_ID,
                 DBConstants.MESSAGE_TYPE, DBConstants.MESSAGE_BODY, DBConstants.MESSAGE_TIMESTAMP,
                 DBConstants.MESSAGE_PARENT_ID, DBConstants.MESSAGE_TIME_OUT,
-                senderID, receiverID, type, msgText, format.format(date), parentMsgID, format.format(timeoutStamp));
+                senderID, receiverID, type, msgText, format.format(date), parentMsgID,
+                timeout == 0 ? null : "'" + format.format(timeoutStamp) + "'");
         return doInsertQuery(query);
     }
 
@@ -167,13 +168,13 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
             rs = statement.executeQuery();
             if (rs.next()) {
                 Long timeStamp = rs.getTimestamp(DBConstants.MESSAGE_TIMESTAMP).getTime();
-                Long timeout = rs.getTimestamp(DBConstants.MESSAGE_TIME_OUT).getTime() - timeStamp;
+                int timeout = computeTimeOut(rs.getTimestamp(DBConstants.MESSAGE_TIME_OUT), timeStamp);
                 message = new Message(rs.getLong(DBConstants.MESSAGE_ID),
                         MessageType.get(rs.getString(DBConstants.MESSAGE_TYPE)),
                         getUserName(rs.getLong(DBConstants.MESSAGE_SENDER_ID)),
                         getUserName(rs.getLong(DBConstants.MESSAGE_RECEIVER_ID)),
                         rs.getString(DBConstants.MESSAGE_BODY), rs.getInt(DBConstants.IS_DELETED),
-                        timeStamp, timeout.intValue());
+                        timeStamp, timeout);
             }
         } catch (SQLException e) {
             logger.log(Level.INFO, SQL_EXCEPTION_MSG + ": " + e.getMessage());
@@ -428,13 +429,13 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
             rs.relative(start);
             while (rs.next()) {
                 Long timeStamp = rs.getTimestamp(DBConstants.MESSAGE_TIMESTAMP).getTime();
-                Long timeout = rs.getTimestamp(DBConstants.MESSAGE_TIME_OUT).getTime() - timeStamp;
+                int timeout = computeTimeOut(rs.getTimestamp(DBConstants.MESSAGE_TIME_OUT), timeStamp);
                 Message msg = new Message(rs.getLong(DBConstants.MESSAGE_ID),
                         MessageType.get(rs.getString(DBConstants.MESSAGE_TYPE)),
                         getUserName(rs.getLong(DBConstants.MESSAGE_SENDER_ID)),
                         getUserName(rs.getInt(DBConstants.MESSAGE_RECEIVER_ID)),
                         rs.getString(DBConstants.MESSAGE_BODY), rs.getInt(DBConstants.IS_DELETED),
-                        timeStamp, timeout.intValue());
+                        timeStamp, timeout);
                 messageList.add(msg);
             }
         } catch (SQLException e) {
@@ -472,13 +473,13 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
             rs.relative(start);
             while (rs.next()) {
                 Long timeStamp = rs.getTimestamp(DBConstants.MESSAGE_TIMESTAMP).getTime();
-                Long timeout = rs.getTimestamp(DBConstants.MESSAGE_TIME_OUT).getTime() - timeStamp;
+                int timeout = computeTimeOut(rs.getTimestamp(DBConstants.MESSAGE_TIME_OUT), timeStamp);
                 Message msg = new Message(rs.getLong(DBConstants.MESSAGE_ID),
                         MessageType.get(rs.getString(DBConstants.MESSAGE_TYPE)),
                         getUserName(rs.getInt(DBConstants.MESSAGE_SENDER_ID)),
                         getUserName(rs.getInt(DBConstants.MESSAGE_RECEIVER_ID)),
                         rs.getString(DBConstants.MESSAGE_BODY), rs.getInt(DBConstants.IS_DELETED),
-                        timeStamp, timeout.intValue());
+                        timeStamp, timeout);
                 messageList.add(msg);
             }
         } catch (SQLException e) {
@@ -518,13 +519,13 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
             rs.relative(start);
             while (rs.next()) {
                 Long timeStamp = rs.getTimestamp(DBConstants.MESSAGE_TIMESTAMP).getTime();
-                Long timeout = rs.getTimestamp(DBConstants.MESSAGE_TIME_OUT).getTime() - timeStamp;
+                int timeout = computeTimeOut(rs.getTimestamp(DBConstants.MESSAGE_TIME_OUT), timeStamp);
                 Message msg = new Message(rs.getLong(DBConstants.MESSAGE_ID),
                         MessageType.get(rs.getString(DBConstants.MESSAGE_TYPE)),
                         getUserName(rs.getInt(DBConstants.MESSAGE_SENDER_ID)),
                         getUserName(rs.getInt(DBConstants.MESSAGE_RECEIVER_ID)),
                         rs.getString(DBConstants.MESSAGE_BODY), rs.getInt(DBConstants.IS_DELETED),
-                        timeStamp, timeout.intValue());
+                        timeStamp, timeout);
                 messageList.add(msg);
             }
         } catch (SQLException e) {
@@ -994,7 +995,8 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
      */
     private List<Message> getPrivateMessagesSinceLogin(long userID) {
         String query = String.format(
-                "SELECT %s, %s, %s, %s, %s, %s.%s as %s from %s inner join %s on %s.%s = %s.%s WHERE %s >= %s AND %s = %s AND %s != %d;",
+                "SELECT %s, %s, %s, %s, %s, %s.%s as %s from %s inner join %s on %s.%s = %s.%s WHERE %s >= %s AND %s = %s AND %s != %d "
+                        + "AND (%s is null || %s > '%s');",
                 //select columns
                 DBConstants.MESSAGE_BODY, DBConstants.USER_LAST_SEEN,
                 DBConstants.MESSAGE_SENDER_ID, DBConstants.MESSAGE_RECEIVER_ID,
@@ -1008,7 +1010,8 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
                 DBConstants.USER_TABLE, DBConstants.USER_ID,
                 //Filters
                 DBConstants.MESSAGE_TIMESTAMP, DBConstants.USER_LAST_SEEN, DBConstants.MESSAGE_RECEIVER_ID, userID,
-                DBConstants.IS_DELETED, DBConstants.IS_DELETED_TRUE);
+                DBConstants.IS_DELETED, DBConstants.IS_DELETED_TRUE, DBConstants.MESSAGE_TIME_OUT,
+                DBConstants.MESSAGE_TIME_OUT, getFormattedDate(System.currentTimeMillis()));
         return getMessages(query, DBConstants.MESSAGE_SENDER_ID, userID, DBConstants.MESSAGE_BODY);
     }
 
@@ -1053,7 +1056,7 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
                 "SELECT %s, %s, %s , %s.%s, %s.%s as %s from %s "
                         + "inner join %s on %s.%s = %s.%s "
                         + "inner join %s on %s.%s = %s.%s "
-                        + "WHERE (%s >= '%s') AND %s = %s.%s AND %s != %d;",
+                        + "WHERE (%s >= '%s') AND %s = %s.%s AND %s != %d AND (%s is null || %s > '%s');",
                 //select columns
                 DBConstants.MESSAGE_BODY,
                 DBConstants.MESSAGE_SENDER_ID, DBConstants.MESSAGE_RECEIVER_ID,
@@ -1077,7 +1080,8 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
                 DBConstants.MESSAGE_TIMESTAMP, lastSeen,
                 //Receiver id is a group that has this user as one of its member
                 DBConstants.MESSAGE_RECEIVER_ID, DBConstants.GROUP_INFO_TABLE, DBConstants.GROUP_INFO_GROUP_ID,
-                DBConstants.IS_DELETED, DBConstants.IS_DELETED_TRUE);
+                DBConstants.IS_DELETED, DBConstants.IS_DELETED_TRUE, DBConstants.MESSAGE_TIME_OUT,
+                DBConstants.MESSAGE_TIME_OUT, getFormattedDate(System.currentTimeMillis()));
         return getMessages(query, DBConstants.MESSAGE_SENDER_ID, userID, DBConstants.MESSAGE_BODY);
     }
 
@@ -1193,6 +1197,27 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
             logger.log(Level.INFO, SQL_EXCEPTION_MSG + ": " + e.getMessage());
         }
         return receiverList;
+    }
+
+    private int computeTimeOut(java.sql.Timestamp timeout, long timeStamp) {
+        if (timeout == null) {
+            return 0;
+        }
+        Long timeoutMills = timeout.getTime() - timeStamp;
+        return milliSecondsToMinutes(timeoutMills);
+    }
+
+    private String getFormattedDate(long time) {
+        return new SimpleDateFormat(DBConstants.DATE_FORMAT).format(new Date(time));
+    }
+
+    private long minutesToMilliSeconds(int minutes) {
+        return minutes * 60 * 1000;
+    }
+
+    private int milliSecondsToMinutes(long mills) {
+        Long val = mills / 60000;
+        return val.intValue();
     }
 
 }
