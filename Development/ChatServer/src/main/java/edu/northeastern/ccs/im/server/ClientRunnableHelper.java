@@ -7,6 +7,7 @@ import edu.northeastern.ccs.im.constants.MessageConstants;
 import edu.northeastern.ccs.im.persistence.IQueryHandler;
 import edu.northeastern.ccs.im.persistence.QueryFactory;
 
+import java.util.Calendar;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -569,7 +570,7 @@ class ClientRunnableHelper {
 
     /**
      * Checks if the receiver is valid. If valid, then send the direct message to
-     * the reeciver. Otherwise, sends an error message to the sender.
+     * the receiver. Otherwise, sends an error message to the sender.
      *
      * @param message - custom constructed message by the parser
      */
@@ -620,21 +621,18 @@ class ClientRunnableHelper {
      */
     private void handleMultiReceiverMessages(Message msg) {
         List<String> actualMembers = queryHandler.getGroupMembers(msg.getMsgReceiver());
-        Set<String> finalizedReceivers = new HashSet<>();
-
+        
         for (String potentialGroupMember : msg.getReceivers()) {
             if (actualMembers.contains(potentialGroupMember)) {
-                finalizedReceivers.add(potentialGroupMember);
-                handleMessageToValidReceiver(msg, potentialGroupMember);
+                handleMessageToValidReceiver(msg.getClone(), potentialGroupMember);
             } else {
                 handleMessageToInvalidReceiver(msg, potentialGroupMember);
             }
         }
-
-        Prattle.sendMessageToMultipleUsers(msg, finalizedReceivers);
     }
 
-    private void handleMessageToInvalidReceiver(Message msg, String potentialGroupMember) {
+
+	private void handleMessageToInvalidReceiver(Message msg, String potentialGroupMember) {
         Message errorMessage = Message.makeErrorMessage(msg.getName(),
                 "[ERROR] : " + potentialGroupMember + " does not exist or not " +
                         "a part of the group - " + msg.getMsgReceiver());
@@ -645,6 +643,14 @@ class ClientRunnableHelper {
         Message ackMessage = Message.makeAckMessage(MessageType.GROUP_SUBSET,
                 msg.getName(), "[INFO] Message successfully sent to "
                         + potentialGroupMember);
+        long messageId = queryHandler.storeMessage(msg.getName(), potentialGroupMember, msg.getMessageType(),
+        		msg.getText(), msg.getTimeStamp(), msg.getTimeOutMinutes());
+        
+        
+        msg.setReceiver(potentialGroupMember);
+        msg.setText(getPrependedMessageText(msg.getText(), messageId));
+        Prattle.sendDirectMessage(msg);
+        
         Prattle.sendAckMessage(ackMessage);
     }
 
