@@ -465,7 +465,7 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
         if (limit == -1) {
             query += ";";
         } else {
-            query += "  LIMIT " + (start + limit) + ";";
+            query += DBConstants.LIMIT + (start + limit) + ";";
         }
 
         List<Message> messageList = new ArrayList<>();
@@ -513,7 +513,7 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
         if (limit == -1) {
             query += ";";
         } else {
-            query += " LIMIT " + (start + limit) + ";";
+            query += DBConstants.LIMIT + (start + limit) + ";";
         }
 
         List<Message> messageList = new ArrayList<>();
@@ -568,7 +568,7 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
         if (limit == -1) {
             query += ";";
         } else {
-            query += " LIMIT " + start + "," + limit + ";";
+            query += DBConstants.LIMIT + start + "," + limit + ";";
         }
 
         List<Message> messageList = new ArrayList<>();
@@ -614,7 +614,7 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
         if (limit == -1) {
             query += ";";
         } else {
-            query += " LIMIT " + start + "," + limit + ";";
+            query += DBConstants.LIMIT + start + "," + limit + ";";
         }
 
         List<Message> messageList = new ArrayList<>();
@@ -945,11 +945,12 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
      */
     long doInsertQuery(String query) {
         PreparedStatement statement = null;
+        ResultSet generatedKeys = null;
         long key = -1;
         try {
             statement = connection.prepareStatement(query);
             statement.executeUpdate();
-            ResultSet generatedKeys = statement.getGeneratedKeys();
+            generatedKeys = statement.getGeneratedKeys();
             if (generatedKeys.next()) {
                 key = generatedKeys.getLong(1);
             } else {
@@ -959,7 +960,7 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
             logger.log(Level.INFO, SQL_EXCEPTION_MSG + ": " + e.getMessage());
         } finally {
             try {
-                closeDBResources(null, statement);
+                closeDBResources(generatedKeys, statement);
             } catch (NullPointerException | SQLException e) {
                 logger.log(Level.INFO, SQL_EXCEPTION_MSG + ": " + e.getMessage());
             }

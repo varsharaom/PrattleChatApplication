@@ -168,10 +168,6 @@ public class Message {
         return timeStamp;
     }
 
-//	public void setTimeOutMinutes (int timeOutMinutes) {
-//		this.timeOutMinutes = timeOutMinutes;
-//	}
-
     public int getTimeOutMinutes() {
         return timeOutMinutes;
     }
@@ -196,10 +192,6 @@ public class Message {
     public static Message makeBroadcastMessage(String myName, String text) {
         return new Message(MessageType.BROADCAST, myName, text);
     }
-
-//    public static Message makeGroupSubsetMessage(String msgSender, String groupName, String msgText) {
-//        return new Message(MessageType.GROUP_SUBSET, msgSender, groupName, msgText);
-//    }
 
     public static Message makeGroupSubsetMessage(String msgSender, String groupName,
                                                  String msgText, int timeOutMinutes) {
