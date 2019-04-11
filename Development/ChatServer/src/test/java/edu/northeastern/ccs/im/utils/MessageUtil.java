@@ -50,6 +50,14 @@ public final class MessageUtil {
                 + CUSTOM_COMMAND_SUFFIX + " " + " INVALID_IDENTIFIER "
                 + " senderName";
     }
+    
+    public static Message getValidUserChatHistoryMessage() {
+        return Message.makeBroadcastMessage(SIMPLE_USER, getValidUserChatHistoryMessageText());
+    }
+    
+    public static Message getValidGroupChatHistoryMessage() {
+        return Message.makeBroadcastMessage(SIMPLE_USER, getValidGroupChatHistoryMessageText());
+    }
 
     public static Message getValidDirectBroadcastMessageDifferentUser() {
         return Message.makeBroadcastMessage(SECOND_USER, getValidDirectMessageText());
@@ -226,6 +234,16 @@ public final class MessageUtil {
         return CUSTOM_COMMAND_PREFIX + FORWARD_MSG_IDENTIFIER + CUSTOM_COMMAND_SUFFIX
                 + " receiver 123 sender";
     }
+    
+    private static String getValidUserChatHistoryMessageText() {
+    		return CUSTOM_COMMAND_PREFIX + ACTION_MSG_IDENTIFIER + CUSTOM_COMMAND_SUFFIX
+                    + " " + MESSAGE_HISTORY_IDENTIFIER + " 0 5 receiverName senderName";
+    }
+    
+    private static String getValidGroupChatHistoryMessageText() {
+		return CUSTOM_COMMAND_PREFIX + ACTION_MSG_IDENTIFIER + CUSTOM_COMMAND_SUFFIX
+                + " " + MESSAGE_HISTORY_IDENTIFIER + " 0 5 groupName";
+}
 
     private static String getInvalidTypeMessageText() {
         return CUSTOM_COMMAND_PREFIX
