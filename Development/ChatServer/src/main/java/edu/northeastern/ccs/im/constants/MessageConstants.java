@@ -320,6 +320,7 @@ public final class MessageConstants {
     public static final String FORWARDED_GROUPS = "forwarded_groups";
 
     public static final String RECEIVERS_DELIMITER = "RCVRS";
+    public static final long DEFAULT_MESSAGE_ID = -1l;
 
     /**
      * Private constructor for class with static methods.

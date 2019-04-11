@@ -391,21 +391,21 @@ public class ClientRunnableHelperTest {
     @Test
     public void testForwardMessageHappyPath() {
 
-        Message message = MessageUtil.getValidForwardMessage();
+        Message message = MessageUtil.getValidForwardDirectMessage();
 
         when(iQueryHandler.getMessage(anyLong())).thenReturn(MessageUtil.getValidMessage());
         Message fwdMessage = clientRunnableHelper.getCustomConstructedMessage(message);
 
         when(iQueryHandler.checkUserNameExists(anyString())).thenReturn(true);
         when(iQueryHandler.storeMessage(anyString(), anyString(), any(), anyString(),  anyLong(), anyInt()))
-                .thenReturn(1l);
+                .thenReturn(2l);
         clientRunnableHelper.handleMessages(fwdMessage);
     }
 
     @Test
     public void testForwardMessageToInvalidReceiver() {
 
-        Message message = MessageUtil.getValidForwardMessage();
+        Message message = MessageUtil.getValidForwardDirectMessage();
 
         when(iQueryHandler.getMessage(anyLong())).thenReturn(MessageUtil.getValidMessage());
         Message fwdMessage = clientRunnableHelper.getCustomConstructedMessage(message);

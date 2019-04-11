@@ -594,7 +594,7 @@ class ClientRunnableHelper {
 
     private void formatMessageTextToClientShowable(Message message, long messageId) {
         long parentMessageId = message.getId();
-        if ((parentMessageId != -1L) && (messageId != parentMessageId)) {
+        if ((parentMessageId != MessageConstants.DEFAULT_MESSAGE_ID) && (messageId != parentMessageId)) {
             message.setText(getPrependedMessageText(message.getText()
                     + " <<< FORWARDED MESSAGE>>> ", messageId));
         }
