@@ -1115,4 +1115,42 @@ public class QueryHandlerMySQLImplTest {
         }
     }
 
+    @Test
+    public void testTimeOutMessagesFeature() {
+        long res1 = 0;
+        long res2 = 0;
+        User user1 = null;
+        long user1Id = -1L;
+        User user2 = null;
+        long user2Id = -1L;
+        try {
+            user1 = handler.createUser(QueryConstants.USERNAME, QueryConstants.PASS, QueryConstants.USERNAME);
+            user1Id = user1.getUserID();
+            user2 = handler.createUser(QueryConstants.USERNAME, QueryConstants.PASS, QueryConstants.USERNAME);
+            user2Id = user2.getUserID();
+            res1 = handler.storeMessage(user1.getUserName(), user2.getUserName(),
+                    MessageType.DIRECT, QueryConstants.MESSAGE_TEXT, System.currentTimeMillis() - 1200000, 1);
+
+            assertEquals(0, handler.getMessagesFromUserChat(user1.getUserName(),
+                    user2.getUserName(), 0, 1).size());
+
+            res2 = handler.storeMessage(user1.getUserName(), user2.getUserName(),
+                    MessageType.DIRECT, QueryConstants.MESSAGE_TEXT, System.currentTimeMillis(), 1);
+
+            assertEquals(1, handler.getMessagesFromUserChat(user1.getUserName(),
+                    user2.getUserName(), 0, 1).size());
+
+        } finally {
+            // Tear down
+            String query = String.format(QueryConstants.TEARDOWN_DELETE, DBConstants.MESSAGE_TABLE, DBConstants.MESSAGE_ID, res1);
+            handler.doUpdateQuery(query);
+            query = String.format(QueryConstants.TEARDOWN_DELETE, DBConstants.MESSAGE_TABLE, DBConstants.MESSAGE_ID, res2);
+            handler.doUpdateQuery(query);
+            query = String.format(QueryConstants.TEARDOWN_DELETE, DBConstants.USER_TABLE, DBConstants.USER_ID, user1Id);
+            handler.doUpdateQuery(query);
+            query = String.format(QueryConstants.TEARDOWN_DELETE, DBConstants.USER_TABLE, DBConstants.USER_ID, user2Id);
+            handler.doUpdateQuery(query);
+        }
+    }
+
 }
