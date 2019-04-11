@@ -1005,6 +1005,28 @@ public class QueryHandlerMySQLImplTest {
     }
 
     @Test
+    public void testParentMessageID() {
+        long res1 = 0;
+        long res2 = 0;
+        try {
+            res1 = handler.storeMessage(QueryConstants.SENDER_USERNAME, QueryConstants.RECEIVER_USERNAME,
+                    MessageType.DIRECT, QueryConstants.MESSAGE_TEXT, System.currentTimeMillis(), 0);
+            assertEquals(res1, (long) handler.getParentMessageID(res1));
+            res2 = handler.storeMessage(QueryConstants.RECEIVER_USERNAME, QueryConstants.SENDER_USERNAME,
+                    MessageType.DIRECT, QueryConstants.MESSAGE_TEXT, res1, System.currentTimeMillis(), 0);
+            assertEquals(res1, (long) handler.getParentMessageID(res2));
+            assertNotEquals(res1, 0);
+            assertNotEquals(res2, 0);
+        } finally {
+            // Tear down
+            String query = String.format(QueryConstants.TEARDOWN_DELETE, DBConstants.MESSAGE_TABLE, DBConstants.MESSAGE_ID, res1);
+            handler.doUpdateQuery(query);
+            query = String.format(QueryConstants.TEARDOWN_DELETE, DBConstants.MESSAGE_TABLE, DBConstants.MESSAGE_ID, res2);
+            handler.doUpdateQuery(query);
+        }
+    }
+
+    @Test
     public void testStoreForwardedMessage() {
         long res1 = 0;
         long res2 = 0;
