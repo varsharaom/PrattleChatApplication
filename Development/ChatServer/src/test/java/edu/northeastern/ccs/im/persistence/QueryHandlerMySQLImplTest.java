@@ -674,8 +674,7 @@ public class QueryHandlerMySQLImplTest {
             handler.doUpdateQuery(query);
             query = String.format(QueryConstants.TEARDOWN_DELETE, DBConstants.USER_TABLE, DBConstants.USER_ID, userTwoId);
             handler.doUpdateQuery(query);
-            query = String.format(QueryConstants.TEARDOWN_DELETE, DBConstants.GROUP_TABLE, DBConstants.GROUP_ID, groupId);
-            handler.doUpdateQuery(query);
+            handler.deleteGroup(QueryConstants.SENDER_USERNAME, QueryConstants.GROUP_NAME);
         }
     }
 
@@ -789,7 +788,7 @@ public class QueryHandlerMySQLImplTest {
             String query = String.format(QueryConstants.TEARDOWN_DELETE, DBConstants.USER_TABLE, DBConstants.USER_ID, userId);
             handler.doUpdateQuery(query);
             handler.removeGroupMember(QueryConstants.INVALID_USERNAME, QueryConstants.GROUP_2_NAME);
-            handler.deleteGroup(QueryConstants.USERNAME, QueryConstants.GROUP_2_NAME);
+            handler.deleteGroup(QueryConstants.INVALID_USERNAME, QueryConstants.GROUP_2_NAME);
             handler.removeGroupMember(QueryConstants.USERNAME, QueryConstants.GROUP_NAME);
             handler.deleteGroup(QueryConstants.USERNAME, QueryConstants.GROUP_NAME);
         }
