@@ -83,6 +83,14 @@ public interface IQueryHandler {
 
 
     /**
+     * Returns the parent message id if there is one, else returns the same ID
+     *
+     * @param messageID current  message ID
+     * @return parent message ID (if any)
+     */
+    public Long getParentMessageID(long messageID);
+
+    /**
      * returns all the users and groups who have been forwarded with the given message ID.
      *
      * @param messageID source message id
@@ -274,24 +282,22 @@ public interface IQueryHandler {
     /**
      * Gets the messages from user chat.
      *
-     * @param senderId   the sender id
-     * @param receiverId the receiver id
+     * @param sender   the sender name
+     * @param receiver the receiver name
      * @return the messages from user chat
      */
     public List<Message> getMessagesFromUserChat(String sender, String receiver, int start, int limit);
-    
-    
+
+
     /**
      * Gets the messages from group chat.
      *
-     * @param sender the sender
-     * @param receiver the receiver
      * @param start the start
      * @param limit the limit
      * @return the messages from group chat
      */
     public List<Message> getMessagesFromGroupChat(String groupName, int start, int limit);
-    
+
 
     /**
      * Creates the group.
