@@ -560,4 +560,8 @@ public class Message {
         return new Message(this.id, this.msgType, this.msgSender, this.msgReceiver, this.msgText, this.isDeleted,
                 this.timeStamp, this.timeOutMinutes);
     }
+
+    public void setName(String name) {
+        this.msgSender = name;
+    }
 }

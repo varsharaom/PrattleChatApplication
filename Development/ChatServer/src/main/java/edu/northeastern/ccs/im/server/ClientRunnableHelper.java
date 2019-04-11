@@ -352,7 +352,7 @@ class ClientRunnableHelper {
                 moderator -> queryHandler.storeMessage(senderName, moderator, MessageType.DIRECT,
                         MessageConstants.REQUEST_PREFIX + content, System.currentTimeMillis(), 0));
 
-        Prattle.sendMessageToMultipleUsers(message, moderatorSet);
+        Prattle.sendMessageToMultipleUsers(message, moderatorSet, groupName);
     }
 
     /**
@@ -564,6 +564,7 @@ class ClientRunnableHelper {
     private void loadPendingMessages(long userId) {
         List<Message> messageList = QueryFactory.getQueryHandler().getMessagesSinceLastLogin(userId);
         for (Message message : messageList) {
+            message.setText(getPrependedMessageText(message.getText(), message.getId()));
             Prattle.sendDirectMessage(message);
         }
     }
@@ -621,7 +622,7 @@ class ClientRunnableHelper {
             long messageId = persistMessage(message);
             formatMessageTextToClientShowable(message, messageId);
             Set<String> groupMemberNames = queryHandler.getAllGroupMembers(groupName);
-            Prattle.sendMessageToMultipleUsers(message, groupMemberNames);
+            Prattle.sendMessageToMultipleUsers(message, groupMemberNames, groupName);
         } else {
             Message errorMessage = Message.makeErrorMessage(message.getName(),
                     MessageConstants.INVALID_GROUP_RECEIVER_MSG);
