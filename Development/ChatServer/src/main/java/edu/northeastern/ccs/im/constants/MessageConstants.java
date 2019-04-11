@@ -319,6 +319,8 @@ public final class MessageConstants {
      */
     public static final String FORWARDED_GROUPS = "forwarded_groups";
 
+    public static final String RECEIVERS_DELIMITER = "RCVRS";
+
     /**
      * Private constructor for class with static methods.
      */

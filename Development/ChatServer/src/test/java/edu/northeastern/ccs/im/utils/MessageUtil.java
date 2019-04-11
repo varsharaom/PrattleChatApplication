@@ -176,7 +176,7 @@ public final class MessageUtil {
 
     private static String getValidGroupSubsetMessageText() {
         return CUSTOM_COMMAND_PREFIX + GROUP_SUBSET_IDENTIFIER + CUSTOM_COMMAND_SUFFIX +
-                " senderName RCVRS Receiver1 Receiver2 Receiver3 RCVRS groupName message text";
+                " senderName groupName RCVRS Receiver1 Receiver2 Receiver3 RCVRS 14 message text";
     }
 
     private static String getValidGetGroupMembersMessageText() {
@@ -269,13 +269,13 @@ public final class MessageUtil {
     private static String getValidGroupMessageText() {
         return CUSTOM_COMMAND_PREFIX + GROUP_MSG_IDENTIFIER
                 + CUSTOM_COMMAND_SUFFIX
-                + " senderName receiverName Hey this is a group message to multiple senders";
+                + " senderName receiverName 14 Hey this is a group message to multiple senders";
     }
 
     private static String getValidDirectMessageText() {
         return CUSTOM_COMMAND_PREFIX + DIRECT_MSG_IDENTIFIER
                 + CUSTOM_COMMAND_SUFFIX + " senderName receiverName "
-                + " Hey this is a direct message to sender";
+                + "14 Hey this is a direct message to sender";
     }
     
     private static String getValidGetUsersMessageText() {

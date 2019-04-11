@@ -1,9 +1,6 @@
 package edu.northeastern.ccs.im.server;
 
-import com.sun.org.apache.bcel.internal.generic.MULTIANEWARRAY;
 import edu.northeastern.ccs.im.constants.ClientRunnableHelperConstants;
-import edu.northeastern.ccs.im.constants.MessageConstants;
-import edu.northeastern.ccs.im.constants.MessageTestConstants;
 import edu.northeastern.ccs.im.persistence.DBConstants;
 import edu.northeastern.ccs.im.persistence.IQueryHandler;
 import edu.northeastern.ccs.im.utils.MessageUtil;
@@ -26,12 +23,10 @@ import static edu.northeastern.ccs.im.constants.MessageTestConstants.BROADCAST_T
 import static edu.northeastern.ccs.im.constants.MessageTestConstants.SIMPLE_USER;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.nio.channels.MulticastChannel;
 import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
 import java.util.List;
