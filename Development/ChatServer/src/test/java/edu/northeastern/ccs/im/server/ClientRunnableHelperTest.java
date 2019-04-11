@@ -431,4 +431,28 @@ public class ClientRunnableHelperTest {
         clientRunnableHelper.handleMessages(getUsersMessage);
 
     }
+    
+    @Test
+    public void testHandleChatHistoryMessage() {
+        Message message = MessageUtil.getValidUserChatHistoryMessage();
+
+        when(iQueryHandler.checkUserNameExists(anyString())).thenReturn(false);
+        when(iQueryHandler.createUser(anyString(), anyString(), anyString())).thenReturn(null);
+        Message chatHistoryMessage = clientRunnableHelper.getCustomConstructedMessage(message);
+        clientRunnableHelper.handleMessages(chatHistoryMessage);
+
+    }
+    
+    @Test
+    public void getValidGroupChatHistoryMessage() {
+        Message message = MessageUtil.getValidGroupChatHistoryMessage();
+
+        when(iQueryHandler.checkUserNameExists(anyString())).thenReturn(false);
+        when(iQueryHandler.createUser(anyString(), anyString(), anyString())).thenReturn(null);
+        Message chatHistoryMessage = clientRunnableHelper.getCustomConstructedMessage(message);
+        clientRunnableHelper.handleMessages(chatHistoryMessage);
+
+    }
+    
+    
 }
