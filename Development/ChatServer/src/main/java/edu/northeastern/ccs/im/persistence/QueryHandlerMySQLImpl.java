@@ -169,10 +169,12 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
             if (rs.next()) {
                 Long timeStamp = rs.getTimestamp(DBConstants.MESSAGE_TIMESTAMP).getTime();
                 int timeout = computeTimeOut(rs.getTimestamp(DBConstants.MESSAGE_TIME_OUT), timeStamp);
+                MessageType msgType = MessageType.get(rs.getString(DBConstants.MESSAGE_TYPE));
                 message = new Message(rs.getLong(DBConstants.MESSAGE_ID),
-                        MessageType.get(rs.getString(DBConstants.MESSAGE_TYPE)),
-                        getUserName(rs.getLong(DBConstants.MESSAGE_SENDER_ID)),
-                        getUserName(rs.getLong(DBConstants.MESSAGE_RECEIVER_ID)),
+                        msgType, getUserName(rs.getLong(DBConstants.MESSAGE_SENDER_ID)),
+                        msgType.equals(MessageType.GROUP) ?
+                                getGroupName(rs.getLong(DBConstants.MESSAGE_RECEIVER_ID))
+                                : getUserName(rs.getLong(DBConstants.MESSAGE_RECEIVER_ID)),
                         rs.getString(DBConstants.MESSAGE_BODY), rs.getInt(DBConstants.IS_DELETED),
                         timeStamp, timeout);
             }
@@ -431,10 +433,12 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
             while (rs.next()) {
                 Long timeStamp = rs.getTimestamp(DBConstants.MESSAGE_TIMESTAMP).getTime();
                 int timeout = computeTimeOut(rs.getTimestamp(DBConstants.MESSAGE_TIME_OUT), timeStamp);
+                MessageType msgType = MessageType.get(rs.getString(DBConstants.MESSAGE_TYPE));
                 Message msg = new Message(rs.getLong(DBConstants.MESSAGE_ID),
-                        MessageType.get(rs.getString(DBConstants.MESSAGE_TYPE)),
-                        getUserName(rs.getLong(DBConstants.MESSAGE_SENDER_ID)),
-                        getUserName(rs.getInt(DBConstants.MESSAGE_RECEIVER_ID)),
+                        msgType, getUserName(rs.getLong(DBConstants.MESSAGE_SENDER_ID)),
+                        msgType.equals(MessageType.GROUP) ?
+                                getGroupName(rs.getInt(DBConstants.MESSAGE_RECEIVER_ID))
+                                : getUserName(rs.getInt(DBConstants.MESSAGE_RECEIVER_ID)),
                         rs.getString(DBConstants.MESSAGE_BODY), rs.getInt(DBConstants.IS_DELETED),
                         timeStamp, timeout);
                 messageList.add(msg);
@@ -476,10 +480,12 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
             while (rs.next()) {
                 Long timeStamp = rs.getTimestamp(DBConstants.MESSAGE_TIMESTAMP).getTime();
                 int timeout = computeTimeOut(rs.getTimestamp(DBConstants.MESSAGE_TIME_OUT), timeStamp);
+                MessageType msgType = MessageType.get(rs.getString(DBConstants.MESSAGE_TYPE));
                 Message msg = new Message(rs.getLong(DBConstants.MESSAGE_ID),
-                        MessageType.get(rs.getString(DBConstants.MESSAGE_TYPE)),
-                        getUserName(rs.getInt(DBConstants.MESSAGE_SENDER_ID)),
-                        getUserName(rs.getInt(DBConstants.MESSAGE_RECEIVER_ID)),
+                        msgType, getUserName(rs.getInt(DBConstants.MESSAGE_SENDER_ID)),
+                        msgType.equals(MessageType.GROUP) ?
+                                getGroupName(rs.getInt(DBConstants.MESSAGE_RECEIVER_ID))
+                                : getUserName(rs.getInt(DBConstants.MESSAGE_RECEIVER_ID)),
                         rs.getString(DBConstants.MESSAGE_BODY), rs.getInt(DBConstants.IS_DELETED),
                         timeStamp, timeout);
                 messageList.add(msg);
@@ -527,11 +533,12 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
             while (rs.next()) {
                 Long timeStamp = rs.getTimestamp(DBConstants.MESSAGE_TIMESTAMP).getTime();
                 int timeout = computeTimeOut(rs.getTimestamp(DBConstants.MESSAGE_TIME_OUT), timeStamp);
-
+                MessageType msgType = MessageType.get(rs.getString(DBConstants.MESSAGE_TYPE));
                 Message msg = new Message(rs.getLong(DBConstants.MESSAGE_ID),
-                        MessageType.get(rs.getString(DBConstants.MESSAGE_TYPE)),
-                        getUserName(rs.getInt(DBConstants.MESSAGE_SENDER_ID)),
-                        getUserName(rs.getInt(DBConstants.MESSAGE_RECEIVER_ID)),
+                        msgType, getUserName(rs.getInt(DBConstants.MESSAGE_SENDER_ID)),
+                        msgType.equals(MessageType.GROUP) ?
+                                getGroupName(rs.getInt(DBConstants.MESSAGE_RECEIVER_ID))
+                                : getUserName(rs.getInt(DBConstants.MESSAGE_RECEIVER_ID)),
                         rs.getString(DBConstants.MESSAGE_BODY), rs.getInt(DBConstants.IS_DELETED),
                         timeStamp, timeout);
                 messageList.add(msg);
@@ -571,10 +578,12 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
             while (rs.next()) {
                 Long timeStamp = rs.getTimestamp(DBConstants.MESSAGE_TIMESTAMP).getTime();
                 int timeout = computeTimeOut(rs.getTimestamp(DBConstants.MESSAGE_TIME_OUT), timeStamp);
+                MessageType msgType = MessageType.get(rs.getString(DBConstants.MESSAGE_TYPE));
                 Message msg = new Message(rs.getLong(DBConstants.MESSAGE_ID),
-                        MessageType.get(rs.getString(DBConstants.MESSAGE_TYPE)),
-                        getUserName(rs.getInt(DBConstants.MESSAGE_SENDER_ID)),
-                        getUserName(rs.getInt(DBConstants.MESSAGE_RECEIVER_ID)),
+                        msgType, getUserName(rs.getInt(DBConstants.MESSAGE_SENDER_ID)),
+                        msgType.equals(MessageType.GROUP) ?
+                                getGroupName(rs.getInt(DBConstants.MESSAGE_RECEIVER_ID))
+                                : getUserName(rs.getInt(DBConstants.MESSAGE_RECEIVER_ID)),
                         rs.getString(DBConstants.MESSAGE_BODY), rs.getInt(DBConstants.IS_DELETED),
                         timeStamp, timeout);
                 messageList.add(msg);
