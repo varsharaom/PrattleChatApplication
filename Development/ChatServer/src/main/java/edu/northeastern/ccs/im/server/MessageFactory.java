@@ -58,16 +58,20 @@ public class MessageFactory {
 
     private static Message constructCustomGroupSubsetMessage(String restOfMessageText, IQueryHandler queryHandler) {
         String[] contents = restOfMessageText.split("RCVRS");
-
-        String senderName = contents[0].trim();
+        
+        String[] senderReceiver = contents[0].trim().split(" ");
+        String senderName = senderReceiver[0];
+        String groupName = senderReceiver[1];
+        
         String[] receivers = contents[1].trim().split(" ");
-        String[] groupNameAndText = contents[2].trim().split(" ", 2);
-        String groupName = groupNameAndText[0].trim();
-        String actualContent = groupNameAndText[1].trim();
+        String[] timeoutInfoAndText = contents[2].trim().split(" ", 2);
+        
+        int timeout = Integer.parseInt(timeoutInfoAndText[0].trim());
+        String actualContent = timeoutInfoAndText[1].trim();
 
         Message groupSubsetMessage = Message.makeGroupSubsetMessage(senderName, groupName, actualContent);
         groupSubsetMessage.setReceivers(Arrays.asList(receivers));
-
+        
         return groupSubsetMessage;
     }
 
