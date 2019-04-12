@@ -1,7 +1,7 @@
 {
 	"server":[
 	  {
-	   "DNS": "ec2-3-19-14-98.us-east-2.compute.amazonaws.com",
+	   "DNS": "ec2-3-19-75-11.us-east-2.compute.amazonaws.com",
 	   "user":"ubuntu",
 	   "directory":"/home/ubuntu",
 	   "JARNAME": "Chatter-0.0.1-SNAPSHOT.jar",
