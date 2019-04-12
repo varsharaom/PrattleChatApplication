@@ -146,6 +146,16 @@ public final class MessageConstants {
     public static final String MSG_ID_SUFFIX = "> ";
 
     /**
+     * The prefix for message time stamp for messages shown on the console.
+     */
+    public static final String MSG_TIMESTAMP_PREFIX = " [";
+    
+    /**
+     * The suffix for message time stamp for messages shown on the console.
+     */
+    public static final String MSG_TIMESTAMP_SUFFIX = "] ";
+    
+    /**
      * The Constant REGISTER_SUCCESS_MSG.
      */
     public static final String REGISTER_SUCCESS_MSG = "You have successfully registered " +
@@ -202,6 +212,9 @@ public final class MessageConstants {
      */
     public static final String ADD_MMBR_SUCCESS_MSG = "Member successfully added...";
 
+    /** The Constant MSG_DATE_FORMAT. */
+    public static final String MSG_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
+    
     /**
      * The Constant LEAVE_GROUP_SUCCESS_MSG.
      */

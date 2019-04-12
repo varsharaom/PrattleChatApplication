@@ -7,6 +7,8 @@ import edu.northeastern.ccs.im.constants.MessageConstants;
 import edu.northeastern.ccs.im.persistence.IQueryHandler;
 import edu.northeastern.ccs.im.persistence.QueryFactory;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -149,7 +151,7 @@ class ClientRunnableHelper {
      * @param msg the msg
      */
     private void handleGetInfoMessages(Message msg) {
-        Prattle.sendDirectMessage(msg);
+        Prattle.sendAckMessage(msg);
     }
 
     /**
@@ -222,7 +224,7 @@ class ClientRunnableHelper {
             String text = getBuiltTrackMessageInfo(trackInfo);
             Message responseMessage = Message.makeDirectMessage(senderName, senderName,
                     text, 0);
-            Prattle.sendDirectMessage(responseMessage);
+            Prattle.sendAckMessage(responseMessage);
         } else {
             Prattle.sendErrorMessage(Message.makeErrorMessage(senderName,
                     MessageConstants.INVALID_MESSAGE_TRACKER_ERR));
@@ -328,8 +330,8 @@ class ClientRunnableHelper {
         }
         for (Message message : messageList) {
             Message msg = Message.makeDirectMessage(message.getName(), senderName,
-                    getPrependedMessageText(message.getText(), message.getId()), 0);
-            Prattle.sendDirectMessage(msg);
+                    getPrependedMessageText(message.getText(), message.getId(), message.getTimeStamp()), 0);
+            Prattle.sendAckMessage(msg);
         }
     }
 
@@ -564,7 +566,7 @@ class ClientRunnableHelper {
     private void loadPendingMessages(long userId) {
         List<Message> messageList = QueryFactory.getQueryHandler().getMessagesSinceLastLogin(userId);
         for (Message message : messageList) {
-            Prattle.sendDirectMessage(message);
+        		Prattle.sendAckMessage(message);
         }
     }
 
@@ -584,6 +586,7 @@ class ClientRunnableHelper {
                     MessageConstants.MESSAGE_SENT_INFO + messageId);
 
             Prattle.sendAckMessage(ackMessage);
+            message.setText(getPrependedMessageText(message.getText(), messageId, message.getTimeStamp()));
             Prattle.sendDirectMessage(message);
         } else {
             Message errorMessage = Message.makeErrorMessage(message.getName(),
@@ -596,10 +599,10 @@ class ClientRunnableHelper {
         long parentMessageId = message.getId();
         if ((parentMessageId != MessageConstants.DEFAULT_MESSAGE_ID) && (messageId != parentMessageId)) {
             message.setText(getPrependedMessageText(message.getText()
-                    + " <<< FORWARDED MESSAGE>>> ", messageId));
+                    + " <<< FORWARDED MESSAGE>>> ", messageId, message.getTimeStamp()));
         }
         else {
-            message.setText(getPrependedMessageText(message.getText(), messageId));
+            message.setText(getPrependedMessageText(message.getText(), messageId, message.getTimeStamp()));
         }
     }
 
@@ -663,7 +666,7 @@ class ClientRunnableHelper {
         
         
         msg.setReceiver(potentialGroupMember);
-        msg.setText(getPrependedMessageText(msg.getText(), messageId));
+        msg.setText(getPrependedMessageText(msg.getText(), messageId, msg.getTimeStamp()));
         Prattle.sendDirectMessage(msg);
         
         Prattle.sendAckMessage(ackMessage);
@@ -679,10 +682,16 @@ class ClientRunnableHelper {
      * @param msgText   - the message text.
      * @param messageId - id for the message returned on persistence in the database.
      */
-    String getPrependedMessageText(String msgText, long messageId) {
-        StringBuilder text = new StringBuilder(MessageConstants.MSG_ID_PREFIX);
+    String getPrependedMessageText(String msgText, long messageId, long timeStamp) {
+		Date messageTimeStamp = new Date(timeStamp);
+		SimpleDateFormat format = new SimpleDateFormat(MessageConstants.MSG_DATE_FORMAT);
+
+    		StringBuilder text = new StringBuilder(MessageConstants.MSG_ID_PREFIX);
         text.append(messageId);
         text.append(MessageConstants.MSG_ID_SUFFIX);
+        text.append(MessageConstants.MSG_TIMESTAMP_PREFIX);
+		text.append(format.format(messageTimeStamp));
+		text.append(MessageConstants.MSG_TIMESTAMP_SUFFIX);
         text.append(msgText);
 
         return text.toString();
