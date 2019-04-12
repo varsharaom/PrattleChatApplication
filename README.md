@@ -10,6 +10,7 @@ Vinayakaram Nagasubramanian: https://github.ccs.neu.edu/cs5500/Student-235-SP19<
 ## Messaging application with a scalable backend(Written in Java and persisted in MySQL)
 - Extensible command line client interface
 - Supports direct and group messaging.
+- Deletions of messages.
 - Supports special message types such as forwarded, group subset and time out messages.
 - Allows users to obtain messages translated in a (limited set of) language of their choice.
 - Allow users to enable chat filtering to mask abusive content.
