@@ -462,43 +462,7 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
                 DBConstants.MESSAGE_TABLE, DBConstants.MESSAGE_SENDER_ID, id, DBConstants.MESSAGE_TYPE, type, DBConstants.MESSAGE_TIME_OUT,
                 DBConstants.MESSAGE_TIME_OUT, getFormattedDate(System.currentTimeMillis()), DBConstants.MESSAGE_TIMESTAMP);
 
-        if (limit == -1) {
-            query += ";";
-        } else {
-            query += DBConstants.LIMIT + (start + limit) + ";";
-        }
-
-        List<Message> messageList = new ArrayList<>();
-        ResultSet rs = null;
-        PreparedStatement statement = null;
-        try {
-            statement = connection.prepareStatement(query);
-            rs = statement.executeQuery();
-
-            rs.relative(start);
-            while (rs.next()) {
-                Long timeStamp = rs.getTimestamp(DBConstants.MESSAGE_TIMESTAMP).getTime();
-                int timeout = computeTimeOut(rs.getTimestamp(DBConstants.MESSAGE_TIME_OUT), timeStamp);
-                MessageType msgType = MessageType.get(rs.getString(DBConstants.MESSAGE_TYPE));
-                Message msg = new Message(msgType, getUserName(rs.getLong(DBConstants.MESSAGE_SENDER_ID)),
-                        msgType.equals(MessageType.GROUP) ?
-                                getGroupName(rs.getInt(DBConstants.MESSAGE_RECEIVER_ID))
-                                : getUserName(rs.getInt(DBConstants.MESSAGE_RECEIVER_ID)),
-                        rs.getString(DBConstants.MESSAGE_BODY), rs.getInt(DBConstants.IS_DELETED),
-                        timeStamp, timeout);
-                msg.setId(rs.getLong(DBConstants.MESSAGE_ID));
-                messageList.add(msg);
-            }
-        } catch (SQLException e) {
-            logger.log(Level.INFO, SQL_EXCEPTION_MSG + ": " + e.getMessage());
-        } finally {
-            try {
-                closeDBResources(rs, statement);
-            } catch (NullPointerException | SQLException e) {
-                logger.log(Level.INFO, SQL_EXCEPTION_MSG + ": " + e.getMessage());
-            }
-        }
-        return messageList;
+        return getMessageHelper(query, start, limit, true);
     }
 
     /* (non-Javadoc)
@@ -510,43 +474,7 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
                 DBConstants.MESSAGE_TABLE, DBConstants.MESSAGE_RECEIVER_ID, id, DBConstants.MESSAGE_TYPE, type, DBConstants.MESSAGE_TIME_OUT,
                 DBConstants.MESSAGE_TIME_OUT, getFormattedDate(System.currentTimeMillis()), DBConstants.MESSAGE_TIMESTAMP);
 
-        if (limit == -1) {
-            query += ";";
-        } else {
-            query += DBConstants.LIMIT + (start + limit) + ";";
-        }
-
-        List<Message> messageList = new ArrayList<>();
-        ResultSet rs = null;
-        PreparedStatement statement = null;
-        try {
-            statement = connection.prepareStatement(query);
-            rs = statement.executeQuery();
-
-            rs.relative(start);
-            while (rs.next()) {
-                Long timeStamp = rs.getTimestamp(DBConstants.MESSAGE_TIMESTAMP).getTime();
-                int timeout = computeTimeOut(rs.getTimestamp(DBConstants.MESSAGE_TIME_OUT), timeStamp);
-                MessageType msgType = MessageType.get(rs.getString(DBConstants.MESSAGE_TYPE));
-                Message msg = new Message(msgType, getUserName(rs.getInt(DBConstants.MESSAGE_SENDER_ID)),
-                        msgType.equals(MessageType.GROUP) ?
-                                getGroupName(rs.getInt(DBConstants.MESSAGE_RECEIVER_ID))
-                                : getUserName(rs.getInt(DBConstants.MESSAGE_RECEIVER_ID)),
-                        rs.getString(DBConstants.MESSAGE_BODY), rs.getInt(DBConstants.IS_DELETED),
-                        timeStamp, timeout);
-                msg.setId(rs.getLong(DBConstants.MESSAGE_ID));
-                messageList.add(msg);
-            }
-        } catch (SQLException e) {
-            logger.log(Level.INFO, SQL_EXCEPTION_MSG + ": " + e.getMessage());
-        } finally {
-            try {
-                closeDBResources(rs, statement);
-            } catch (NullPointerException | SQLException e) {
-                logger.log(Level.INFO, SQL_EXCEPTION_MSG + ": " + e.getMessage());
-            }
-        }
-        return messageList;
+        return getMessageHelper(query, start, limit, true);
     }
 
     /* (non-Javadoc)
@@ -565,42 +493,8 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
                 DBConstants.IS_DELETED, DBConstants.IS_DELETED_TRUE, DBConstants.MESSAGE_TIME_OUT,
                 DBConstants.MESSAGE_TIME_OUT, getFormattedDate(System.currentTimeMillis()), DBConstants.MESSAGE_TIMESTAMP);
 
-        if (limit == -1) {
-            query += ";";
-        } else {
-            query += DBConstants.LIMIT + start + "," + limit + ";";
-        }
+        return getMessageHelper(query, start, limit, false);
 
-        List<Message> messageList = new ArrayList<>();
-        ResultSet rs = null;
-        PreparedStatement statement = null;
-        try {
-            statement = connection.prepareStatement(query);
-            rs = statement.executeQuery();
-
-            while (rs.next()) {
-                Long timeStamp = rs.getTimestamp(DBConstants.MESSAGE_TIMESTAMP).getTime();
-                int timeout = computeTimeOut(rs.getTimestamp(DBConstants.MESSAGE_TIME_OUT), timeStamp);
-                MessageType msgType = MessageType.get(rs.getString(DBConstants.MESSAGE_TYPE));
-                Message msg = new Message(msgType, getUserName(rs.getInt(DBConstants.MESSAGE_SENDER_ID)),
-                        msgType.equals(MessageType.GROUP) ?
-                                getGroupName(rs.getInt(DBConstants.MESSAGE_RECEIVER_ID))
-                                : getUserName(rs.getInt(DBConstants.MESSAGE_RECEIVER_ID)),
-                        rs.getString(DBConstants.MESSAGE_BODY), rs.getInt(DBConstants.IS_DELETED),
-                        timeStamp, timeout);
-                msg.setId(rs.getLong(DBConstants.MESSAGE_ID));
-                messageList.add(msg);
-            }
-        } catch (SQLException e) {
-            logger.log(Level.INFO, SQL_EXCEPTION_MSG + ": " + e.getMessage());
-        } finally {
-            try {
-                closeDBResources(rs, statement);
-            } catch (NullPointerException | SQLException e) {
-                logger.log(Level.INFO, SQL_EXCEPTION_MSG + ": " + e.getMessage());
-            }
-        }
-        return messageList;
     }
 
     @Override
@@ -611,42 +505,7 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
                 DBConstants.MESSAGE_TYPE, MessageType.GROUP,
                 DBConstants.IS_DELETED, DBConstants.IS_DELETED_TRUE, DBConstants.MESSAGE_TIMESTAMP);
 
-        if (limit == -1) {
-            query += ";";
-        } else {
-            query += DBConstants.LIMIT + start + "," + limit + ";";
-        }
-
-        List<Message> messageList = new ArrayList<>();
-        ResultSet rs = null;
-        PreparedStatement statement = null;
-        try {
-            statement = connection.prepareStatement(query);
-            rs = statement.executeQuery();
-
-            while (rs.next()) {
-                Long timeStamp = rs.getTimestamp(DBConstants.MESSAGE_TIMESTAMP).getTime();
-                int timeout = computeTimeOut(rs.getTimestamp(DBConstants.MESSAGE_TIME_OUT), timeStamp);
-                MessageType msgType = MessageType.get(rs.getString(DBConstants.MESSAGE_TYPE));
-                Message msg = new Message(msgType, getUserName(rs.getInt(DBConstants.MESSAGE_SENDER_ID)),
-                        msgType.equals(MessageType.GROUP) ?
-                                getGroupName(rs.getInt(DBConstants.MESSAGE_RECEIVER_ID))
-                                : getUserName(rs.getInt(DBConstants.MESSAGE_RECEIVER_ID)),
-                        rs.getString(DBConstants.MESSAGE_BODY), rs.getInt(DBConstants.IS_DELETED),
-                        timeStamp, timeout);
-                msg.setId(rs.getLong(DBConstants.MESSAGE_ID));
-                messageList.add(msg);
-            }
-        } catch (SQLException e) {
-            logger.log(Level.INFO, SQL_EXCEPTION_MSG + ": " + e.getMessage());
-        } finally {
-            try {
-                closeDBResources(rs, statement);
-            } catch (NullPointerException | SQLException e) {
-                logger.log(Level.INFO, SQL_EXCEPTION_MSG + ": " + e.getMessage());
-            }
-        }
-        return messageList;
+        return getMessageHelper(query, start, limit, false);
     }
 
     //-----------------Group Queries----------------------------------
@@ -1358,6 +1217,53 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
     private int milliSecondsToMinutes(long mills) {
         Long val = mills / 60000;
         return val.intValue();
+    }
+
+    private String getLimit(int start, int limit) {
+        if (limit == -1) {
+            return DBConstants.SEMI_COLON;
+        } else {
+            return DBConstants.LIMIT + start + DBConstants.COMMA + limit + DBConstants.SEMI_COLON;
+        }
+    }
+
+    private List<Message> getMessageHelper(String query, int start, int limit, boolean isRelative) {
+
+        query += getLimit(start, limit);
+
+        List<Message> messageList = new ArrayList<>();
+        ResultSet rs = null;
+        PreparedStatement statement = null;
+        try {
+            statement = connection.prepareStatement(query);
+            rs = statement.executeQuery();
+
+            if (isRelative) {
+                rs.relative(start);
+            }
+            while (rs.next()) {
+                Long timeStamp = rs.getTimestamp(DBConstants.MESSAGE_TIMESTAMP).getTime();
+                int timeout = computeTimeOut(rs.getTimestamp(DBConstants.MESSAGE_TIME_OUT), timeStamp);
+                MessageType msgType = MessageType.get(rs.getString(DBConstants.MESSAGE_TYPE));
+                Message msg = new Message(msgType, getUserName(rs.getLong(DBConstants.MESSAGE_SENDER_ID)),
+                        msgType.equals(MessageType.GROUP) ?
+                                getGroupName(rs.getInt(DBConstants.MESSAGE_RECEIVER_ID))
+                                : getUserName(rs.getInt(DBConstants.MESSAGE_RECEIVER_ID)),
+                        rs.getString(DBConstants.MESSAGE_BODY), rs.getInt(DBConstants.IS_DELETED),
+                        timeStamp, timeout);
+                msg.setId(rs.getLong(DBConstants.MESSAGE_ID));
+                messageList.add(msg);
+            }
+        } catch (SQLException e) {
+            logger.log(Level.INFO, SQL_EXCEPTION_MSG + ": " + e.getMessage());
+        } finally {
+            try {
+                closeDBResources(rs, statement);
+            } catch (NullPointerException | SQLException e) {
+                logger.log(Level.INFO, SQL_EXCEPTION_MSG + ": " + e.getMessage());
+            }
+        }
+        return messageList;
     }
 
 }
