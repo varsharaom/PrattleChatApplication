@@ -382,7 +382,7 @@ public class ClientRunnableHelperTest {
         assertFalse(messageText.startsWith(msgPrefix));
 
         String prependedText =
-                clientRunnableHelper.getPrependedMessageText(messageText, randomId);
+                clientRunnableHelper.getPrependedMessageText(messageText, randomId, 0);
 
         assertTrue(prependedText.startsWith(msgPrefix));
         assertTrue(prependedText.endsWith(BROADCAST_TEXT_MESSAGE));

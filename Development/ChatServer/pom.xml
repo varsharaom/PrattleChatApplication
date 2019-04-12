@@ -139,5 +139,12 @@
 			<version>1.19.0</version>
 			<scope>test</scope>
 		</dependency>
+
+        <dependency>
+            <groupId>com.ibm.watson.developer_cloud</groupId>
+            <artifactId>java-sdk</artifactId>
+            <version>6.11.0</version>
+        </dependency>
+		
 	</dependencies>
 </project>
