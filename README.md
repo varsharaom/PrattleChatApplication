@@ -19,6 +19,7 @@ Documentation
 - [Components](#components)
 - [Requirements](#requirements)
 
+
 ### Installation
 * We need a client to run the chat application. For this purpose, we have added an extensive command line based client packaged as a JAR, which can be found in Development/ClientJAR.
 * The JAR has to be executed by providing the server endpoint to which the client must connect.
