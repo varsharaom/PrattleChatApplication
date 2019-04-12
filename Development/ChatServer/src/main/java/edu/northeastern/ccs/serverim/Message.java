@@ -273,6 +273,7 @@ public class Message {
      * @param msgSender   the message sender
      * @param msgReceiver the message receiver
      * @param msgText     the message text
+     * @param timeOutMinutes minutes of validity
      * @return the message
      */
     public static Message makeDirectMessage(String msgSender, String msgReceiver, String msgText,
@@ -286,6 +287,8 @@ public class Message {
      * @param msgSender the message sender
      * @param groupName the group name
      * @param msgText   the message text
+     * @param timeOutMinutes minutes of validity
+     *
      * @return the message
      */
     public static Message makeGroupMessage(String msgSender, String groupName, String msgText,

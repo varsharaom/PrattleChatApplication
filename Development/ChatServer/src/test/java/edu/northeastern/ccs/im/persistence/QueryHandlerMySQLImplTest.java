@@ -220,21 +220,6 @@ public class QueryHandlerMySQLImplTest {
     }
 
     @Test
-    public void testGetAllUsers() throws SQLException {
-        String query = String.format("SELECT Count(*) FROM %s;", DBConstants.USER_TABLE);
-        int count = 0;
-        try (PreparedStatement statement = DBHandler.getConnection().prepareStatement(query);
-             ResultSet rs = statement.executeQuery()) {
-
-            while (rs.next()) {
-                count = rs.getInt(1);
-            }
-        } finally {
-            assertEquals(count, handler.getAllUsers().size());
-        }
-    }
-
-    @Test
     public void testGetMessageSuccess() {
         long id = 0;
         try {

@@ -147,8 +147,6 @@ public abstract class Prattle {
 	 * @param args String arguments to the server from the command line. At present
 	 *             the only legal (and required) argument is the port on which this
 	 *             server should list.
-	 * @throws IOException Exception thrown if the server cannot connect to the port
-	 *                     to which it is supposed to listen.
 	 */
 	public static void main(String[] args) {
 		
