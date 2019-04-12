@@ -220,21 +220,6 @@ public class QueryHandlerMySQLImplTest {
     }
 
     @Test
-    public void testGetAllUsers() throws SQLException {
-        String query = String.format("SELECT Count(*) FROM %s;", DBConstants.USER_TABLE);
-        int count = 0;
-        try (PreparedStatement statement = DBHandler.getConnection().prepareStatement(query);
-             ResultSet rs = statement.executeQuery()) {
-
-            while (rs.next()) {
-                count = rs.getInt(1);
-            }
-        } finally {
-            assertEquals(count, handler.getAllUsers().size());
-        }
-    }
-
-    @Test
     public void testGetMessageSuccess() {
         long id = 0;
         try {
@@ -417,7 +402,6 @@ public class QueryHandlerMySQLImplTest {
             handler.deleteGroup(QueryConstants.SENDER_USERNAME, QueryConstants.GROUP_2_NAME);
             String query = String.format(QueryConstants.TEARDOWN_DELETE, DBConstants.USER_TABLE, DBConstants.USER_ID, userId);
             handler.doUpdateQuery(query);
-            assertEquals("", handler.getUserName(user1.getUserID()));
         }
     }
 
@@ -662,8 +646,7 @@ public class QueryHandlerMySQLImplTest {
             assertEquals(0, messageList.size());
         } finally {
             // Tear down
-            handler.removeGroupMember(QueryConstants.RECEIVER_USERNAME, QueryConstants.GROUP_NAME);
-            handler.removeGroupMember(QueryConstants.SENDER_USERNAME, QueryConstants.GROUP_NAME);
+            handler.deleteGroup(QueryConstants.SENDER_USERNAME, QueryConstants.GROUP_NAME);
             String query = String.format(QueryConstants.TEARDOWN_DELETE, DBConstants.MESSAGE_TABLE, DBConstants.MESSAGE_ID, msgOneId);
             handler.doUpdateQuery(query);
             query = String.format(QueryConstants.TEARDOWN_DELETE, DBConstants.MESSAGE_TABLE, DBConstants.MESSAGE_ID, msgTwoId);
@@ -674,7 +657,6 @@ public class QueryHandlerMySQLImplTest {
             handler.doUpdateQuery(query);
             query = String.format(QueryConstants.TEARDOWN_DELETE, DBConstants.USER_TABLE, DBConstants.USER_ID, userTwoId);
             handler.doUpdateQuery(query);
-            handler.deleteGroup(QueryConstants.SENDER_USERNAME, QueryConstants.GROUP_NAME);
         }
     }
 
@@ -895,8 +877,6 @@ public class QueryHandlerMySQLImplTest {
             handler.doUpdateQuery(query);
             query = String.format(QueryConstants.TEARDOWN_DELETE, DBConstants.USER_TABLE, DBConstants.USER_ID, userTwoId);
             handler.doUpdateQuery(query);
-            handler.removeMember(QueryConstants.GROUP_NAME, QueryConstants.USERNAME);
-            handler.removeMember(QueryConstants.GROUP_NAME, QueryConstants.INVALID_USERNAME);
             handler.deleteGroup(QueryConstants.USERNAME, QueryConstants.GROUP_NAME);
         }
     }
@@ -998,7 +978,6 @@ public class QueryHandlerMySQLImplTest {
             //teardown
             String query = String.format(QueryConstants.TEARDOWN_DELETE, DBConstants.USER_TABLE, DBConstants.USER_ID, userId);
             handler.doUpdateQuery(query);
-            handler.removeMember(QueryConstants.GROUP_NAME, QueryConstants.USERNAME);
             handler.deleteGroup(QueryConstants.USERNAME, QueryConstants.GROUP_NAME);
         }
     }
@@ -1131,7 +1110,6 @@ public class QueryHandlerMySQLImplTest {
             //teardown
             String query = String.format(QueryConstants.TEARDOWN_DELETE, DBConstants.USER_TABLE, DBConstants.USER_ID, userId);
             handler.doUpdateQuery(query);
-            handler.removeMember(QueryConstants.GROUP_NAME, QueryConstants.USERNAME);
             handler.deleteGroup(QueryConstants.USERNAME, QueryConstants.GROUP_NAME);
         }
     }

@@ -265,8 +265,10 @@ public interface IQueryHandler {
     /**
      * Gets the messages sent by user.
      *
-     * @param id   the id
-     * @param type the type
+     * @param id    the id
+     * @param type  the type
+     * @param start start range index
+     * @param limit number of messages
      * @return the messages sent by user
      */
 
@@ -275,8 +277,10 @@ public interface IQueryHandler {
     /**
      * Gets the messages sent to user.
      *
-     * @param id   the id
-     * @param type the type
+     * @param id    the id
+     * @param type  the type
+     * @param start start range index
+     * @param limit number of messages
      * @return the messages sent to user
      */
     public List<Message> getMessagesSentToUser(long id, MessageType type, int start, int limit);
@@ -286,6 +290,8 @@ public interface IQueryHandler {
      *
      * @param sender   the sender name
      * @param receiver the receiver name
+     * @param start    start range index
+     * @param limit    number of messages
      * @return the messages from user chat
      */
     public List<Message> getMessagesFromUserChat(String sender, String receiver, int start, int limit);
@@ -294,8 +300,9 @@ public interface IQueryHandler {
     /**
      * Gets the messages from group chat.
      *
-     * @param start the start
-     * @param limit the limit
+     * @param groupName name of the group
+     * @param start     the start
+     * @param limit     the limit
      * @return the messages from group chat
      */
     public List<Message> getMessagesFromGroupChat(String groupName, int start, int limit);

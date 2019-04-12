@@ -20,13 +20,13 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * methods work with our non-blocking Socket classes. This class could easily be
  * made to wait for network output (e.g., be made &quot;non-blocking&quot; in
  * technical parlance), but I have not worried about it yet.
- * 
+ *
  * This work is licensed under the Creative Commons Attribution-ShareAlike 4.0
  * International License. To view a copy of this license, visit
  * http://creativecommons.org/licenses/by-sa/4.0/. It is based on work
  * originally written by Matthew Hertz and has been adapted for use in a class
  * assignment at Northeastern University.
- * 
+ *
  * @version 1.4
  */
 public class NetworkConnection implements Iterable<Message> {
@@ -70,11 +70,9 @@ public class NetworkConnection implements Iterable<Message> {
 	 * Creates a new instance of this class. Since, by definition, this class sends
 	 * output over the network, we need to supply the non-blocking Socket instance
 	 * to which we will write.
-	 * 
+	 *
 	 * @param sockChan Non-blocking SocketChannel instance to which we will send all
 	 *                 communication.
-	 * @throws IOException Exception thrown if we have trouble completing this
-     *                     connection
 	 */
 	public NetworkConnection(SocketChannel sockChan) {
 		// Create the queue that will hold the messages received from over the network
@@ -102,7 +100,7 @@ public class NetworkConnection implements Iterable<Message> {
 	 * the given Message over the SocketNB instance with which the PrintNetNB was
 	 * instantiated. This returns whether our attempt to send the message was
 	 * successful.
-	 * 
+	 *
 	 * @param msg Message to be sent out over the network.
 	 * @return True if we successfully send this message; false otherwise.
 	 */
@@ -142,7 +140,7 @@ public class NetworkConnection implements Iterable<Message> {
 			assert false;
 		}
 	}
-	
+
 	  @Override
 	  public Iterator<Message> iterator() {
 	    return new MessageIterator();
@@ -150,7 +148,7 @@ public class NetworkConnection implements Iterable<Message> {
 
 	  /**
 	   * Private class that helps iterate over a Network Connection.
-	   * 
+	   *
 	   * @author Riya Nadkarni
 	   * @version 12-27-2018
 	   */
@@ -219,7 +217,7 @@ public class NetworkConnection implements Iterable<Message> {
 	        // Do we now have any messages?
 	        return result;
 	    }
-	    
+
 	    @Override
 	    public Message next() {
 	      if (messages.isEmpty()) {
@@ -229,10 +227,10 @@ public class NetworkConnection implements Iterable<Message> {
 	      ChatLogger.info(msg.toString());
 	      return msg;
 	    }
-	    
+
 	    /**
 	     * Read in a new argument from the IM server.
-	     * 
+	     *
 	     * @param charBuffer Buffer holding text from over the network.
 	     * @return String holding the next argument sent over the network.
 	     */

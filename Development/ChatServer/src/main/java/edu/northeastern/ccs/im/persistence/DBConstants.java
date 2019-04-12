@@ -153,4 +153,7 @@ public class DBConstants {
     public static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
     public static final String LIMIT = "  LIMIT ";
+
+    public static final String COMMA = ",";
+    public static final String SEMI_COLON = ";";
 }
