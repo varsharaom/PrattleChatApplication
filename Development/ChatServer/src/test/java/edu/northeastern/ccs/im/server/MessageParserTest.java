@@ -165,6 +165,7 @@ public class MessageParserTest {
 
         when(queryHandler.getMessage(anyLong())).thenReturn(QueryHandlerUtil.getValidDirectMessage());
         when(queryHandler.getParentMessageID(anyLong())).thenReturn(1L);
+        when(queryHandler.checkUserNameExists(anyString())).thenReturn(true);
         Message constructedMessage = clientRunnableHelper.getCustomConstructedMessage(message);
 
         assertTrue(constructedMessage.isDirectMessage());
