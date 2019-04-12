@@ -45,9 +45,10 @@ public class DeleteMessageTest {
         Message message = getValidDeleteBroadcastMessage();
         Message customConstructedMessage = clientRunnableHelper.getCustomConstructedMessage(message);
 
-        Message dbMessage = new Message(customConstructedMessage.getId(), MessageType.DELETE,
+        Message dbMessage = new Message(MessageType.DELETE,
                 customConstructedMessage.getMsgReceiver(), customConstructedMessage.getMsgReceiver(),
                 "", 0);
+        dbMessage.setId(customConstructedMessage.getId());
 
         when(queryHandler.getMessage(anyLong())).thenReturn(dbMessage);
         clientRunnableHelper.handleMessages(customConstructedMessage);
@@ -58,9 +59,10 @@ public class DeleteMessageTest {
         Message message = getValidDeleteBroadcastMessage();
         Message customConstructedMessage = clientRunnableHelper.getCustomConstructedMessage(message);
 
-        Message dbMessage = new Message(customConstructedMessage.getId(), MessageType.DELETE,
+        Message dbMessage = new Message(MessageType.DELETE,
                 customConstructedMessage.getName(), customConstructedMessage.getName(),
                 "", 0);
+        dbMessage.setId(customConstructedMessage.getId());
         when(queryHandler.getMessage(anyLong())).thenReturn(dbMessage);
         clientRunnableHelper.handleMessages(customConstructedMessage);
     }
