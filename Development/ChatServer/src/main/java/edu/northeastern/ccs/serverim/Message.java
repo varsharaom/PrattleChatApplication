@@ -52,7 +52,6 @@ public class Message {
     /**
      * Instantiates a new message.
      *
-     * @param id             the id
      * @param handle         the handle
      * @param sender         the sender
      * @param receiver       the receiver
@@ -61,30 +60,17 @@ public class Message {
      * @param timeStamp      timestamp of message
      * @param timeoutMinutes timeoutMinutes for this message
      */
-    public Message(long id, MessageType handle, String sender, String receiver, String text, int isDeleted,
+    public Message(MessageType handle, String sender, String receiver, String text, int isDeleted,
                    long timeStamp, int timeoutMinutes) {
         this.msgType = handle;
         this.msgSender = sender;
         this.msgReceiver = receiver;
         this.msgText = text;
-        this.id = id;
         this.isDeleted = isDeleted;
         this.timeStamp = timeStamp;
         this.timeOutMinutes = timeoutMinutes;
-    }
-
-    /**
-     * Instantiates a new message.
-     *
-     * @param id        the id
-     * @param handle    the handle
-     * @param sender    the sender
-     * @param receiver  the receiver
-     * @param text      the text
-     * @param isDeleted the bit to indicate if a message is deleted
-     */
-    public Message(long id, MessageType handle, String sender, String receiver, String text, int isDeleted) {
-        this(id, handle, sender, receiver, text, isDeleted, System.currentTimeMillis(), 0);
+        //default value will be reset by setter as the message ID is generated after persistence.
+        this.id = -1l;
     }
 
     /**
@@ -109,19 +95,18 @@ public class Message {
      * @param text     the text
      */
     public Message(MessageType handle, String sender, String receiver, String text) {
-        this(-1L, handle, sender, receiver, text, 0);
+        this(handle, sender, receiver, text, 0);
     }
 
     /**
-     *
-     * @param handle handle for the message
-     * @param sender sender name of the message
-     * @param receiver receiver name of the message
-     * @param text actual text content of the message
+     * @param handle         handle for the message
+     * @param sender         sender name of the message
+     * @param receiver       receiver name of the message
+     * @param text           actual text content of the message
      * @param timeOutMinutes timeout in minutes after which the message cease to exist
      */
     public Message(MessageType handle, String sender, String receiver, String text, int timeOutMinutes) {
-        this(-1L, handle, sender, receiver, text, 0, System.currentTimeMillis(), timeOutMinutes);
+        this(handle, sender, receiver, text, 0, System.currentTimeMillis(), timeOutMinutes);
     }
 
     /**
@@ -341,7 +326,9 @@ public class Message {
      * @return the message
      */
     public static Message makeDeleteMessage(long messageId, String msgSender, String msgReceiver) {
-        return new Message(messageId, MessageType.DELETE, msgSender, msgReceiver, "", 0);
+        Message delMsg = new Message(MessageType.DELETE, msgSender, msgReceiver, "", 0);
+        delMsg.setId(messageId);
+        return delMsg;
     }
 
     /**
@@ -557,8 +544,10 @@ public class Message {
     }
 
     public Message getClone() {
-        return new Message(this.id, this.msgType, this.msgSender, this.msgReceiver, this.msgText, this.isDeleted,
+        Message newMsg = new Message(this.msgType, this.msgSender, this.msgReceiver, this.msgText, this.isDeleted,
                 this.timeStamp, this.timeOutMinutes);
+        newMsg.setId(this.id);
+        return newMsg;
     }
 
     public void setName(String name) {
