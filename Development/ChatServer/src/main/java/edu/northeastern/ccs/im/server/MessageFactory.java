@@ -56,6 +56,11 @@ public class MessageFactory {
         return message;
     }
 
+    /***
+     *
+     * @param restOfMessageText Raw message content sent from client
+     * @return a reconstructed message object to be handled by server
+     */
     private static Message constructCustomGroupSubsetMessage(String restOfMessageText) {
         String[] contents = restOfMessageText.split(MessageConstants.RECEIVERS_DELIMITER);
 
@@ -243,6 +248,12 @@ public class MessageFactory {
         return info;
     }
 
+    /**
+     *
+     * @param consoleInfo Header of the console printable output information
+     * @param groupMembers Names of all group members
+     * @return a formatted string that has all group members information aggregated
+     */
     private static String handleGetGroupMembers(String consoleInfo, List<String> groupMembers) {
         StringBuilder sb = new StringBuilder();
         sb.append(consoleInfo + "\n");
