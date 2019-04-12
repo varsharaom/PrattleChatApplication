@@ -194,9 +194,8 @@ class ClientRunnableHelper {
     }
 
     /**
-     *
      * @param senderName Sender name of the request
-     * @param contents Raw content of message object sent from client
+     * @param contents   Raw content of message object sent from client
      */
     private void handleUserVisibility(String senderName, String[] contents) {
         boolean isPrivate = isPrivateVisibility(contents[1]);
@@ -215,7 +214,8 @@ class ClientRunnableHelper {
 
     /**
      * Modifies the user's visibility to the given one
-     * @param userName User name whose visibility is to be toggled
+     *
+     * @param userName  User name whose visibility is to be toggled
      * @param isPrivate true if the visibility is private. Otherwise false
      */
     private void toggleUserVisibility(String userName, boolean isPrivate) {
@@ -228,6 +228,7 @@ class ClientRunnableHelper {
     /**
      * Handler for tracking message command. Sends tracked information if the
      * request is valid. Otherwise sends an error message.
+     *
      * @param userName Name of the user whose message has to be tracked
      * @param contents Raw contents from the client
      */
@@ -287,7 +288,6 @@ class ClientRunnableHelper {
     }
 
     /**
-     *
      * @param visibility Compared to check whether it is a private visibility or not
      * @return True if visibility is Private. Otherwise False
      */
@@ -296,9 +296,8 @@ class ClientRunnableHelper {
     }
 
     /**
-     *
      * @param groupName Group's name whose visibility is intended to be modified
-     * @param userName User's name who raise the request to toggle group visibility
+     * @param userName  User's name who raise the request to toggle group visibility
      * @param isPrivate visibility of group. True if Private. False if Public
      */
     private void toggleGroupVisibility(String groupName, String userName, boolean isPrivate) {
@@ -339,9 +338,8 @@ class ClientRunnableHelper {
     }
 
     /**
-     *
-     * @param groupName Group's name where new member has to be added
-     * @param userName User's name who raise the request add group member request
+     * @param groupName  Group's name where new member has to be added
+     * @param userName   User's name who raise the request add group member request
      * @param toBeMember Name of user that has to be added in the group
      * @return an acknowledgement message of the request's status
      */
@@ -376,7 +374,7 @@ class ClientRunnableHelper {
         for (Message message : messageList) {
             Message msg = Message.makeDirectMessage(message.getName(), senderName,
                     getPrependedMessageText(message.getText(), message.getId(), message.getTimeStamp()), 0);
-            Prattle.sendAckMessage(msg);
+            Prattle.sendDirectMessage(msg);
         }
     }
 
@@ -655,8 +653,7 @@ class ClientRunnableHelper {
     }
 
     /**
-     *
-     * @param message Object whose text field has to be formatted to print to client window
+     * @param message   Object whose text field has to be formatted to print to client window
      * @param messageId id of the message
      */
     private void formatMessageTextToClientShowable(Message message, long messageId) {
@@ -664,14 +661,12 @@ class ClientRunnableHelper {
         if ((parentMessageId != MessageConstants.DEFAULT_MESSAGE_ID) && (messageId != parentMessageId)) {
             message.setText(getPrependedMessageText(message.getText()
                     + MessageConstants.FORWARDED_MESSAGE_IDENTIFIER, messageId, message.getTimeStamp()));
-        }
-        else {
+        } else {
             message.setText(getPrependedMessageText(message.getText(), messageId, message.getTimeStamp()));
         }
     }
 
     /**
-     *
      * @param message Message object to be persisted in the database
      * @return id of the persisted message
      */
@@ -702,12 +697,11 @@ class ClientRunnableHelper {
     }
 
     /**
-     *
      * @param msg Message to be sent to multiple receivers of a group
      */
     private void handleMultiReceiverMessages(Message msg) {
         List<String> actualMembers = queryHandler.getGroupMembers(msg.getMsgReceiver());
-        
+
         for (String potentialGroupMember : msg.getReceivers()) {
             if (actualMembers.contains(potentialGroupMember)) {
                 handleMessageToValidReceiver(msg.getClone(), potentialGroupMember);
@@ -719,11 +713,10 @@ class ClientRunnableHelper {
 
 
     /**
-     *
-     * @param msg message information
+     * @param msg                  message information
      * @param potentialGroupMember User intended to receive a group subset message
      */
-	private void handleMessageToInvalidReceiver(Message msg, String potentialGroupMember) {
+    private void handleMessageToInvalidReceiver(Message msg, String potentialGroupMember) {
         Message errorMessage = Message.makeErrorMessage(msg.getName(),
                 "[ERROR] : " + potentialGroupMember + " does not exist or not " +
                         "a part of the group - " + msg.getMsgReceiver());
@@ -731,8 +724,7 @@ class ClientRunnableHelper {
     }
 
     /**
-     *
-     * @param msg message information
+     * @param msg                  message information
      * @param potentialGroupMember User intended to receive a group subset message
      */
     private void handleMessageToValidReceiver(Message msg, String potentialGroupMember) {
@@ -740,13 +732,13 @@ class ClientRunnableHelper {
                 msg.getName(), "[INFO] Message successfully sent to "
                         + potentialGroupMember);
         long messageId = queryHandler.storeMessage(msg.getName(), potentialGroupMember, msg.getMessageType(),
-        		msg.getText(), msg.getTimeStamp(), msg.getTimeOutMinutes());
-        
-        
+                msg.getText(), msg.getTimeStamp(), msg.getTimeOutMinutes());
+
+
         msg.setReceiver(potentialGroupMember);
         msg.setText(getPrependedMessageText(msg.getText(), messageId, msg.getTimeStamp()));
         Prattle.sendDirectMessage(msg);
-        
+
         Prattle.sendAckMessage(ackMessage);
     }
 
@@ -761,13 +753,13 @@ class ClientRunnableHelper {
      * @param messageId - id for the message returned on persistence in the database.
      */
     String getPrependedMessageText(String msgText, long messageId, long timeStamp) {
-		Date messageTimeStamp = new Date(timeStamp);
-		SimpleDateFormat format = new SimpleDateFormat(MessageConstants.MSG_DATE_FORMAT);
+        Date messageTimeStamp = new Date(timeStamp);
+        SimpleDateFormat format = new SimpleDateFormat(MessageConstants.MSG_DATE_FORMAT);
 
-		StringBuilder text = new StringBuilder(MessageConstants.MSG_TIMESTAMP_PREFIX);
-		text.append(format.format(messageTimeStamp));
-		text.append(MessageConstants.MSG_TIMESTAMP_SUFFIX);
-		text.append(MessageConstants.MSG_ID_PREFIX);
+        StringBuilder text = new StringBuilder(MessageConstants.MSG_TIMESTAMP_PREFIX);
+        text.append(format.format(messageTimeStamp));
+        text.append(MessageConstants.MSG_TIMESTAMP_SUFFIX);
+        text.append(MessageConstants.MSG_ID_PREFIX);
         text.append(messageId);
         text.append(MessageConstants.MSG_ID_SUFFIX);
         text.append(msgText);
