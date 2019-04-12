@@ -1,9 +1,7 @@
 package edu.northeastern.ccs.im.server;
 
-import com.sun.org.apache.bcel.internal.generic.MULTIANEWARRAY;
 import edu.northeastern.ccs.im.constants.ClientRunnableHelperConstants;
 import edu.northeastern.ccs.im.constants.MessageConstants;
-import edu.northeastern.ccs.im.constants.MessageTestConstants;
 import edu.northeastern.ccs.im.persistence.DBConstants;
 import edu.northeastern.ccs.im.persistence.IQueryHandler;
 import edu.northeastern.ccs.im.utils.MessageUtil;
@@ -26,12 +24,10 @@ import static edu.northeastern.ccs.im.constants.MessageTestConstants.BROADCAST_T
 import static edu.northeastern.ccs.im.constants.MessageTestConstants.SIMPLE_USER;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.nio.channels.MulticastChannel;
 import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
 import java.util.List;
@@ -307,7 +303,7 @@ public class ClientRunnableHelperTest {
         Message message = MessageUtil.getValidGroupBroadcastMessage();
 
         when(iQueryHandler.checkGroupNameExists(anyString())).thenReturn(true);
-        when(iQueryHandler.storeMessage(anyString(), anyString(), any(), anyString()))
+        when(iQueryHandler.storeMessage(anyString(), anyString(), any(), anyString(),  anyLong(), anyInt()))
                 .thenReturn(1l);
         Message groupMessage = clientRunnableHelper.getCustomConstructedMessage(message);
         clientRunnableHelper.handleMessages(groupMessage);
@@ -319,7 +315,7 @@ public class ClientRunnableHelperTest {
         Message message = MessageUtil.getValidGroupBroadcastMessage();
 
         when(iQueryHandler.checkGroupNameExists(anyString())).thenReturn(false);
-        when(iQueryHandler.storeMessage(anyString(), anyString(), any(), anyString()))
+        when(iQueryHandler.storeMessage(anyString(), anyString(), any(), anyString(), anyLong(), anyInt()))
                 .thenReturn(1l);
         Message groupMessage = clientRunnableHelper.getCustomConstructedMessage(message);
         clientRunnableHelper.handleMessages(groupMessage);
@@ -387,30 +383,31 @@ public class ClientRunnableHelperTest {
         assertFalse(messageText.startsWith(msgPrefix));
 
         String prependedText =
-                clientRunnableHelper.getPrependedMessageText(messageText, randomId);
+                clientRunnableHelper.getPrependedMessageText(messageText, randomId, 0);
 
-        assertTrue(prependedText.startsWith(msgPrefix));
+        assertTrue(prependedText.startsWith(MessageConstants.MSG_TIMESTAMP_PREFIX));
+        assertTrue(prependedText.contains(msgPrefix));
         assertTrue(prependedText.endsWith(BROADCAST_TEXT_MESSAGE));
     }
 
     @Test
     public void testForwardMessageHappyPath() {
 
-        Message message = MessageUtil.getValidForwardMessage();
+        Message message = MessageUtil.getValidForwardDirectMessage();
 
         when(iQueryHandler.getMessage(anyLong())).thenReturn(MessageUtil.getValidMessage());
         Message fwdMessage = clientRunnableHelper.getCustomConstructedMessage(message);
 
         when(iQueryHandler.checkUserNameExists(anyString())).thenReturn(true);
-        when(iQueryHandler.storeMessage(anyString(), anyString(), any(), anyString()))
-                .thenReturn(1l);
+        when(iQueryHandler.storeMessage(anyString(), anyString(), any(), anyString(),  anyLong(), anyInt()))
+                .thenReturn(2l);
         clientRunnableHelper.handleMessages(fwdMessage);
     }
 
     @Test
     public void testForwardMessageToInvalidReceiver() {
 
-        Message message = MessageUtil.getValidForwardMessage();
+        Message message = MessageUtil.getValidForwardDirectMessage();
 
         when(iQueryHandler.getMessage(anyLong())).thenReturn(MessageUtil.getValidMessage());
         Message fwdMessage = clientRunnableHelper.getCustomConstructedMessage(message);
@@ -431,4 +428,28 @@ public class ClientRunnableHelperTest {
         clientRunnableHelper.handleMessages(getUsersMessage);
 
     }
+    
+    @Test
+    public void testHandleChatHistoryMessage() {
+        Message message = MessageUtil.getValidUserChatHistoryMessage();
+
+        when(iQueryHandler.checkUserNameExists(anyString())).thenReturn(false);
+        when(iQueryHandler.createUser(anyString(), anyString(), anyString())).thenReturn(null);
+        Message chatHistoryMessage = clientRunnableHelper.getCustomConstructedMessage(message);
+        clientRunnableHelper.handleMessages(chatHistoryMessage);
+
+    }
+    
+    @Test
+    public void getValidGroupChatHistoryMessage() {
+        Message message = MessageUtil.getValidGroupChatHistoryMessage();
+
+        when(iQueryHandler.checkUserNameExists(anyString())).thenReturn(false);
+        when(iQueryHandler.createUser(anyString(), anyString(), anyString())).thenReturn(null);
+        Message chatHistoryMessage = clientRunnableHelper.getCustomConstructedMessage(message);
+        clientRunnableHelper.handleMessages(chatHistoryMessage);
+
+    }
+    
+    
 }

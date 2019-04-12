@@ -1,7 +1,5 @@
 package edu.northeastern.ccs.im.server;
 
-
-import com.sun.org.apache.bcel.internal.generic.MULTIANEWARRAY;
 import edu.northeastern.ccs.im.constants.MessageConstants;
 import edu.northeastern.ccs.im.persistence.IQueryHandler;
 import edu.northeastern.ccs.im.utils.ClientRunnableHelperUtil;
@@ -18,12 +16,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.anyLong;
+import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MessageParserTest {
 
+	public static String MESSAGE_CONTENT_EMPTY = "Constructed message content is empty";
+	
     @InjectMocks
     private ClientRunnableHelper clientRunnableHelper;
 
@@ -36,7 +36,7 @@ public class MessageParserTest {
         Message constructedMessage = clientRunnableHelper.getCustomConstructedMessage(message);
 
         assertTrue(constructedMessage.isRegisterMessage());
-        assertNotNull("Constructed message content is empty", message.getText());
+        assertNotNull(MESSAGE_CONTENT_EMPTY, message.getText());
 
         String[] content = message.getText().split(" ");
         assertEquals(3, content.length);
@@ -54,7 +54,7 @@ public class MessageParserTest {
         Message constructedMessage = clientRunnableHelper.getCustomConstructedMessage(message);
 
         assertTrue(constructedMessage.isLoginMessage());
-        assertNotNull("Constructed message content is empty", message.getText());
+        assertNotNull(MESSAGE_CONTENT_EMPTY, message.getText());
 
         String[] content = message.getText().split(" ");
         assertEquals(3, content.length);
@@ -72,16 +72,16 @@ public class MessageParserTest {
         Message constructedMessage = clientRunnableHelper.getCustomConstructedMessage(message);
 
         assertTrue(constructedMessage.isDirectMessage());
-        assertNotNull("Constructed message content is empty", message.getText());
+        assertNotNull(MESSAGE_CONTENT_EMPTY, message.getText());
 
-        String[] content = message.getText().split(" ", 4);
-        assertEquals(4, content.length);
+        String[] content = message.getText().split(" ", 5);
+        assertEquals(5, content.length);
 
         assertTrue(ClientRunnableHelperUtil.isValidDirectMessageIdentifer(content[0]));
-        assertEquals(constructedMessage.getName(), content[1]);
-        assertEquals(constructedMessage.getMsgReceiver(), content[2]);
-//        assertEquals(constructedMessage.getText(), content[3]);
-        assertTrue(constructedMessage.getText().contains(content[3]));
+        assertEquals(content[1], constructedMessage.getName());
+        assertEquals(content[2], constructedMessage.getMsgReceiver());
+        assertEquals(Integer.parseInt(content[3]), constructedMessage.getTimeOutMinutes());
+        assertTrue(constructedMessage.getText().contains(content[4]));
     }
 
     @Test
@@ -91,16 +91,16 @@ public class MessageParserTest {
         Message constructedMessage = clientRunnableHelper.getCustomConstructedMessage(message);
 
         assertTrue(constructedMessage.isGroupMessage());
-        assertNotNull(message.getText());
+        assertNotNull(MESSAGE_CONTENT_EMPTY, message.getText());
 
-        String[] content = message.getText().split(" ", 4);
-        assertEquals(4, content.length);
+        String[] content = message.getText().split(" ", 5);
+        assertEquals(5, content.length);
 
         assertTrue(ClientRunnableHelperUtil.isValidGroupMessageIdentifer(content[0]));
-        assertEquals(constructedMessage.getName(), content[1]);
-        assertEquals(constructedMessage.getMsgReceiver(), content[2]);
-        assertEquals(constructedMessage.getText(), content[3]);
-
+        assertEquals(content[1], constructedMessage.getName());
+        assertEquals(content[2], constructedMessage.getMsgReceiver());
+        assertEquals(Integer.parseInt(content[3]), constructedMessage.getTimeOutMinutes());
+        assertTrue(constructedMessage.getText().contains(content[4]));
     }
 
     @Test
@@ -160,18 +160,30 @@ public class MessageParserTest {
     }
 
     @Test
-    public void testValidForwardMessage() {
-        Message message = MessageUtil.getValidForwardMessage();
+    public void testValidForwardDirectMessage() {
+        Message message = MessageUtil.getValidForwardDirectMessage();
 
-        when(queryHandler.getMessage(anyLong())).thenReturn(QueryHandlerUtil.getValidMessage());
-        Message constuctedMessage = clientRunnableHelper.getCustomConstructedMessage(message);
+        when(queryHandler.getMessage(anyLong())).thenReturn(QueryHandlerUtil.getValidDirectMessage());
+        when(queryHandler.getParentMessageID(anyLong())).thenReturn(1L);
+        when(queryHandler.checkUserNameExists(anyString())).thenReturn(true);
+        Message constructedMessage = clientRunnableHelper.getCustomConstructedMessage(message);
 
-        String expectedPattern = ".*<<< FORWARDED MESSAGE FROM * ";
-        Pattern pattern = Pattern.compile(expectedPattern);
-        Matcher matcher = pattern.matcher(constuctedMessage.getText());
+        assertTrue(constructedMessage.isDirectMessage());
+        assertEquals("Forwarded messages must have a parent Id set",
+                1L, constructedMessage.getId());
+    }
 
-        assertTrue(constuctedMessage.isDirectMessage());
-        assertTrue("Constrcuted message does not have forwarded message info.", matcher.find());
+    @Test
+    public void testValidForwardGroupMessage() {
+        Message message = MessageUtil.getValidForwardDirectMessage();
+
+        when(queryHandler.getMessage(anyLong())).thenReturn(QueryHandlerUtil.getValidGroupMessage());
+        when(queryHandler.getParentMessageID(anyLong())).thenReturn(1L);
+        Message constructedMessage = clientRunnableHelper.getCustomConstructedMessage(message);
+
+        assertTrue(constructedMessage.isGroupMessage());
+        assertEquals("Forwarded messages must have a parent Id set",
+                1L, constructedMessage.getId());
     }
 
     @Test
@@ -257,5 +269,46 @@ public class MessageParserTest {
 
         Message constructedMessage = clientRunnableHelper.getCustomConstructedMessage(message);
         assertTrue(constructedMessage.getText().endsWith(MessageConstants.INVALID_GROUP_INFO_ERR));
+    }
+
+    @Test
+    public void testValidGroupSubsetMessage() {
+        Message message = MessageUtil.getValidGroupSubsetMessage();
+
+        Message constructedMessage = clientRunnableHelper.getCustomConstructedMessage(message);
+
+        assertTrue(constructedMessage.isGroupSubsetMessage());
+        assertEquals("senderName", constructedMessage.getName());
+        assertEquals("groupName", constructedMessage.getMsgReceiver());
+        assertEquals(3, constructedMessage.getReceivers().size());
+        assertEquals(14, constructedMessage.getTimeOutMinutes());
+        assertNotNull(constructedMessage.getText());
+    }
+
+    @Test
+    public void testTrackMessage() {
+        Message message = MessageUtil.getValidTrackMessage();
+
+        Message constructedMessage = clientRunnableHelper.getCustomConstructedMessage(message);
+        assertTrue(constructedMessage.isActionMessage());;
+    }
+
+    @Test
+    public void testChangeGroupVisibilityToPrivate() {
+        Message message = MessageUtil.getValidGroupVisibilityToPrivateMessage();
+
+        when(queryHandler.isGroupInVisible(anyString())).thenReturn(false);
+        when(queryHandler.isModerator(anyString(), anyString())).thenReturn(true);
+        Message constructedMessage = clientRunnableHelper.getCustomConstructedMessage(message);
+        assertTrue(constructedMessage.isActionMessage());
+    }
+
+
+    @Test
+    public void testUserVisibilityChangeMessage() {
+        Message message = MessageUtil.getValidUserVisibilityChangeMessage();
+
+        Message constructedMessage = clientRunnableHelper.getCustomConstructedMessage(message);
+        assertTrue(constructedMessage.isActionMessage());;
     }
 }

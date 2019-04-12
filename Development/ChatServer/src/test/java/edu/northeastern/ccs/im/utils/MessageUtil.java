@@ -50,6 +50,14 @@ public final class MessageUtil {
                 + CUSTOM_COMMAND_SUFFIX + " " + " INVALID_IDENTIFIER "
                 + " senderName";
     }
+    
+    public static Message getValidUserChatHistoryMessage() {
+        return Message.makeBroadcastMessage(SIMPLE_USER, getValidUserChatHistoryMessageText());
+    }
+    
+    public static Message getValidGroupChatHistoryMessage() {
+        return Message.makeBroadcastMessage(SIMPLE_USER, getValidGroupChatHistoryMessageText());
+    }
 
     public static Message getValidDirectBroadcastMessageDifferentUser() {
         return Message.makeBroadcastMessage(SECOND_USER, getValidDirectMessageText());
@@ -80,7 +88,7 @@ public final class MessageUtil {
                 getInvalidTypeMessageText());
     }
 
-    public static Message getValidForwardMessage() {
+    public static Message getValidForwardDirectMessage() {
         return Message.makeBroadcastMessage(SIMPLE_USER,
                 getValidForwardMessageText());
     }
@@ -123,6 +131,52 @@ public final class MessageUtil {
 
     public static Message getValidGetGroupMembersMessage() {
         return Message.makeBroadcastMessage(SIMPLE_USER, getValidGetGroupMembersMessageText());
+    }
+
+    public static Message getValidGroupSubsetMessage() {
+        return Message.makeBroadcastMessage(SIMPLE_USER, getValidGroupSubsetMessageText());
+    }
+
+    public static Message getValidGroupVisibilityToPrivateMessage() {
+        return Message.makeBroadcastMessage(SIMPLE_USER, getValidGroupVisibilityToPrivateMessageText());
+    }
+
+    public static Message getValidGroupVisibilityToPublicMessage() {
+        return Message.makeBroadcastMessage(SIMPLE_USER, getValidGroupVisibilityToPublicMessageText());
+    }
+
+    public static Message getValidUserVisibilityChangeMessage() {
+        return Message.makeBroadcastMessage(SIMPLE_USER, getValidUserVisibilityChangeMessageText());
+    }
+
+    private static String getValidUserVisibilityChangeMessageText() {
+        return CUSTOM_COMMAND_PREFIX + ACTION_MSG_IDENTIFIER + CUSTOM_COMMAND_SUFFIX
+                + " " + CHANGE_USER_VISIBILITY_IDENTIFIER + " PRIVATE senderName";
+    }
+
+    public static Message getValidTrackMessage() {
+        return Message.makeBroadcastMessage(SIMPLE_USER, getValidTrackMessageText());
+    }
+
+    private static String getValidTrackMessageText() {
+        return CUSTOM_COMMAND_PREFIX + ACTION_MSG_IDENTIFIER + CUSTOM_COMMAND_SUFFIX
+                + " " + TRACK_MESSAGE_IDENTIFIER + " " + "124 senderName";
+    }
+
+    private static String getValidGroupVisibilityToPrivateMessageText() {
+        return CUSTOM_COMMAND_PREFIX + ACTION_MSG_IDENTIFIER + CUSTOM_COMMAND_SUFFIX
+                + " " + CHANGE_GROUP_VISIBILITY_IDENTIFIER + " PRIVATE groupName senderName";
+    }
+
+    private static String getValidGroupVisibilityToPublicMessageText() {
+        return CUSTOM_COMMAND_PREFIX + ACTION_MSG_IDENTIFIER + CUSTOM_COMMAND_SUFFIX
+                + " " + CHANGE_GROUP_VISIBILITY_IDENTIFIER + " PUBLIC groupName senderName";
+    }
+
+
+    private static String getValidGroupSubsetMessageText() {
+        return CUSTOM_COMMAND_PREFIX + GROUP_SUBSET_IDENTIFIER + CUSTOM_COMMAND_SUFFIX +
+                " senderName groupName RCVRS Receiver1 Receiver2 Receiver3 RCVRS 14 message text";
     }
 
     private static String getValidGetGroupMembersMessageText() {
@@ -180,6 +234,16 @@ public final class MessageUtil {
         return CUSTOM_COMMAND_PREFIX + FORWARD_MSG_IDENTIFIER + CUSTOM_COMMAND_SUFFIX
                 + " receiver 123 sender";
     }
+    
+    private static String getValidUserChatHistoryMessageText() {
+    		return CUSTOM_COMMAND_PREFIX + ACTION_MSG_IDENTIFIER + CUSTOM_COMMAND_SUFFIX
+                    + " " + MESSAGE_HISTORY_IDENTIFIER + " 0 5 receiverName senderName";
+    }
+    
+    private static String getValidGroupChatHistoryMessageText() {
+		return CUSTOM_COMMAND_PREFIX + ACTION_MSG_IDENTIFIER + CUSTOM_COMMAND_SUFFIX
+                + " " + MESSAGE_HISTORY_IDENTIFIER + " 0 5 groupName";
+}
 
     private static String getInvalidTypeMessageText() {
         return CUSTOM_COMMAND_PREFIX
@@ -205,13 +269,13 @@ public final class MessageUtil {
     private static String getValidGroupMessageText() {
         return CUSTOM_COMMAND_PREFIX + GROUP_MSG_IDENTIFIER
                 + CUSTOM_COMMAND_SUFFIX
-                + " senderName receiverName Hey this is a group message to multiple senders";
+                + " senderName receiverName 14 Hey this is a group message to multiple senders";
     }
 
     private static String getValidDirectMessageText() {
         return CUSTOM_COMMAND_PREFIX + DIRECT_MSG_IDENTIFIER
                 + CUSTOM_COMMAND_SUFFIX + " senderName receiverName "
-                + " Hey this is a direct message to sender";
+                + "14 Hey this is a direct message to sender";
     }
     
     private static String getValidGetUsersMessageText() {
@@ -249,7 +313,6 @@ public final class MessageUtil {
                 + CUSTOM_COMMAND_SUFFIX + " " + SIMPLE_USER
                 + " password";
     }
-
 
     public static boolean isErrorMessage(Message message) {
         String[] parsedMessageContents = message.getText().split(" ");

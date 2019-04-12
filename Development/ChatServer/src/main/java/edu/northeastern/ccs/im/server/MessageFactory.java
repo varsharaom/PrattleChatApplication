@@ -44,6 +44,8 @@ public class MessageFactory {
                 message = constructCustomForwardMessage(restOfMessageText, queryHandler);
             else if (type.equals(MessageConstants.ACTION_MSG_IDENTIFIER))
                 message = constructActionMessage(restOfMessageText);
+            else if (type.equals(MessageConstants.GROUP_SUBSET_IDENTIFIER))
+                message = constructCustomGroupSubsetMessage(restOfMessageText);
             else
                 message = Message.makeErrorMessage(clientMessage.getName(),
                         MessageConstants.UNKNOWN_MESSAGE_TYPE_ERR);
@@ -53,6 +55,32 @@ public class MessageFactory {
         }
         return message;
     }
+
+    /***
+     *
+     * @param restOfMessageText Raw message content sent from client
+     * @return a reconstructed message object to be handled by server
+     */
+    private static Message constructCustomGroupSubsetMessage(String restOfMessageText) {
+        String[] contents = restOfMessageText.split(MessageConstants.RECEIVERS_DELIMITER);
+
+        String[] senderReceiver = contents[0].trim().split(" ");
+        String senderName = senderReceiver[0];
+        String groupName = senderReceiver[1];
+
+        String[] receivers = contents[1].trim().split(" ");
+        String[] timeoutInfoAndText = contents[2].trim().split(" ", 2);
+
+        int timeOutMinutes = Integer.parseInt(timeoutInfoAndText[0].trim());
+        String actualContent = timeoutInfoAndText[1].trim();
+
+        Message groupSubsetMessage = Message.makeGroupSubsetMessage(senderName, groupName,
+                actualContent, timeOutMinutes);
+        groupSubsetMessage.setReceivers(Arrays.asList(receivers));
+
+        return groupSubsetMessage;
+    }
+
 
     /**
      * Construct an action message.
@@ -115,26 +143,30 @@ public class MessageFactory {
      * Construct a direct message based on the parsed input message.
      */
     private static Message constructCustomDirectMessage(String restOfMessageText) {
-        String[] arr = restOfMessageText.split(" ", 3);
+        String[] arr = restOfMessageText.split(" ", 4);
 
         String sender = arr[0];
         String receiver = arr[1];
-        String actualContent = arr[2];
+        int timeOutMinutes = Integer.parseInt(arr[2]);
+        String actualContent = arr[3];
 
-        return Message.makeDirectMessage(sender, receiver, actualContent);
+        return Message.makeDirectMessage(sender, receiver, actualContent,
+                timeOutMinutes);
     }
 
     /**
      * Construct a group message based on the parsed input message.
      */
     private static Message constructCustomGroupMessage(String restOfMessageText) {
-        String[] arr = restOfMessageText.split(" ", 3);
+        String[] arr = restOfMessageText.split(" ", 4);
 
         String sender = arr[0];
         String groupName = arr[1];
-        String actualContent = arr[2];
+        int timeOutMinutes = Integer.parseInt(arr[2]);
+        String actualContent = arr[3];
 
-        return Message.makeGroupMessage(sender, groupName, actualContent);
+        return Message.makeGroupMessage(sender, groupName, actualContent, timeOutMinutes);
+
     }
 
     /**
@@ -157,23 +189,33 @@ public class MessageFactory {
     /**
      * Construct a custom forward message.
      *
-     * @param restOfMessagetext the rest of messagetext
+     * @param restOfMessageText the rest of messagetext
      * @param queryHandler      the query handler
      * @return the message
      */
-    private static Message constructCustomForwardMessage(String restOfMessagetext, IQueryHandler queryHandler) {
-        String[] content = restOfMessagetext.split(" ");
+    private static Message constructCustomForwardMessage(String restOfMessageText, IQueryHandler queryHandler) {
+        String[] content = restOfMessageText.split(" ");
         String receiver = content[0];
-        long messageId = Long.parseLong(content[1]);
+        long actualMessageId = Long.parseLong(content[1]);
+        long parentMessageId = queryHandler.getParentMessageID(actualMessageId);
         String sender = content[2];
+        Message actualMessage = queryHandler.getMessage(actualMessageId);
+        String text = actualMessage.getText();
+        int originalMessageTimeout = actualMessage.getTimeOutMinutes();
+        
+        if (parentMessageId == -1) {
+        	parentMessageId = actualMessageId;
+        }
+        Message constructedMessage;
+        if (queryHandler.checkUserNameExists(receiver)) {
+        	constructedMessage = Message.makeDirectMessage(sender, receiver, text, originalMessageTimeout);
+        }else {
+            constructedMessage = Message.makeGroupMessage(sender, receiver, text, originalMessageTimeout);
+        }
 
-        Message actualMessage = queryHandler.getMessage(messageId);
-        String messageOriginator = actualMessage.getName();
+        constructedMessage.setId(parentMessageId);
 
-        String text = actualMessage.getText() + " <<< FORWARDED MESSAGE FROM  " + messageOriginator
-                + " >>>";
-
-        return Message.makeDirectMessage(sender, receiver, text);
+        return constructedMessage;
     }
 
     /**
@@ -210,6 +252,12 @@ public class MessageFactory {
         return info;
     }
 
+    /**
+     *
+     * @param consoleInfo Header of the console printable output information
+     * @param groupMembers Names of all group members
+     * @return a formatted string that has all group members information aggregated
+     */
     private static String handleGetGroupMembers(String consoleInfo, List<String> groupMembers) {
         StringBuilder sb = new StringBuilder();
         sb.append(consoleInfo + "\n");
@@ -264,4 +312,5 @@ public class MessageFactory {
         }
         return messageTypeAsString;
     }
+
 }

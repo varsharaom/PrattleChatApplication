@@ -101,4 +101,13 @@ public class User {
     public long getLastSeen() {
         return lastSeen;
     }
+
+    /**
+     * Returns the user visibility status
+     *
+     * @return visibility status
+     */
+    public int getInvisible() {
+        return invisible;
+    }
 }

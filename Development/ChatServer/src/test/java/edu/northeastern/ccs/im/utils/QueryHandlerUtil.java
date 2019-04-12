@@ -25,8 +25,15 @@ public class QueryHandlerUtil {
         return Arrays.asList(group1, group2);
     }
 
-    public static Message getValidMessage() {
-        Message message = Message.makeBroadcastMessage("originalSender", "forward message");
-        return message;
+    public static Message getValidDirectMessage() {
+        return Message.makeDirectMessage("sender", "recevier",
+                "message text", 0);
+
     }
+
+    public static Message getValidGroupMessage() {
+        return Message.makeGroupMessage("sender", "recevier",
+                "message text", 0);
+    }
+
 }
