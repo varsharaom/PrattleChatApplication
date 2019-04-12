@@ -402,7 +402,6 @@ public class QueryHandlerMySQLImplTest {
             handler.deleteGroup(QueryConstants.SENDER_USERNAME, QueryConstants.GROUP_2_NAME);
             String query = String.format(QueryConstants.TEARDOWN_DELETE, DBConstants.USER_TABLE, DBConstants.USER_ID, userId);
             handler.doUpdateQuery(query);
-            assertEquals("", handler.getUserName(user1.getUserID()));
         }
     }
 
