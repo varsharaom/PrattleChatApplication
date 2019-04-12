@@ -647,8 +647,7 @@ public class QueryHandlerMySQLImplTest {
             assertEquals(0, messageList.size());
         } finally {
             // Tear down
-            handler.removeGroupMember(QueryConstants.RECEIVER_USERNAME, QueryConstants.GROUP_NAME);
-            handler.removeGroupMember(QueryConstants.SENDER_USERNAME, QueryConstants.GROUP_NAME);
+            handler.deleteGroup(QueryConstants.SENDER_USERNAME, QueryConstants.GROUP_NAME);
             String query = String.format(QueryConstants.TEARDOWN_DELETE, DBConstants.MESSAGE_TABLE, DBConstants.MESSAGE_ID, msgOneId);
             handler.doUpdateQuery(query);
             query = String.format(QueryConstants.TEARDOWN_DELETE, DBConstants.MESSAGE_TABLE, DBConstants.MESSAGE_ID, msgTwoId);
@@ -659,7 +658,6 @@ public class QueryHandlerMySQLImplTest {
             handler.doUpdateQuery(query);
             query = String.format(QueryConstants.TEARDOWN_DELETE, DBConstants.USER_TABLE, DBConstants.USER_ID, userTwoId);
             handler.doUpdateQuery(query);
-            handler.deleteGroup(QueryConstants.SENDER_USERNAME, QueryConstants.GROUP_NAME);
         }
     }
 
@@ -880,8 +878,6 @@ public class QueryHandlerMySQLImplTest {
             handler.doUpdateQuery(query);
             query = String.format(QueryConstants.TEARDOWN_DELETE, DBConstants.USER_TABLE, DBConstants.USER_ID, userTwoId);
             handler.doUpdateQuery(query);
-            handler.removeMember(QueryConstants.GROUP_NAME, QueryConstants.USERNAME);
-            handler.removeMember(QueryConstants.GROUP_NAME, QueryConstants.INVALID_USERNAME);
             handler.deleteGroup(QueryConstants.USERNAME, QueryConstants.GROUP_NAME);
         }
     }
@@ -983,7 +979,6 @@ public class QueryHandlerMySQLImplTest {
             //teardown
             String query = String.format(QueryConstants.TEARDOWN_DELETE, DBConstants.USER_TABLE, DBConstants.USER_ID, userId);
             handler.doUpdateQuery(query);
-            handler.removeMember(QueryConstants.GROUP_NAME, QueryConstants.USERNAME);
             handler.deleteGroup(QueryConstants.USERNAME, QueryConstants.GROUP_NAME);
         }
     }
@@ -1116,7 +1111,6 @@ public class QueryHandlerMySQLImplTest {
             //teardown
             String query = String.format(QueryConstants.TEARDOWN_DELETE, DBConstants.USER_TABLE, DBConstants.USER_ID, userId);
             handler.doUpdateQuery(query);
-            handler.removeMember(QueryConstants.GROUP_NAME, QueryConstants.USERNAME);
             handler.deleteGroup(QueryConstants.USERNAME, QueryConstants.GROUP_NAME);
         }
     }
