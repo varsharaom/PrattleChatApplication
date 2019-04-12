@@ -133,7 +133,7 @@ public final class MessageConstants {
     
     public static final String PRIVATE_VISIBILITY_IDENTIFIER = "PRIVATE";
 
-    public static final String TRACK_MESSAGE_IDENTIFIER = "TRCK_MSG";
+    public static final String TRACK_MESSAGE_IDENTIFIER = "TRACK_MSG";
 
     /**
      * The prefix for message id for messages shown on the console.
