@@ -16,7 +16,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * The Class QueryHandlerMySQLImpl.
+ * An implementation for IQueryHandler that reads/writes/updates DataBase.
  */
 public class QueryHandlerMySQLImpl implements IQueryHandler {
 
