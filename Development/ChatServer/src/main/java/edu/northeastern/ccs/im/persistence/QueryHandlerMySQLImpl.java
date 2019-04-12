@@ -1232,8 +1232,8 @@ public class QueryHandlerMySQLImpl implements IQueryHandler {
                 long msgID = rs.getLong(DBConstants.MESSAGE_ID_ALIAS);
 
                 if (!visitedMessages.contains(msgID)) {
-                    Long timeStamp = rs.getTimestamp(DBConstants.MESSAGE_TIMESTAMP).getTime();
-                    int timeout = computeTimeOut(rs.getTimestamp(DBConstants.MESSAGE_TIME_OUT), timeStamp);
+                    Long timeStamp = rs.getTimestamp(timeStampColumn).getTime();
+                    int timeout = computeTimeOut(rs.getTimestamp(timeoutColumn), timeStamp);
                     Message m = new Message(MessageType.DIRECT, getUserName(rs.getLong(senderColumn)),
                             getUserName(receiverID), rs.getString(textColumn), rs.getInt(deletedStatusColumn),
                             timeStamp, timeout);
