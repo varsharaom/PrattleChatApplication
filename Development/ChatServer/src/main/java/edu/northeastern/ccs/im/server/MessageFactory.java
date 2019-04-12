@@ -196,20 +196,24 @@ public class MessageFactory {
     private static Message constructCustomForwardMessage(String restOfMessageText, IQueryHandler queryHandler) {
         String[] content = restOfMessageText.split(" ");
         String receiver = content[0];
-        long messageId = queryHandler.getParentMessageID(Long.parseLong(content[1]));
+        long actualMessageId = Long.parseLong(content[1]);
+        long parentMessageId = queryHandler.getParentMessageID(actualMessageId);
         String sender = content[2];
-        Message actualMessage = queryHandler.getMessage(messageId);
+        Message actualMessage = queryHandler.getMessage(actualMessageId);
         String text = actualMessage.getText();
         int originalMessageTimeout = actualMessage.getTimeOutMinutes();
-
+        
+        if (parentMessageId == -1) {
+        	parentMessageId = actualMessageId;
+        }
         Message constructedMessage;
-        if (actualMessage.isDirectMessage()) {
-            constructedMessage = Message.makeDirectMessage(sender, receiver, text, originalMessageTimeout);
-        } else {
+        if (queryHandler.checkUserNameExists(receiver)) {
+        	constructedMessage = Message.makeDirectMessage(sender, receiver, text, originalMessageTimeout);
+        }else {
             constructedMessage = Message.makeGroupMessage(sender, receiver, text, originalMessageTimeout);
         }
 
-        constructedMessage.setId(messageId);
+        constructedMessage.setId(parentMessageId);
 
         return constructedMessage;
     }

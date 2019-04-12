@@ -28,8 +28,9 @@ Documentation
 * Chatter
   * Extended Chatter client to provide the functionalities implemented in the chat server.
 * Prattle
-  * 
+  * Extended Prattle client to implement full chat functionality.
 * Deployment server
-  * 
+  * AWS instance to deploy the prattle server. Exposes a public endpoint to which any user having the Chatter client can connect.
+  
 ### Requirements
 * Java 1.8

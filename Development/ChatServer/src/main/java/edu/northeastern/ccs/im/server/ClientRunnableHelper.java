@@ -646,7 +646,6 @@ class ClientRunnableHelper {
                     MessageConstants.MESSAGE_SENT_INFO + messageId);
 
             Prattle.sendAckMessage(ackMessage);
-            message.setText(getPrependedMessageText(message.getText(), messageId, message.getTimeStamp()));
             Prattle.sendDirectMessage(message);
         } else {
             Message errorMessage = Message.makeErrorMessage(message.getName(),
@@ -765,12 +764,12 @@ class ClientRunnableHelper {
 		Date messageTimeStamp = new Date(timeStamp);
 		SimpleDateFormat format = new SimpleDateFormat(MessageConstants.MSG_DATE_FORMAT);
 
-    		StringBuilder text = new StringBuilder(MessageConstants.MSG_ID_PREFIX);
-        text.append(messageId);
-        text.append(MessageConstants.MSG_ID_SUFFIX);
-        text.append(MessageConstants.MSG_TIMESTAMP_PREFIX);
+		StringBuilder text = new StringBuilder(MessageConstants.MSG_TIMESTAMP_PREFIX);
 		text.append(format.format(messageTimeStamp));
 		text.append(MessageConstants.MSG_TIMESTAMP_SUFFIX);
+		text.append(MessageConstants.MSG_ID_PREFIX);
+        text.append(messageId);
+        text.append(MessageConstants.MSG_ID_SUFFIX);
         text.append(msgText);
 
         return text.toString();
