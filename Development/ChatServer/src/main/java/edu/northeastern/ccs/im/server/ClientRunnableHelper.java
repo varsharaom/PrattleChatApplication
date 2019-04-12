@@ -566,7 +566,7 @@ class ClientRunnableHelper {
     private void loadPendingMessages(long userId) {
         List<Message> messageList = QueryFactory.getQueryHandler().getMessagesSinceLastLogin(userId);
         for (Message message : messageList) {
-            message.setText(getPrependedMessageText(message.getText(), message.getId()));
+            message.setText(getPrependedMessageText(message.getText(), message.getId(), message.getTimeStamp()));
             Prattle.sendDirectMessage(message);
         }
     }
