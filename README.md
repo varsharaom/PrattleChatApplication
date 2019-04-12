@@ -7,7 +7,7 @@ Elavazhagan Sethuraman: https://github.ccs.neu.edu/cs5500/Student-259-SP19<br>
 Varsha Muroor Rao: https://github.ccs.neu.edu/cs5500/Student-244-SP19<br>
 Vinayakaram Nagasubramanian: https://github.ccs.neu.edu/cs5500/Student-235-SP19<br>
 
-## Messaging application with a scalable backend. Written in Java.
+## Messaging application with a scalable backend. Written in Java and persisted un MySQL.
 - Extensible command line client interface
 - Supports direct and group messaging.
 - Supports special message types such as forwarded, group subset and time out messages.
