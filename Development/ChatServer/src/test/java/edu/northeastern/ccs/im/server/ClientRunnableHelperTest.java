@@ -1,6 +1,7 @@
 package edu.northeastern.ccs.im.server;
 
 import edu.northeastern.ccs.im.constants.ClientRunnableHelperConstants;
+import edu.northeastern.ccs.im.constants.MessageConstants;
 import edu.northeastern.ccs.im.persistence.DBConstants;
 import edu.northeastern.ccs.im.persistence.IQueryHandler;
 import edu.northeastern.ccs.im.utils.MessageUtil;
@@ -384,7 +385,8 @@ public class ClientRunnableHelperTest {
         String prependedText =
                 clientRunnableHelper.getPrependedMessageText(messageText, randomId, 0);
 
-        assertTrue(prependedText.startsWith(msgPrefix));
+        assertTrue(prependedText.startsWith(MessageConstants.MSG_TIMESTAMP_PREFIX));
+        assertTrue(prependedText.contains(msgPrefix));
         assertTrue(prependedText.endsWith(BROADCAST_TEXT_MESSAGE));
     }
 

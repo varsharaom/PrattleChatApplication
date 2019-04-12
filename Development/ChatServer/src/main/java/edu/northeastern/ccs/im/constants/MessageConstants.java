@@ -334,6 +334,10 @@ public final class MessageConstants {
 
     public static final String RECEIVERS_DELIMITER = "RCVRS";
     public static final long DEFAULT_MESSAGE_ID = -1l;
+    public static final String MESSAGE_TRACK_INFO_HEADER = " Message Tracking information: \n";
+    public static final String GROUPS_HEADER = "Groups: ";
+    public static final String USER_HEADER = "\nUsers: ";
+    public static final String FORWARDED_MESSAGE_IDENTIFIER = " <<< FORWARDED MESSAGE>>> ";
 
     /**
      * Private constructor for class with static methods.

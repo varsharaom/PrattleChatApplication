@@ -193,6 +193,11 @@ class ClientRunnableHelper {
 
     }
 
+    /**
+     *
+     * @param senderName Sender name of the request
+     * @param contents Raw content of message object sent from client
+     */
     private void handleUserVisibility(String senderName, String[] contents) {
         boolean isPrivate = isPrivateVisibility(contents[1]);
         boolean isActualVisibilityPrivate = queryHandler.isUserInVisible(senderName);
@@ -208,69 +213,102 @@ class ClientRunnableHelper {
 
     }
 
-    private void toggleUserVisibility(String senderName, boolean isPrivate) {
-        queryHandler.updateUserVisibility(senderName, isPrivate);
-        Message ackMessage = Message.makeAckMessage(MessageType.DIRECT, senderName,
+    /**
+     * Modifies the user's visibility to the given one
+     * @param userName User name whose visibility is to be toggled
+     * @param isPrivate true if the visibility is private. Otherwise false
+     */
+    private void toggleUserVisibility(String userName, boolean isPrivate) {
+        queryHandler.updateUserVisibility(userName, isPrivate);
+        Message ackMessage = Message.makeAckMessage(MessageType.DIRECT, userName,
                 "Visibility successfully updated to - " + isPrivate);
         Prattle.sendAckMessage(ackMessage);
     }
 
-    private void handleTrackMessage(String senderName, String[] contents) {
+    /**
+     * Handler for tracking message command. Sends tracked information if the
+     * request is valid. Otherwise sends an error message.
+     * @param userName Name of the user whose message has to be tracked
+     * @param contents Raw contents from the client
+     */
+    private void handleTrackMessage(String userName, String[] contents) {
         long messageId = Long.parseLong(contents[1]);
         Message originalMessage = queryHandler.getMessage(messageId);
 
-        if (originalMessage.getName().equals(senderName)) {
+        if (originalMessage.getName().equals(userName)) {
             Map<String, List<String>> trackInfo = queryHandler.trackMessage(messageId);
             String text = getBuiltTrackMessageInfo(trackInfo);
-            Message responseMessage = Message.makeDirectMessage(senderName, senderName,
+            Message responseMessage = Message.makeDirectMessage(userName, userName,
                     text, 0);
             Prattle.sendAckMessage(responseMessage);
         } else {
-            Prattle.sendErrorMessage(Message.makeErrorMessage(senderName,
+            Prattle.sendErrorMessage(Message.makeErrorMessage(userName,
                     MessageConstants.INVALID_MESSAGE_TRACKER_ERR));
         }
     }
 
+    /***
+     * Builds a formatted String of message track information
+     * @param trackInfo Contains both group and user names who has received the message
+     *                  indirectly (through forwarding)
+     * @return a detailed information of all groups and users who got the message forwarded.
+     */
     private String getBuiltTrackMessageInfo(Map<String, List<String>> trackInfo) {
-        StringBuilder text = new StringBuilder(" Message Tracking information: \n");
-        text.append("Groups: ");
+        StringBuilder text = new StringBuilder(MessageConstants.MESSAGE_TRACK_INFO_HEADER);
+        text.append(MessageConstants.GROUPS_HEADER);
         text.append(trackInfo.get(MessageConstants.FORWARDED_GROUPS)
                 .stream()
                 .reduce("", (group1, group2) -> group1 + "\n" + group2));
-        text.append("\nUsers: ");
+        text.append(MessageConstants.USER_HEADER);
         text.append(trackInfo.get(MessageConstants.FORWARDED_USERS)
                 .stream()
                 .reduce("", (user1, user2) -> user1 + "\n" + user2));
         return text.toString().trim();
     }
 
-    private void handleChangeGroupVisibility(String senderName, String[] contents) {
+    /***
+     * Handles request to modify group's visibility
+     * @param userName Name of user who request to modify group's visibility
+     * @param contents Raw message content from client
+     */
+    private void handleChangeGroupVisibility(String userName, String[] contents) {
         boolean toBeGroupVisibility = isPrivateVisibility(contents[1]);
         String groupName = contents[2];
 
         boolean isActuallyPrivate = queryHandler.isGroupInVisible(groupName);
 
         if (isActuallyPrivate == toBeGroupVisibility) {
-            Message errorMessage = Message.makeErrorMessage(senderName,
+            Message errorMessage = Message.makeErrorMessage(userName,
                     "[INFO] Group's visibility is already " + toBeGroupVisibility);
             Prattle.sendErrorMessage(errorMessage);
         } else {
-            toggleGroupVisibility(groupName, senderName, toBeGroupVisibility);
+            toggleGroupVisibility(groupName, userName, toBeGroupVisibility);
         }
     }
 
-    private boolean isPrivateVisibility(String toBeGroupVisibility) {
-        return toBeGroupVisibility.equals(MessageConstants.PRIVATE_VISIBILITY_IDENTIFIER);
+    /**
+     *
+     * @param visibility Compared to check whether it is a private visibility or not
+     * @return True if visibility is Private. Otherwise False
+     */
+    private boolean isPrivateVisibility(String visibility) {
+        return visibility.equals(MessageConstants.PRIVATE_VISIBILITY_IDENTIFIER);
     }
 
-    private void toggleGroupVisibility(String groupName, String senderName, boolean isPrivate) {
-        if (queryHandler.isModerator(senderName, groupName)) {
+    /**
+     *
+     * @param groupName Group's name whose visibility is intended to be modified
+     * @param userName User's name who raise the request to toggle group visibility
+     * @param isPrivate visibility of group. True if Private. False if Public
+     */
+    private void toggleGroupVisibility(String groupName, String userName, boolean isPrivate) {
+        if (queryHandler.isModerator(userName, groupName)) {
             queryHandler.updateGroupVisibility(groupName, isPrivate);
-            Message ackMessage = Message.makeAckMessage(MessageType.DIRECT, senderName,
+            Message ackMessage = Message.makeAckMessage(MessageType.DIRECT, userName,
                     "Group Visibility successfully updated to - " + isPrivate);
             Prattle.sendAckMessage(ackMessage);
         } else {
-            Message errorMessage = Message.makeErrorMessage(senderName,
+            Message errorMessage = Message.makeErrorMessage(userName,
                     MessageConstants.INVALID_MODERATOR_ERR);
             Prattle.sendErrorMessage(errorMessage);
         }
@@ -300,11 +338,18 @@ class ClientRunnableHelper {
         Prattle.sendAckMessage(handshakeMessage);
     }
 
-    private String requestGroupAddByGroupMember(String groupName, String senderName, String toBeMember) {
+    /**
+     *
+     * @param groupName Group's name where new member has to be added
+     * @param userName User's name who raise the request add group member request
+     * @param toBeMember Name of user that has to be added in the group
+     * @return an acknowledgement message of the request's status
+     */
+    private String requestGroupAddByGroupMember(String groupName, String userName, String toBeMember) {
         String ackMessage;
         if (queryHandler.checkUserNameExists(toBeMember)) {
             ackMessage = MessageConstants.REQUEST_GROUP_ADD_SUCCESS_MSG;
-            publishRequestToModerators(groupName, senderName, toBeMember);
+            publishRequestToModerators(groupName, userName, toBeMember);
         } else {
             ackMessage = MessageConstants.INVALID_USER_ERR;
         }
@@ -430,6 +475,13 @@ class ClientRunnableHelper {
         Prattle.sendAckMessage(message);
     }
 
+    /***
+     *
+     * @param groupName Name of group for which request is raised
+     * @param sender Name of user who raises the request
+     * @param member Name of user who is intended to be removed from group
+     * @return acknowledgement message stating the status of request
+     */
     private String removeMemberByModerator(String groupName, String sender, String member) {
         String ackMessage;
         if (queryHandler.isGroupMember(groupName, sender)) {
@@ -462,6 +514,13 @@ class ClientRunnableHelper {
         Prattle.sendAckMessage(message);
     }
 
+    /***
+     *
+     * @param groupName Name of group for which request is raised
+     * @param sender Name of user who raises the request
+     * @param toBeModerator User who is intended to be moderator
+     * @return an acknowledgement message stating the status of request
+     */
     private String createModeratorByModerator(String groupName, String sender, String toBeModerator) {
         String ackMessage;
         if (queryHandler.isGroupMember(groupName, sender)) {
@@ -595,17 +654,27 @@ class ClientRunnableHelper {
         }
     }
 
+    /**
+     *
+     * @param message Object whose text field has to be formatted to print to client window
+     * @param messageId id of the message
+     */
     private void formatMessageTextToClientShowable(Message message, long messageId) {
         long parentMessageId = message.getId();
         if ((parentMessageId != MessageConstants.DEFAULT_MESSAGE_ID) && (messageId != parentMessageId)) {
             message.setText(getPrependedMessageText(message.getText()
-                    + " <<< FORWARDED MESSAGE>>> ", messageId, message.getTimeStamp()));
+                    + MessageConstants.FORWARDED_MESSAGE_IDENTIFIER, messageId, message.getTimeStamp()));
         }
         else {
             message.setText(getPrependedMessageText(message.getText(), messageId, message.getTimeStamp()));
         }
     }
 
+    /**
+     *
+     * @param message Message object to be persisted in the database
+     * @return id of the persisted message
+     */
     private long persistMessage(Message message) {
         return queryHandler.storeMessage(message.getName(), message.getMsgReceiver(),
                 message.getMessageType(), message.getText(), message.getId(),
@@ -632,10 +701,9 @@ class ClientRunnableHelper {
         }
     }
 
-    /***
+    /**
      *
-     * @param msg
-     * NOTES: GRP_SBST SENDER_NAME 'RCVRS' RCVR1 RCVR2 RCVR3 RCVR4 'RCVRS' GRP_SBST GROUP_NAME message text
+     * @param msg Message to be sent to multiple receivers of a group
      */
     private void handleMultiReceiverMessages(Message msg) {
         List<String> actualMembers = queryHandler.getGroupMembers(msg.getMsgReceiver());
@@ -650,6 +718,11 @@ class ClientRunnableHelper {
     }
 
 
+    /**
+     *
+     * @param msg message information
+     * @param potentialGroupMember User intended to receive a group subset message
+     */
 	private void handleMessageToInvalidReceiver(Message msg, String potentialGroupMember) {
         Message errorMessage = Message.makeErrorMessage(msg.getName(),
                 "[ERROR] : " + potentialGroupMember + " does not exist or not " +
@@ -657,6 +730,11 @@ class ClientRunnableHelper {
         Prattle.sendErrorMessage(errorMessage);
     }
 
+    /**
+     *
+     * @param msg message information
+     * @param potentialGroupMember User intended to receive a group subset message
+     */
     private void handleMessageToValidReceiver(Message msg, String potentialGroupMember) {
         Message ackMessage = Message.makeAckMessage(MessageType.GROUP_SUBSET,
                 msg.getName(), "[INFO] Message successfully sent to "
