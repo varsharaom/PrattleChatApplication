@@ -131,7 +131,7 @@ public class NetworkConnectionTest {
         nc.close();
     }
 
-    // @Test(expected = AssertionError.class)
+    @Test(expected = AssertionError.class)
     public void testConstructor() {
         ServerSocketChannel serverSocketLocal = null;
         try {
@@ -170,7 +170,7 @@ public class NetworkConnectionTest {
         }
     }
 
-    // @Test
+    @Test
     public void testMessageIteratorHasNext() {
         ServerSocketChannel serverSocketLocal = null;
         try {
