@@ -27,10 +27,10 @@ Vinayakaram Nagasubramanian: https://github.ccs.neu.edu/cs5500/Student-235-SP19<
 
 ### Installation
 * The server JAR can be created by navigating to Development/ChatServer and executing the following command in the terminal: 
-   *mvn clean package
+   * mvn clean package
 * This will create a JAR file called Chatter-0.0.1-SNAPSHOT-jar-with-dependencies.jar in the ChatServer/target folder.
 * The server JAR can be run locally by using the command :
-  *java -cp target/Chatter-0.0.1-SNAPSHOT-jar-with-dependencies.jar edu.northeastern.ccs.im.server.Prattle
+   * java -cp target/Chatter-0.0.1-SNAPSHOT-jar-with-dependencies.jar edu.northeastern.ccs.im.server.Prattle
 * We need a client to run the chat application. For this purpose, we have added an extensive command line based client packaged as a JAR, which can be found in Development/ClientJAR.
 * The JAR has to be executed by providing the server endpoint to which the client must connect. 
 * The client JAR can be connected to either the server running in the AWS or the server running locally
