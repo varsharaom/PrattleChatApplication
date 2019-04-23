@@ -50,10 +50,10 @@ Vinayakaram Nagasubramanian: https://github.ccs.neu.edu/cs5500/Student-235-SP19<
   * MSG
           
 * To register as a new user, the command is:
-  * $$RGSTR# <username> <password>
+  * $$RGSTR# `<username> <password>`
  
 * To login as an existing user:
-  * $$LGN# <username> <password>
+  * $$LGN# `<username> <password>`
  
 * Various information about other users and groups can be obtained by the following commands:
   * GT_USRS
