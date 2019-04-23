@@ -26,16 +26,24 @@ Vinayakaram Nagasubramanian: https://github.ccs.neu.edu/cs5500/Student-235-SP19<
 - [Requirements](#requirements)
 
 ### Installation
+* The server JAR can be created by navigating to Development/ChatServer and executing the following command in the terminal: 
+   *mvn clean package
+* This will create a JAR file called Chatter-0.0.1-SNAPSHOT-jar-with-dependencies.jar in the ChatServer/target folder.
+* The server JAR can be run locally by using the command :
+  *java -cp target/Chatter-0.0.1-SNAPSHOT-jar-with-dependencies.jar edu.northeastern.ccs.im.server.Prattle
 * We need a client to run the chat application. For this purpose, we have added an extensive command line based client packaged as a JAR, which can be found in Development/ClientJAR.
-* The JAR has to be executed by providing the server endpoint to which the client must connect.
-* The JAR can be executed as: java -jar Chatter.jar <endpoint>
+* The JAR has to be executed by providing the server endpoint to which the client must connect. 
+* The client JAR can be connected to either the server running in the AWS or the server running locally
+The client JAR can be connected to the local instance of the server by running the command: 
+java -cp ClientJar/Client-Chatter.jar:ClientJar/Chatter.jar edu.northeastern.ccs.im.clientextensions.CommandLineMainExtended localhost 4545
+The client JAR can be connected to the server instance deployed in AWS by running the command:
+ *java -cp ClientJar/Client-Chatter.jar:ClientJar/Chatter.jar edu.northeastern.ccs.im.clientextensions.CommandLineMainExtended ec2-3-19-75-11.us-east-2.compute.amazonaws.com 4545
 
 ### Components
-* Chatter
+* Chatter - the client
   * Extended Chatter client to provide the functionalities implemented in the chat server.
-* Prattle
-  * Extended Prattle client to implement full chat functionality.
-  * Deployment server
+* Prattle - the server
+  * Extended the given Prattle class to include the functionalities from backlog.
   * AWS instance to deploy the prattle server. Exposes a public endpoint to which any user having the Chatter client can connect.
   
 ### Requirements
@@ -45,7 +53,7 @@ Vinayakaram Nagasubramanian: https://github.ccs.neu.edu/cs5500/Student-235-SP19<
 * This is a command line based application. The commands typed in the terminal by the client are parsed and interpreted in the server side. To have an overview of all the commands in the application, use the following command:
   * $$HELP#
  
-* This application is classified in to two modes - operation and messaging modes. In messaging mode, the user can send messages to another user, another group, a subset of users from the group and forward messages. In operation mode,  delete messages, add a moderator, remove a person from the group, add a person to the group and the like. To toggle in to those modes, the following commands are used:
+* This application is classified into two modes - operation and messaging modes. In messaging mode, the user can send messages to another user, another group, a subset of users from the group. In operation mode, the user can perform operations like delete messages, adding a moderator, removing a person from the group, adding a person to the group and the like. To toggle into those modes, the following commands are used:
   * OPT
   * MSG
 * During conversation, the user would like to toggle to a different conversation with another group or a person. For such scenarios, the following command is used: 
@@ -66,7 +74,7 @@ Vinayakaram Nagasubramanian: https://github.ccs.neu.edu/cs5500/Student-235-SP19<
            
 * To change the language,
   * CHANGE_LANG <language>
-   Note: es for Espanol, ar for Arabic. For more details on supported languages by this application, please visit 
+   Note: es for Espanol, fr for French. For more details on supported languages by this application, please visit 
  [https://cloud.ibm.com/docs/services/language-translator?topic=language-translator-identifiable-languages#identifiable-languages] 
  
 * To reset to the english language,
