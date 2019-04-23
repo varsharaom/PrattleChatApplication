@@ -46,14 +46,14 @@ Vinayakaram Nagasubramanian: https://github.ccs.neu.edu/cs5500/Student-235-SP19<
   * $$HELP#
  
 * This application is classified in to two modes - operation and messaging modes. In messaging mode, the user can send messages to another user, another group, a subset of users from the group and forward messages. In operation mode, the user can obtain information about users and groups, track messages, delete messages, add a moderator, remove a person from the group, add a person to the group and the like. To toggle in to those modes, the following commands are used:
- * OPT
- * MSG
+  * OPT
+  * MSG
           
 * To register as a new user, the command is:
- * $$RGSTR# <username> <password>
+  * $$RGSTR# <username> <password>
  
 * To login as an existing user:
- * $$LGN# <username> <password>
+  * $$LGN# <username> <password>
  
 * Various information about other users and groups can be obtained by the following commands:
  * GT_USRS
