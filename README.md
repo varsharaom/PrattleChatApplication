@@ -7,6 +7,11 @@ Elavazhagan Sethuraman: https://github.ccs.neu.edu/cs5500/Student-259-SP19<br>
 Varsha Muroor Rao: https://github.ccs.neu.edu/cs5500/Student-244-SP19<br>
 Vinayakaram Nagasubramanian: https://github.ccs.neu.edu/cs5500/Student-235-SP19<br>
 
+## Youtube Videos
+- [System Setup](https://youtu.be/N6ODQkEy_kQ)
+- [System Demo](https://youtu.be/OxmLVMbMJ9s)
+- [Final Presentation](https://youtu.be/lPfVFpD00o8)
+
 ## Messaging application with a scalable backend(Written in Java and persisted in MySQL)
 - Extensible command line client interface
 - Supports direct and group messaging.
@@ -35,4 +40,3 @@ Documentation
   
 ### Requirements
 * Java 1.8
-
