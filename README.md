@@ -42,7 +42,7 @@ Vinayakaram Nagasubramanian: https://github.ccs.neu.edu/cs5500/Student-235-SP19<
 * Java 1.8
 
 ## How to use the application
-* This is a command line b$$LGN# <username> <password>ased application. The commands typed in the terminal by the client are parsed and interpreted in the server side. To have an overview of all the commands in the application, use the following command:
+* This is a command line based application. The commands typed in the terminal by the client are parsed and interpreted in the server side. To have an overview of all the commands in the application, use the following command:
   * $$HELP#
  
 * This application is classified in to two modes - operation and messaging modes. In messaging mode, the user can send messages to another user, another group, a subset of users from the group and forward messages. In operation mode, the user can obtain information about users and groups, track messages, delete messages, add a moderator, remove a person from the group, add a person to the group and the like. To toggle in to those modes, the following commands are used:
@@ -67,13 +67,13 @@ Vinayakaram Nagasubramanian: https://github.ccs.neu.edu/cs5500/Student-235-SP19<
  [https://cloud.ibm.com/docs/services/language-translator?topic=language-translator-identifiable-languages#identifiable-languages] 
  
 * To reset to the english language,
-  * RESET_LANG <language>
+  * RESET_LANG `<language>`
  
 * To track a message from its origin, 
-  * TRACK_MSG <MessageId>
+  * TRACK_MSG `<MessageId>`
  
 * To send a direct message to another user in the application,
-  * $$DRCT# <username> 
+  * $$DRCT# `<username>`
  
 * To send a group message to a group,
-  * $$GRP# <username> 
+  * $$GRP# `<username>` 
