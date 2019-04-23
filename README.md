@@ -13,10 +13,10 @@ Vinayakaram Nagasubramanian: https://github.ccs.neu.edu/cs5500/Student-235-SP19<
 - [Final Presentation](https://youtu.be/lPfVFpD00o8)
 
 ## Messaging application with a scalable backend(Written in Java and persisted in MySQL)
-- Extensible command line client interface
+- Extensible command line client interface.
 - Supports direct and group messaging.
 - Deletions of messages.
-- Supports special message types such as forwarded, group subset and time out messages.
+- Supports forwarding the messages, messaging group subset, tracking messages and enabling time out messages.
 - Allows users to obtain messages translated in a (limited set of) language of their choice.
 - Allow users to enable chat filtering to mask abusive content.
 
@@ -29,15 +29,16 @@ Vinayakaram Nagasubramanian: https://github.ccs.neu.edu/cs5500/Student-235-SP19<
 * The server JAR can be created by navigating to Development/ChatServer and executing the following command in the terminal: 
    * mvn clean package
 * This will create a JAR file called Chatter-0.0.1-SNAPSHOT-jar-with-dependencies.jar in the ChatServer/target folder.
-* The server JAR can be run locally by using the command :
-   * java -cp target/Chatter-0.0.1-SNAPSHOT-jar-with-dependencies.jar edu.northeastern.ccs.im.server.Prattle
-* We need a client to run the chat application. For this purpose, we have added an extensive command line based client packaged as a JAR, which can be found in Development/ClientJAR.
+* The server JAR can be run locally by navigating to ChatServer/target folder and using the command :
+   * java -cp Chatter-0.0.1-SNAPSHOT-jar-with-dependencies.jar edu.northeastern.ccs.im.server.Prattle
+* We need a client to run the chat application. For this purpose, we have added an extensive command line based client packaged as a JAR, which can be found in Development/ClientJar.
 * The JAR has to be executed by providing the server endpoint to which the client must connect. 
-* The client JAR can be connected to either the server running in the AWS or the server running locally
-* The client JAR can be connected to the local instance of the server by running the command: 
-  * java -cp ClientJar/Client-Chatter.jar:ClientJar/Chatter.jar edu.northeastern.ccs.im.clientextensions.CommandLineMainExtended localhost 4545
+* The client JAR can be connected to either the server running in the AWS or the server running locally.
+* The client JAR can be connected to the local instance of the server by navigating to Development/ClientJar and running the command: 
+  * java -cp Client-Chatter.jar;Chatter.jar edu.northeastern.ccs.im.clientextensions.CommandLineMainExtended localhost 4545
 * The client JAR can be connected to the server instance deployed in AWS by running the command:
-  * java -cp ClientJar/Client-Chatter.jar:ClientJar/Chatter.jar edu.northeastern.ccs.im.clientextensions.CommandLineMainExtended ec2-3-19-75-11.us-east-2.compute.amazonaws.com 4545
+  * java -cp Client-Chatter.jar;Chatter.jar edu.northeastern.ccs.im.clientextensions.CommandLineMainExtended ec2-3-19-75-11.us-east-2.compute.amazonaws.com 4545
+  
 
 ### Components
 * Chatter - the client
