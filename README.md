@@ -56,24 +56,24 @@ Vinayakaram Nagasubramanian: https://github.ccs.neu.edu/cs5500/Student-235-SP19<
   * $$LGN# <username> <password>
  
 * Various information about other users and groups can be obtained by the following commands:
- * GT_USRS
- * GT_MY_USRS
- * GT_GRPS
- * GT_MY_GRPS
+  * GT_USRS
+  * GT_MY_USRS
+  * GT_GRPS
+  * GT_MY_GRPS
            
 * To change the language,
- * CHANGE_LANG <language>
+  * CHANGE_LANG <language>
    Note: es for Espanol, ar for Arabic. For more details on supported languages by this application, please visit 
  [https://cloud.ibm.com/docs/services/language-translator?topic=language-translator-identifiable-languages#identifiable-languages] 
  
 * To reset to the english language,
- * RESET_LANG <language>
+  * RESET_LANG <language>
  
 * To track a message from its origin, 
- * TRACK_MSG <MessageId>
+  * TRACK_MSG <MessageId>
  
 * To send a direct message to another user in the application,
- * $$DRCT# <username> 
+  * $$DRCT# <username> 
  
 * To send a group message to a group,
- * $$GRP# <username> 
+  * $$GRP# <username> 
