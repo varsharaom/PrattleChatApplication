@@ -34,9 +34,9 @@ Vinayakaram Nagasubramanian: https://github.ccs.neu.edu/cs5500/Student-235-SP19<
 * We need a client to run the chat application. For this purpose, we have added an extensive command line based client packaged as a JAR, which can be found in Development/ClientJAR.
 * The JAR has to be executed by providing the server endpoint to which the client must connect. 
 * The client JAR can be connected to either the server running in the AWS or the server running locally
-The client JAR can be connected to the local instance of the server by running the command: 
+* The client JAR can be connected to the local instance of the server by running the command: 
   * java -cp ClientJar/Client-Chatter.jar:ClientJar/Chatter.jar edu.northeastern.ccs.im.clientextensions.CommandLineMainExtended localhost 4545
-The client JAR can be connected to the server instance deployed in AWS by running the command:
+* The client JAR can be connected to the server instance deployed in AWS by running the command:
   * java -cp ClientJar/Client-Chatter.jar:ClientJar/Chatter.jar edu.northeastern.ccs.im.clientextensions.CommandLineMainExtended ec2-3-19-75-11.us-east-2.compute.amazonaws.com 4545
 
 ### Components
