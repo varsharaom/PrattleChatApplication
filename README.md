@@ -45,10 +45,13 @@ Vinayakaram Nagasubramanian: https://github.ccs.neu.edu/cs5500/Student-235-SP19<
 * This is a command line based application. The commands typed in the terminal by the client are parsed and interpreted in the server side. To have an overview of all the commands in the application, use the following command:
   * $$HELP#
  
-* This application is classified in to two modes - operation and messaging modes. In messaging mode, the user can send messages to another user, another group, a subset of users from the group and forward messages. In operation mode, the user can obtain information about users and groups, track messages, delete messages, add a moderator, remove a person from the group, add a person to the group and the like. To toggle in to those modes, the following commands are used:
+* This application is classified in to two modes - operation and messaging modes. In messaging mode, the user can send messages to another user, another group, a subset of users from the group and forward messages. In operation mode,  delete messages, add a moderator, remove a person from the group, add a person to the group and the like. To toggle in to those modes, the following commands are used:
   * OPT
   * MSG
-          
+* During conversation, the user would like to toggle to a different conversation with another group or a person. For such scenarios, the following command is used: 
+   * CHANGE
+   
+### Few important commands in the application:
 * To register as a new user, the command is:
   * $$RGSTR# `<username> <password>`
  
